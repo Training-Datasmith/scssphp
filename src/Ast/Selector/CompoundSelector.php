@@ -130,7 +130,7 @@ final class CompoundSelector extends Selector
      */
     public function hasComplicatedSuperselectorSemantics(): bool
     {
-        return $this->complicatedSuperselectorSemantics ??= IterableUtil::any($this->components, fn (SimpleSelector $component) => $component->hasComplicatedSuperselectorSemantics());
+        return $this->complicatedSuperselectorSemantics ??= IterableUtil::any($this->components, fn (SimpleSelector $component): bool => $component->hasComplicatedSuperselectorSemantics());
     }
 
     public function accept(SelectorVisitor $visitor)

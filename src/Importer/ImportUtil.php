@@ -30,11 +30,11 @@ final class ImportUtil
         $extension = Path::extension($path);
 
         if ($extension === '.sass' || $extension === '.scss' || $extension === '.css') {
-            return self::ifInImport(fn () => self::exactlyOne(self::tryPath(Path::withoutExtension($path) . '.import' . $extension)))
+            return self::ifInImport(fn (): ?string => self::exactlyOne(self::tryPath(Path::withoutExtension($path) . '.import' . $extension)))
                 ?? self::exactlyOne(self::tryPath($path));
         }
 
-        return self::ifInImport(fn () => self::exactlyOne(self::tryPathWithExtensions($path . '.import')))
+        return self::ifInImport(fn (): ?string => self::exactlyOne(self::tryPathWithExtensions($path . '.import')))
             ?? self::exactlyOne(self::tryPathWithExtensions($path))
             ?? self::tryPathAsDirectory($path);
     }
@@ -94,7 +94,7 @@ final class ImportUtil
             return null;
         }
 
-        return self::ifInImport(fn () => self::exactlyOne(self::tryPathWithExtensions(Path::join($path, 'index.import'))))
+        return self::ifInImport(fn (): ?string => self::exactlyOne(self::tryPathWithExtensions(Path::join($path, 'index.import'))))
             ?? self::exactlyOne(self::tryPathWithExtensions(Path::join($path, 'index')));
     }
 

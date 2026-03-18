@@ -25,14 +25,11 @@ use SourceSpan\FileSpan;
  */
 final class TypeSelector extends SimpleSelector
 {
-    /**
+    public function __construct(/**
      * The element name being selected.
      */
-    private readonly QualifiedName $name;
-
-    public function __construct(QualifiedName $name, FileSpan $span)
+    private readonly QualifiedName $name, FileSpan $span)
     {
-        $this->name = $name;
         parent::__construct($span);
     }
 
@@ -51,7 +48,7 @@ final class TypeSelector extends SimpleSelector
         return $visitor->visitTypeSelector($this);
     }
 
-    public function addSuffix(string $suffix): SimpleSelector
+    public function addSuffix(string $suffix): \ScssPhp\ScssPhp\Ast\Selector\TypeSelector
     {
         return new TypeSelector(new QualifiedName($this->name->getName() . $suffix, $this->name->getNamespace()), $this->getSpan());
     }
@@ -77,7 +74,10 @@ final class TypeSelector extends SimpleSelector
 
     public function isSuperselector(SimpleSelector $other): bool
     {
-        return parent::isSuperselector($other) || ($other instanceof TypeSelector && $this->name->getName() === $other->getName()->getName() && ($this->name->getNamespace() === '*' || $this->name->getNamespace() === $other->getName()->getNamespace()));
+        if (parent::isSuperselector($other)) {
+            return true;
+        }
+        return $other instanceof TypeSelector && $this->name->getName() === $other->getName()->getName() && ($this->name->getNamespace() === '*' || $this->name->getNamespace() === $other->getName()->getNamespace());
     }
 
     public function equals(object $other): bool

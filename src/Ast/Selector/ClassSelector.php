@@ -25,14 +25,11 @@ use SourceSpan\FileSpan;
  */
 final class ClassSelector extends SimpleSelector
 {
-    /**
+    public function __construct(/**
      * The class name this selects for.
      */
-    private readonly string $name;
-
-    public function __construct(string $name, FileSpan $span)
+    private readonly string $name, FileSpan $span)
     {
-        $this->name = $name;
         parent::__construct($span);
     }
 
@@ -51,7 +48,7 @@ final class ClassSelector extends SimpleSelector
         return $other instanceof ClassSelector && $other->name === $this->name;
     }
 
-    public function addSuffix(string $suffix): SimpleSelector
+    public function addSuffix(string $suffix): \ScssPhp\ScssPhp\Ast\Selector\ClassSelector
     {
         return new ClassSelector($this->name . $suffix, $this->getSpan());
     }

@@ -29,7 +29,7 @@ final class MathFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function abs(array $arguments): Value
+    public static function abs(array $arguments): \ScssPhp\ScssPhp\Value\SassNumber
     {
         $number = $arguments[0]->assertNumber('number');
         // TODO implement the deprecation for the % unit once modules are implemented to provided the replacement
@@ -108,7 +108,7 @@ final class MathFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function compatible(array $arguments): Value
+    public static function compatible(array $arguments): \ScssPhp\ScssPhp\Value\SassBoolean
     {
         $number1 = $arguments[0]->assertNumber('number1');
         $number2 = $arguments[1]->assertNumber('number2');
@@ -119,7 +119,7 @@ final class MathFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function isUnitless(array $arguments): Value
+    public static function isUnitless(array $arguments): \ScssPhp\ScssPhp\Value\SassBoolean
     {
         $number = $arguments[0]->assertNumber('number');
 
@@ -129,7 +129,7 @@ final class MathFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function unit(array $arguments): Value
+    public static function unit(array $arguments): \ScssPhp\ScssPhp\Value\SassString
     {
         $number = $arguments[0]->assertNumber('number');
 
@@ -139,7 +139,7 @@ final class MathFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function percentage(array $arguments): Value
+    public static function percentage(array $arguments): \ScssPhp\ScssPhp\Value\SassNumber
     {
         $number = $arguments[0]->assertNumber('number');
         $number->assertNoUnits('number');
@@ -150,7 +150,7 @@ final class MathFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function random(array $arguments): Value
+    public static function random(array $arguments): \ScssPhp\ScssPhp\Value\SassNumber
     {
         if ($arguments[0] instanceof SassNull) {
             // TODO use a better algorithm to generate a random float.
@@ -196,7 +196,7 @@ final class MathFunctions
      *
      * @param-immediately-invoked-callable $transform
      */
-    private static function numberFunction(array $arguments, callable $transform): Value
+    private static function numberFunction(array $arguments, callable $transform): \ScssPhp\ScssPhp\Value\SassNumber
     {
         $number = $arguments[0]->assertNumber('number');
 

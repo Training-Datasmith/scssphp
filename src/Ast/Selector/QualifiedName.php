@@ -21,26 +21,23 @@ use ScssPhp\ScssPhp\Util\Equatable;
  *
  * @internal
  */
-final class QualifiedName implements Equatable
+final class QualifiedName implements Equatable, \Stringable
 {
-    /**
-     * The identifier name.
-     */
-    private readonly string $name;
-
-    /**
-     * The namespace name.
-     *
-     * If this is `null`, {@see name} belongs to the default namespace. If it's the
-     * empty string, {@see name} belongs to no namespace. If it's `*`, {@see name} belongs
-     * to any namespace. Otherwise, {@see name} belongs to the given namespace.
-     */
-    private readonly ?string $namespace;
-
-    public function __construct(string $name, ?string $namespace = null)
+    public function __construct(
+        /**
+         * The identifier name.
+         */
+        private readonly string $name,
+        /**
+         * The namespace name.
+         *
+         * If this is `null`, {@see name} belongs to the default namespace. If it's the
+         * empty string, {@see name} belongs to no namespace. If it's `*`, {@see name} belongs
+         * to any namespace. Otherwise, {@see name} belongs to the given namespace.
+         */
+        private readonly ?string $namespace = null
+    )
     {
-        $this->name = $name;
-        $this->namespace = $namespace;
     }
 
     public function getName(): string

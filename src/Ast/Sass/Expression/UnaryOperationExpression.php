@@ -23,16 +23,10 @@ use SourceSpan\FileSpan;
  */
 final class UnaryOperationExpression implements Expression
 {
-    private readonly UnaryOperator $operator;
-
-    private readonly Expression $operand;
-
     private readonly FileSpan $span;
 
-    public function __construct(UnaryOperator $operator, Expression $operand, FileSpan $span)
+    public function __construct(private readonly UnaryOperator $operator, private readonly Expression $operand, FileSpan $span)
     {
-        $this->operator = $operator;
-        $this->operand = $operand;
         $this->span = $span;
     }
 

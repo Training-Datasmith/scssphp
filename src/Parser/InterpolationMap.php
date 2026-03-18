@@ -28,31 +28,22 @@ use SourceSpan\SourceLocation;
  */
 final class InterpolationMap
 {
-    private readonly Interpolation $interpolation;
-
     /**
+     * @param list<SourceLocation> $targetLocations
+     */
+    public function __construct(private readonly Interpolation $interpolation, /**
      * Locations in the generated string.
      *
      * Each of these indicates the location in the generated string that
      * corresponds to the end of the component at the same index of
      * {@see $interpolation->getContents()}. Its length is always one less than
      * {@see $interpolation->getContents()} because the last element always ends the string.
-     *
-     * @var list<SourceLocation>
      */
-    private readonly array $targetLocations;
-
-    /**
-     * @param list<SourceLocation> $targetLocations
-     */
-    public function __construct(Interpolation $interpolation, array $targetLocations)
+    private readonly array $targetLocations)
     {
-        $this->interpolation = $interpolation;
-        $this->targetLocations = $targetLocations;
-
-        $expectedLocations = max(0, \count($interpolation->getContents()) - 1);
-        if (\count($targetLocations) !== $expectedLocations) {
-            $interpolationParts = \count($interpolation->getContents());
+        $expectedLocations = max(0, \count($this->interpolation->getContents()) - 1);
+        if (\count($this->targetLocations) !== $expectedLocations) {
+            $interpolationParts = \count($this->interpolation->getContents());
             throw new \InvalidArgumentException("InterpolationMap must have $expectedLocations targetLocations if the interpolation has $interpolationParts components.");
         }
     }
@@ -68,7 +59,7 @@ final class InterpolationMap
         $startIndex = $this->indexInContents($target->getStart());
         $endIndex = $this->indexInContents($target->getEnd());
 
-        if (!IterableUtil::any(array_slice($this->interpolation->getContents(), $startIndex, $endIndex - $startIndex + 1), fn ($content) => $content instanceof Expression)) {
+        if (!IterableUtil::any(array_slice($this->interpolation->getContents(), $startIndex, $endIndex - $startIndex + 1), fn ($content): bool => $content instanceof Expression)) {
             return new FormatException($error->getMessage(), $source, $error);
         }
 
@@ -196,7 +187,7 @@ final class InterpolationMap
         $source = $end->getFile()->getString();
         $i = $end->getOffset();
 
-        while ($i < \strlen($source)) {
+        while ($i < \strlen((string) $source)) {
             $next = $source[$i++];
 
             if ($next === '}') {

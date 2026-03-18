@@ -49,12 +49,12 @@ final class SelectorFunctions
 
         $first = true;
 
-        return ArrayUtil::reduce(array_map(function (Value $selector) use (&$first) {
+        return ArrayUtil::reduce(array_map(function (Value $selector) use (&$first): \ScssPhp\ScssPhp\Ast\Selector\SelectorList {
             $result = $selector->assertSelector(allowParent: !$first);
             $first = false;
 
             return $result;
-        }, $selectors), fn (SelectorList $parent, SelectorList $child) => $child->nestWithin($parent))->asSassList();
+        }, $selectors), fn (SelectorList $parent, SelectorList $child): \ScssPhp\ScssPhp\Ast\Selector\SelectorList => $child->nestWithin($parent))->asSassList();
     }
 
     /**
@@ -70,32 +70,30 @@ final class SelectorFunctions
 
         $span = EvaluationContext::getCurrent()->getCurrentCallableSpan();
 
-        return ArrayUtil::reduce(array_map(fn(Value $selector) => $selector->assertSelector(), $selectors), function (SelectorList $parent, SelectorList $child) use ($span) {
-            return (new SelectorList(array_map(function (ComplexSelector $complex) use ($span, $parent) {
-                if (\count($complex->getLeadingCombinators()) > 0) {
-                    throw new SassScriptException("Can't append $complex to $parent.");
-                }
+        return ArrayUtil::reduce(array_map(fn(Value $selector): \ScssPhp\ScssPhp\Ast\Selector\SelectorList => $selector->assertSelector(), $selectors), fn(SelectorList $parent, SelectorList $child) => (new SelectorList(array_map(function (ComplexSelector $complex) use ($span, $parent): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
+            if (\count($complex->getLeadingCombinators()) > 0) {
+                throw new SassScriptException("Can't append $complex to $parent.");
+            }
 
-                $component = $complex->getComponents()[0];
-                $rest = array_slice($complex->getComponents(), 1);
-                $newCompound = self::prependParent($component->getSelector());
+            $component = $complex->getComponents()[0];
+            $rest = array_slice($complex->getComponents(), 1);
+            $newCompound = self::prependParent($component->getSelector());
 
-                if ($newCompound === null) {
-                    throw new SassScriptException("Can't append $complex to $parent.");
-                }
+            if ($newCompound === null) {
+                throw new SassScriptException("Can't append $complex to $parent.");
+            }
 
-                return new ComplexSelector([], [
-                    new ComplexSelectorComponent($newCompound, $component->getCombinators(), $span),
-                    ...$rest,
-                ], $span);
-            }, $child->getComponents()), $span))->nestWithin($parent);
-        })->asSassList();
+            return new ComplexSelector([], [
+                new ComplexSelectorComponent($newCompound, $component->getCombinators(), $span),
+                ...$rest,
+            ], $span);
+        }, $child->getComponents()), $span))->nestWithin($parent))->asSassList();
     }
 
     /**
      * @param list<Value> $arguments
      */
-    public static function extend(array $arguments): Value
+    public static function extend(array $arguments): \ScssPhp\ScssPhp\Value\SassList
     {
         $selector = $arguments[0]->assertSelector('selector');
         $selector->assertNotBogus('selector');
@@ -110,7 +108,7 @@ final class SelectorFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function replace(array $arguments): Value
+    public static function replace(array $arguments): \ScssPhp\ScssPhp\Value\SassList
     {
         $selector = $arguments[0]->assertSelector('selector');
         $selector->assertNotBogus('selector');
@@ -139,7 +137,7 @@ final class SelectorFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function isSuperselector(array $arguments): Value
+    public static function isSuperselector(array $arguments): \ScssPhp\ScssPhp\Value\SassBoolean
     {
         $selector1 = $arguments[0]->assertSelector('super');
         $selector1->assertNotBogus('super');
@@ -153,12 +151,12 @@ final class SelectorFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function simpleSelectors(array $arguments): Value
+    public static function simpleSelectors(array $arguments): \ScssPhp\ScssPhp\Value\SassList
     {
         $selector = $arguments[0]->assertCompoundSelector('selector');
 
         return new SassList(
-            array_map(fn (SimpleSelector $simple) => new SassString((string) $simple, false), $selector->getComponents()),
+            array_map(fn (SimpleSelector $simple): \ScssPhp\ScssPhp\Value\SassString => new SassString((string) $simple, false), $selector->getComponents()),
             ListSeparator::COMMA
         );
     }

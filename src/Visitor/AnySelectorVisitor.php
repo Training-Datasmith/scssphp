@@ -40,7 +40,7 @@ abstract class AnySelectorVisitor implements SelectorVisitor
 {
     public function visitComplexSelector(ComplexSelector $complex): bool
     {
-        return IterableUtil::any($complex->getComponents(), fn (ComplexSelectorComponent $component) => $this->visitCompoundSelector($component->getSelector()));
+        return IterableUtil::any($complex->getComponents(), fn (ComplexSelectorComponent $component): bool => $this->visitCompoundSelector($component->getSelector()));
     }
 
     public function visitCompoundSelector(CompoundSelector $compound): bool

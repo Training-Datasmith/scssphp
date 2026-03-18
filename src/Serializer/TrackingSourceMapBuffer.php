@@ -180,7 +180,7 @@ final class TrackingSourceMapBuffer implements SourceMapBuffer
             }
         }
 
-        return SingleMapping::fromEntries(array_map(fn (Entry $entry) => new Entry(
+        return SingleMapping::fromEntries(array_map(fn (Entry $entry): \ScssPhp\ScssPhp\SourceMap\Builder\Entry => new Entry(
             $entry->source,
             new SimpleSourceLocation(
                 $entry->target->getOffset() + $prefixLength,

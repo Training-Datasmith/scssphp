@@ -23,16 +23,13 @@ use SourceSpan\FileSpan;
  */
 final class SupportsInterpolation implements SupportsCondition
 {
-    /**
-     * The expression in the interpolation.
-     */
-    private readonly Expression $expression;
-
     private readonly FileSpan $span;
 
-    public function __construct(Expression $expression, FileSpan $span)
+    public function __construct(/**
+     * The expression in the interpolation.
+     */
+    private readonly Expression $expression, FileSpan $span)
     {
-        $this->expression = $expression;
         $this->span = $span;
     }
 

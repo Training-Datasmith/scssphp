@@ -23,19 +23,13 @@ use SourceSpan\FileSpan;
  */
 final class MapExpression implements Expression
 {
-    /**
-     * @var list<array{Expression, Expression}>
-     */
-    private readonly array $pairs;
-
     private readonly FileSpan $span;
 
     /**
      * @param list<array{Expression, Expression}> $pairs
      */
-    public function __construct(array $pairs, FileSpan $span)
+    public function __construct(private readonly array $pairs, FileSpan $span)
     {
-        $this->pairs = $pairs;
         $this->span = $span;
     }
 
@@ -59,6 +53,6 @@ final class MapExpression implements Expression
 
     public function __toString(): string
     {
-        return '(' . implode(', ', array_map(fn($pair) => $pair[0] . ': ' . $pair[1], $this->pairs)) . ')';
+        return '(' . implode(', ', array_map(fn(array $pair): string => $pair[0] . ': ' . $pair[1], $this->pairs)) . ')';
     }
 }

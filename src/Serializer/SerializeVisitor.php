@@ -86,32 +86,21 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
 
     /**
      * The current indentation of the CSS output.
-     *
-     * @var int
      */
     private int $indentation = 0;
 
-    /**
+    private readonly bool $compressed;
+
+    public function __construct(/**
      * Whether we're emitting an unambiguous representation of the source
      * structure, as opposed to valid CSS.
      */
-    private readonly bool $inspect;
-
-    /**
+    private readonly bool $inspect = false, /**
      * Whether quoted strings should be emitted with quotes.
      */
-    private readonly bool $quote;
-
-    private readonly LoggerInterface $logger;
-
-    private readonly bool $compressed;
-
-    public function __construct(bool $inspect = false, bool $quote = true, OutputStyle $style = OutputStyle::EXPANDED, bool $sourceMap = false, ?LoggerInterface $logger = null)
+    private readonly bool $quote = true, OutputStyle $style = OutputStyle::EXPANDED, bool $sourceMap = false, private readonly ?LoggerInterface $logger = new QuietLogger())
     {
         $this->buffer = $sourceMap ? new TrackingSourceMapBuffer() : new SimpleStringBuffer();
-        $this->inspect = $inspect;
-        $this->quote = $quote;
-        $this->logger = $logger ?? new QuietLogger();
         $this->compressed = $style === OutputStyle::COMPRESSED;
     }
 
@@ -156,7 +145,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
 
     public function visitCssComment(CssComment $node): void
     {
-        $this->for($node, function () use ($node) {
+        $this->for($node, function () use ($node): void {
             // Preserve comments that start with `/*!`.
             if ($this->compressed && !$node->isPreserved()) {
                 return;
@@ -186,7 +175,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
     {
         $this->writeIndentation();
 
-        $this->for($node, function () use ($node) {
+        $this->for($node, function () use ($node): void {
             $this->buffer->writeChar('@');
             $this->write($node->getName());
 
@@ -208,7 +197,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
     {
         $this->writeIndentation();
 
-        $this->for($node, function () use ($node) {
+        $this->for($node, function () use ($node): void {
             $this->buffer->write('@media');
 
             $firstQuery = $node->getQueries()[0];
@@ -228,10 +217,10 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
     {
         $this->writeIndentation();
 
-        $this->for($node, function () use ($node) {
+        $this->for($node, function () use ($node): void {
             $this->buffer->write('@import');
             $this->writeOptionalSpace();
-            $this->for($node->getUrl(), function () use ($node) {
+            $this->for($node->getUrl(), function () use ($node): void {
                 $this->writeImportUrl($node->getUrl()->getValue());
             });
 
@@ -269,7 +258,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
     {
         $this->writeIndentation();
 
-        $this->for($node->getSelector(), function () use ($node) {
+        $this->for($node->getSelector(), function () use ($node): void {
             $this->writeBetween($node->getSelector()->getValue(), $this->getCommaSeparator(), $this->buffer->write(...));
         });
         $this->writeOptionalSpace();
@@ -306,7 +295,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
     {
         $this->writeIndentation();
 
-        $this->for($node->getSelector(), function () use ($node) {
+        $this->for($node->getSelector(), function () use ($node): void {
             $node->getSelector()->accept($this);
         });
         $this->writeOptionalSpace();
@@ -317,7 +306,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
     {
         $this->writeIndentation();
 
-        $this->for($node, function () use ($node) {
+        $this->for($node, function () use ($node): void {
             $this->buffer->write('@supports');
 
             if (!($this->compressed && $node->getCondition()->getValue()[0] === '(')) {
@@ -342,7 +331,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
                 // If the declaration can never match with the same specificity as one
                 // of its sibling rules, then ordering will never matter and there's no
                 // need to warn about the declaration being re-ordered.
-                if (!IterableUtil::any($declSpecificities, fn ($s) => \in_array($s, $ruleSpecificities, true))) {
+                if (!IterableUtil::any($declSpecificities, fn ($s): bool => \in_array($s, $ruleSpecificities, true))) {
                     continue;
                 }
 
@@ -373,7 +362,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
         // property (such as `#{--foo}: ...`), we serialize its value using the
         // normal Sass property logic as well.
         if ($node->isCustomProperty() && $node->isParsedAsCustomProperty()) {
-            $this->for($node->getValue(), function () use ($node) {
+            $this->for($node->getValue(), function () use ($node): void {
                 if ($this->compressed) {
                     $this->writeFoldedValue($node);
                 } else {
@@ -408,7 +397,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
                 $parent = 0;
             }
 
-            return array_map(fn (ComplexSelector $selector) => $parent + $selector->getSpecificity(), $node->getSelector()->getComponents());
+            return array_map(fn (ComplexSelector $selector): float|int => $parent + $selector->getSpecificity(), $node->getSelector()->getComponents());
         }
 
         if ($node->getParent() !== null) {
@@ -492,8 +481,10 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
                 }
                 $scanner->readChar();
             }
-
-            if ($scanner->isDone() || $scanner->scanChar("\n")) {
+            if ($scanner->isDone()) {
+                continue;
+            }
+            if ($scanner->scanChar("\n")) {
                 continue;
             }
 
@@ -540,8 +531,10 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
                 }
 
                 $next = $scanner->readChar();
-
-                if ($next === ' ' || $next === "\t") {
+                if ($next === ' ') {
+                    continue;
+                }
+                if ($next === "\t") {
                     continue;
                 }
 
@@ -1123,9 +1116,8 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
             // because the first digit doesn't count towards the exponent. Subtract 1
             // more for negative numbers because of the `-` written to the buffer.
             $additionalZeroes = $exponent - (\strlen($buffer) - 1 - ($negative ? 1 : 0));
-            $buffer .= str_repeat('0', $additionalZeroes);
 
-            return $buffer;
+            return $buffer . str_repeat('0', $additionalZeroes);
         }
 
         $result = '';
@@ -1545,7 +1537,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      */
     private function writeCombinators(array $combinators): void
     {
-        $this->writeBetween($combinators, $this->compressed ? '' : ' ', function ($text) {
+        $this->writeBetween($combinators, $this->compressed ? '' : ' ', function ($text): void {
             $this->buffer->write($text);
         });
     }
@@ -1686,7 +1678,7 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      */
     private function write(CssValue $value): void
     {
-        $this->for($value, function () use ($value) {
+        $this->for($value, function () use ($value): void {
             $this->buffer->write($value->getValue());
         });
     }
@@ -1712,12 +1704,12 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
 
             if ($this->isTrailingComment($child, $previous ?? $parent)) {
                 $this->writeOptionalSpace();
-                $this->withoutIndentation(function () use ($child) {
+                $this->withoutIndentation(function () use ($child): void {
                     $child->accept($this);
                 });
             } else {
                 $this->writeLineFeed();
-                $this->indent(function () use ($child) {
+                $this->indent(function () use ($child): void {
                     $child->accept($this);
                 });
             }

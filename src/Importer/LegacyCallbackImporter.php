@@ -20,15 +20,13 @@ use ScssPhp\ScssPhp\Util\Path;
  */
 final class LegacyCallbackImporter extends Importer
 {
-    private readonly \Closure $callback;
     private readonly Importer $filesystemImporter;
 
     /**
      * @param \Closure(string): (string|null) $callback
      */
-    public function __construct(\Closure $callback)
+    public function __construct(private readonly \Closure $callback)
     {
-        $this->callback = $callback;
         $this->filesystemImporter = new FilesystemImporter(null);
     }
 

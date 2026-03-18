@@ -24,14 +24,11 @@ use SourceSpan\FileSpan;
  */
 final class IDSelector extends SimpleSelector
 {
-    /**
+    public function __construct(/**
      * The ID name this selects for.
      */
-    private readonly string $name;
-
-    public function __construct(string $name, FileSpan $span)
+    private readonly string $name, FileSpan $span)
     {
-        $this->name = $name;
         parent::__construct($span);
     }
 
@@ -50,7 +47,7 @@ final class IDSelector extends SimpleSelector
         return $visitor->visitIDSelector($this);
     }
 
-    public function addSuffix(string $suffix): SimpleSelector
+    public function addSuffix(string $suffix): \ScssPhp\ScssPhp\Ast\Selector\IDSelector
     {
         return new IDSelector($this->name . $suffix, $this->getSpan());
     }

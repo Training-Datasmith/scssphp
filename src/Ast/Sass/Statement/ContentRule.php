@@ -27,18 +27,15 @@ use SourceSpan\FileSpan;
  */
 final class ContentRule implements Statement
 {
-    /**
+    private readonly FileSpan $span;
+
+    public function __construct(/**
      * The arguments pass to this `@content` rule.
      *
      * This will be an empty invocation if `@content` has no arguments.
      */
-    private readonly ArgumentInvocation $arguments;
-
-    private readonly FileSpan $span;
-
-    public function __construct(ArgumentInvocation $arguments, FileSpan $span)
+    private readonly ArgumentInvocation $arguments, FileSpan $span)
     {
-        $this->arguments = $arguments;
         $this->span = $span;
     }
 

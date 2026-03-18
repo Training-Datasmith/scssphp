@@ -19,14 +19,10 @@ use League\Uri\Contracts\UriInterface;
  */
 final class CanonicalizeContext
 {
-    private readonly ?UriInterface $containingUrl;
-    private bool $fromImport;
     private bool $containingUrlAccessed = false;
 
-    public function __construct(?UriInterface $containingUrl, bool $fromImport)
+    public function __construct(private readonly ?UriInterface $containingUrl, private bool $fromImport)
     {
-        $this->containingUrl = $containingUrl;
-        $this->fromImport = $fromImport;
     }
 
     /**

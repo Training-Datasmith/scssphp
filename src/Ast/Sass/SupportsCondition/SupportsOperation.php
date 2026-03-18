@@ -22,25 +22,16 @@ use SourceSpan\FileSpan;
  */
 final class SupportsOperation implements SupportsCondition
 {
-    /**
-     * The left-hand operand.
-     */
-    private readonly SupportsCondition $left;
-
-    /**
-     * The right-hand operand.
-     */
-    private readonly SupportsCondition $right;
-
-    private readonly string $operator;
-
     private readonly FileSpan $span;
 
-    public function __construct(SupportsCondition $left, SupportsCondition $right, string $operator, FileSpan $span)
+    public function __construct(/**
+     * The left-hand operand.
+     */
+    private readonly SupportsCondition $left, /**
+     * The right-hand operand.
+     */
+    private readonly SupportsCondition $right, private readonly string $operator, FileSpan $span)
     {
-        $this->left = $left;
-        $this->right = $right;
-        $this->operator = $operator;
         $this->span = $span;
     }
 

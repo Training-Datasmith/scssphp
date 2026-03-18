@@ -25,22 +25,16 @@ use SourceSpan\FileSpan;
  */
 final class SupportsDeclaration implements SupportsCondition
 {
-    /**
-     * The name of the declaration being tested.
-     */
-    private readonly Expression $name;
-
-    /**
-     * The value of the declaration being tested.
-     */
-    private readonly Expression $value;
-
     private readonly FileSpan $span;
 
-    public function __construct(Expression $name, Expression $value, FileSpan $span)
+    public function __construct(/**
+     * The name of the declaration being tested.
+     */
+    private readonly Expression $name, /**
+     * The value of the declaration being tested.
+     */
+    private readonly Expression $value, FileSpan $span)
     {
-        $this->name = $name;
-        $this->value = $value;
         $this->span = $span;
     }
 

@@ -22,14 +22,11 @@ use ScssPhp\ScssPhp\Ast\Sass\Statement;
  */
 final class IfClause extends IfRuleClause
 {
-    private readonly Expression $expression;
-
     /**
      * @param Statement[] $children
      */
-    public function __construct(Expression $expression, array $children)
+    public function __construct(private readonly Expression $expression, array $children)
     {
-        $this->expression = $expression;
         parent::__construct($children);
     }
 

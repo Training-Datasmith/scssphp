@@ -22,20 +22,11 @@ use SourceSpan\FileSpan;
  */
 final class ConfiguredVariable implements SassNode, SassDeclaration
 {
-    private readonly string $name;
-
-    private readonly Expression $expression;
-
     private readonly FileSpan $span;
 
-    private readonly bool $guarded;
-
-    public function __construct(string $name, Expression $expression, FileSpan $span, bool $guarded = false)
+    public function __construct(private readonly string $name, private readonly Expression $expression, FileSpan $span, private readonly bool $guarded = false)
     {
-        $this->name = $name;
-        $this->expression = $expression;
         $this->span = $span;
-        $this->guarded = $guarded;
     }
 
     public function getName(): string

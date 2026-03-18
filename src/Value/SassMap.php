@@ -87,7 +87,7 @@ final class SassMap extends Value
         return $this;
     }
 
-    public function tryMap(): ?SassMap
+    public function tryMap(): \ScssPhp\ScssPhp\Value\SassMap
     {
         return $this;
     }

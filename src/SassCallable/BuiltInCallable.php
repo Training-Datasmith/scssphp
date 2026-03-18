@@ -30,15 +30,6 @@ use ScssPhp\ScssPhp\Value\Value;
  */
 class BuiltInCallable implements SassCallable
 {
-    private readonly string $name;
-
-    /**
-     * @var list<array{ArgumentDeclaration, callable(list<Value>): Value}>
-     */
-    private readonly array $overloads;
-
-    private readonly bool $acceptsContent;
-
     /**
      * Creates a function with a single $arguments declaration and a single
      * $callback.
@@ -81,7 +72,7 @@ class BuiltInCallable implements SassCallable
         return self::parsed(
             $name,
             ArgumentDeclaration::parse("@mixin $name($arguments) {", url: $url),
-            function ($arguments) use ($callback) {
+            function ($arguments) use ($callback): \ScssPhp\ScssPhp\Value\SassNull {
                 $callback($arguments);
 
                 return SassNull::create();
@@ -132,11 +123,8 @@ class BuiltInCallable implements SassCallable
     /**
      * @param list<array{ArgumentDeclaration, callable(list<Value>): Value}> $overloads
      */
-    private function __construct(string $name, array $overloads, bool $acceptsContent)
+    private function __construct(private readonly string $name, private readonly array $overloads, private readonly bool $acceptsContent)
     {
-        $this->name = $name;
-        $this->overloads = $overloads;
-        $this->acceptsContent = $acceptsContent;
     }
 
     public function getName(): string

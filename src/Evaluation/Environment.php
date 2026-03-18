@@ -29,29 +29,6 @@ use SourceSpan\FileSpan;
 final class Environment
 {
     /**
-     * A list of variables defined at each lexical scope level.
-     *
-     * Each scope maps the names of declared variables to their values.
-     *
-     * The first element is the global scope, and each successive element is
-     * deeper in the tree.
-     *
-     * @var array<int, \ArrayObject<string, Value>>
-     */
-    private array $variables;
-
-    /**
-     * The nodes where each variable in {@see variables} was defined.
-     *
-     * This stores {@see AstNode}s rather than {@see FileSpan}s so it can avoid calling
-     * {@see AstNode::getSspan} if the span isn't required, since some nodes need to do
-     * real work to manufacture a source span.
-     *
-     * @var array<int, \ArrayObject<string, AstNode>>
-     */
-    private array $variableNodes;
-
-    /**
      * A map of variable names to their indices in {@see variables}.
      *
      * This map is filled in as-needed, and may not be complete.
@@ -59,18 +36,6 @@ final class Environment
      * @var array<string, int>
      */
     private array $variableIndices = [];
-
-    /**
-     * A list of functions defined at each lexical scope level.
-     *
-     * Each scope maps the names of declared functions to their values.
-     *
-     * The first element is the global scope, and each successive element is
-     * deeper in the tree.
-     *
-     * @var array<int, \ArrayObject<string, SassCallable>>
-     */
-    private array $functions;
 
     /**
      * A map of function names to their indices in {@see functions}.
@@ -82,18 +47,6 @@ final class Environment
     private array $functionIndices = [];
 
     /**
-     * A list of mixins defined at each lexical scope level.
-     *
-     * Each scope maps the names of declared mixins to their values.
-     *
-     * The first element is the global scope, and each successive element is
-     * deeper in the tree.
-     *
-     * @var array<int, \ArrayObject<string, SassCallable>>
-     */
-    private array $mixins;
-
-    /**
      * A map of mixin names to their indices in {@see mixins}.
      *
      * This map is filled in as-needed, and may not be complete.
@@ -101,12 +54,6 @@ final class Environment
      * @var array<string, int>
      */
     private array $mixinIndices = [];
-
-    /**
-     * The content block passed to the lexically-enclosing mixin, or `null` if
-     * this is not in a mixin, or if no content block was passed.
-     */
-    private ?UserDefinedCallable $content;
 
     /**
      * Whether the environment is lexically within a mixin.
@@ -145,13 +92,49 @@ final class Environment
      * @param array<int, \ArrayObject<string, SassCallable>> $functions
      * @param array<int, \ArrayObject<string, SassCallable>> $mixins
      */
-    private function __construct(array $variables, array $variableNodes, array $functions, array $mixins, ?UserDefinedCallable $content = null)
+    private function __construct(
+        /**
+         * A list of variables defined at each lexical scope level.
+         *
+         * Each scope maps the names of declared variables to their values.
+         *
+         * The first element is the global scope, and each successive element is
+         * deeper in the tree.
+         */
+        private array $variables,
+        /**
+         * The nodes where each variable in {@see variables} was defined.
+         *
+         * This stores {@see AstNode}s rather than {@see FileSpan}s so it can avoid calling
+         * {@see AstNode::getSspan} if the span isn't required, since some nodes need to do
+         * real work to manufacture a source span.
+         */
+        private array $variableNodes,
+        /**
+         * A list of functions defined at each lexical scope level.
+         *
+         * Each scope maps the names of declared functions to their values.
+         *
+         * The first element is the global scope, and each successive element is
+         * deeper in the tree.
+         */
+        private array $functions,
+        /**
+         * A list of mixins defined at each lexical scope level.
+         *
+         * Each scope maps the names of declared mixins to their values.
+         *
+         * The first element is the global scope, and each successive element is
+         * deeper in the tree.
+         */
+        private array $mixins,
+        /**
+         * The content block passed to the lexically-enclosing mixin, or `null` if
+         * this is not in a mixin, or if no content block was passed.
+         */
+        private ?UserDefinedCallable $content = null
+    )
     {
-        $this->variables = $variables;
-        $this->variableNodes = $variableNodes;
-        $this->functions = $functions;
-        $this->mixins = $mixins;
-        $this->content = $content;
     }
 
     public function getContent(): ?UserDefinedCallable

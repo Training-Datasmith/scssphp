@@ -26,14 +26,8 @@ use SourceSpan\FileSpan;
  */
 final class StringExpression implements Expression
 {
-    private readonly Interpolation $text;
-
-    private readonly bool $quotes;
-
-    public function __construct(Interpolation $text, bool $quotes = false)
+    public function __construct(private readonly Interpolation $text, private readonly bool $quotes = false)
     {
-        $this->text = $text;
-        $this->quotes = $quotes;
     }
 
     /**
@@ -53,9 +47,8 @@ final class StringExpression implements Expression
         $quote = self::bestQuote([$text]);
         $buffer = $quote;
         $buffer .= self::quoteInnerText($text, $quote, true);
-        $buffer .= $quote;
 
-        return $buffer;
+        return $buffer . $quote;
     }
 
     /**
@@ -93,7 +86,7 @@ final class StringExpression implements Expression
             return $this->text;
         }
 
-        $quote = $quote ?? self::bestQuote($this->text->getContents());
+        $quote ??= self::bestQuote($this->text->getContents());
         $buffer = new InterpolationBuffer();
 
         $buffer->write($quote);

@@ -32,32 +32,21 @@ class Extension
      */
     public readonly Extender $extender;
 
-    /**
-     * The selector that's being extended.
-     */
-    public readonly SimpleSelector $target;
-
-    /**
-     * The media query context to which this extension is restricted, or `null`
-     * if it can apply within any context.
-     *
-     * @var list<CssMediaQuery>|null
-     */
-    public readonly ?array $mediaContext;
-
-    public readonly bool $isOptional;
-
     public readonly FileSpan $span;
 
     /**
      * @param list<CssMediaQuery>|null $mediaContext
      */
-    public function __construct(ComplexSelector $extender, SimpleSelector $target, FileSpan $span, ?array $mediaContext = null, bool $optional = false)
+    public function __construct(ComplexSelector $extender, /**
+     * The selector that's being extended.
+     */
+    public readonly SimpleSelector $target, FileSpan $span, /**
+     * The media query context to which this extension is restricted, or `null`
+     * if it can apply within any context.
+     */
+    public readonly ?array $mediaContext = null, public readonly bool $isOptional = false)
     {
         $this->extender = Extender::forExtension($extender, $this);
-        $this->target = $target;
-        $this->mediaContext = $mediaContext;
-        $this->isOptional = $optional;
         $this->span = $span;
     }
 

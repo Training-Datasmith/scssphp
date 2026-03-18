@@ -29,16 +29,13 @@ use SourceSpan\FileSpan;
  */
 final class WhileRule extends ParentStatement
 {
-    private readonly Expression $condition;
-
     private readonly FileSpan $span;
 
     /**
      * @param Statement[] $children
      */
-    public function __construct(Expression $condition, array $children, FileSpan $span)
+    public function __construct(private readonly Expression $condition, array $children, FileSpan $span)
     {
-        $this->condition = $condition;
         $this->span = $span;
         parent::__construct($children);
     }

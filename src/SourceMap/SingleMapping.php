@@ -22,31 +22,6 @@ use SourceSpan\SourceFile;
 final class SingleMapping
 {
     /**
-     * @var list<string>
-     */
-    public readonly array $urls;
-
-    /**
-     * The {@see SourceFile}s to which the entries in {@see $lines} refer.
-     *
-     * This is in the same order as {@see $urls}. If this was constructed using
-     * {@see SingleMapping::fromEntries()}, this contains files from any {@see FileLocation}s
-     * used to build the mapping.
-     *
-     * Files whose contents aren't available are `null`.
-     *
-     * @var list<SourceFile|null>
-     */
-    public readonly array $files;
-
-    /**
-     * Entries indicating the beginning of each span.
-     *
-     * @var list<TargetLineEntry>
-     */
-    public readonly array $lines;
-
-    /**
      * Url of the target file.
      */
     public ?string $targetUrl = null;
@@ -61,11 +36,24 @@ final class SingleMapping
      * @param list<string> $urls
      * @param list<TargetLineEntry> $lines
      */
-    private function __construct(array $files, array $urls, array $lines)
+    private function __construct(
+        /**
+         * The {@see SourceFile}s to which the entries in {@see $lines} refer.
+         *
+         * This is in the same order as {@see $urls}. If this was constructed using
+         * {@see SingleMapping::fromEntries()}, this contains files from any {@see FileLocation}s
+         * used to build the mapping.
+         *
+         * Files whose contents aren't available are `null`.
+         */
+        public readonly array $files,
+        public readonly array $urls,
+        /**
+         * Entries indicating the beginning of each span.
+         */
+        public readonly array $lines
+    )
     {
-        $this->urls = $urls;
-        $this->files = $files;
-        $this->lines = $lines;
     }
 
     /**
@@ -73,7 +61,7 @@ final class SingleMapping
      */
     public static function fromEntries(array $sourceEntries): self
     {
-        usort($sourceEntries, fn (Entry $a, Entry $b) => $a->compareTo($b));
+        usort($sourceEntries, fn (Entry $a, Entry $b): int => $a->compareTo($b));
 
         $lines = [];
         // Indices associated with file urls that will be part of the source map. We

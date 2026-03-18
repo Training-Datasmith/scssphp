@@ -18,17 +18,8 @@ use ScssPhp\ScssPhp\Syntax;
 
 final class ImporterResult
 {
-    private readonly string $contents;
-
-    private readonly ?UriInterface $sourceMapUrl;
-
-    private readonly Syntax $syntax;
-
-    public function __construct(string $contents, Syntax $syntax, ?UriInterface $sourceMapUrl = null)
+    public function __construct(private readonly string $contents, private readonly Syntax $syntax, private readonly ?UriInterface $sourceMapUrl = null)
     {
-        $this->contents = $contents;
-        $this->syntax = $syntax;
-        $this->sourceMapUrl = $sourceMapUrl;
     }
 
     public function getContents(): string

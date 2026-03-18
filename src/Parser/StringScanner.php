@@ -38,8 +38,6 @@ use SourceSpan\SourceFile;
  */
 class StringScanner
 {
-    private readonly string $string;
-
     private int $position = 0;
 
     private readonly SourceFile $sourceFile;
@@ -48,10 +46,9 @@ class StringScanner
 
     private ?int $lastMatchPosition = null;
 
-    public function __construct(string $content, ?UriInterface $sourceUrl = null)
+    public function __construct(private readonly string $string, ?UriInterface $sourceUrl = null)
     {
-        $this->string = $content;
-        $this->sourceFile = SourceFile::fromString($content, $sourceUrl);
+        $this->sourceFile = SourceFile::fromString($this->string, $sourceUrl);
     }
 
     public function getString(): string

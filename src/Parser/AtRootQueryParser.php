@@ -27,7 +27,7 @@ final class AtRootQueryParser extends Parser
      */
     public function parse(): AtRootQuery
     {
-        return $this->wrapSpanFormatException(function () {
+        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Sass\AtRootQuery {
             $this->scanner->expectChar('(');
             $this->whitespace();
             $include = $this->scanIdentifier('with');

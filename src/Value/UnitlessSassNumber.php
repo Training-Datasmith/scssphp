@@ -21,14 +21,6 @@ use ScssPhp\ScssPhp\Util\NumberUtil;
  */
 final class UnitlessSassNumber extends SassNumber
 {
-    /**
-     * @param array{SassNumber, SassNumber}|null $asSlash
-     */
-    public function __construct(float $value, ?array $asSlash = null)
-    {
-        parent::__construct($value, $asSlash);
-    }
-
     public function getNumeratorUnits(): array
     {
         return [];
@@ -49,14 +41,14 @@ final class UnitlessSassNumber extends SassNumber
         return false;
     }
 
-    protected function withValue(float $value): SassNumber
+    protected function withValue(float $value): \ScssPhp\ScssPhp\Value\UnitlessSassNumber
     {
         return new self($value);
     }
 
-    public function withSlash(SassNumber $numerator, SassNumber $denominator): SassNumber
+    public function withSlash(SassNumber $numerator, SassNumber $denominator): \ScssPhp\ScssPhp\Value\UnitlessSassNumber
     {
-        return new self($this->getValue(), array($numerator, $denominator));
+        return new self($this->getValue(), [$numerator, $denominator]);
     }
 
     public function hasUnit(string $unit): bool
@@ -211,7 +203,7 @@ final class UnitlessSassNumber extends SassNumber
         return parent::dividedBy($other);
     }
 
-    public function unaryMinus(): Value
+    public function unaryMinus(): \ScssPhp\ScssPhp\Value\UnitlessSassNumber
     {
         return new self(-$this->getValue());
     }

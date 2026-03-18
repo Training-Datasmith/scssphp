@@ -22,25 +22,16 @@ use SourceSpan\FileSpan;
  */
 class MultiSpanSassException extends \Exception implements SassException
 {
-    public readonly string $primaryLabel;
-    /**
-     * @var array<string, FileSpan>
-     */
-    public readonly array $secondarySpans;
-    private readonly string $originalMessage;
     private readonly FileSpan $span;
 
     /**
      * @param array<string, FileSpan> $secondarySpans
      */
-    public function __construct(string $message, FileSpan $span, string $primaryLabel, array $secondarySpans, ?\Throwable $previous = null)
+    public function __construct(private readonly string $originalMessage, FileSpan $span, public readonly string $primaryLabel, public readonly array $secondarySpans, ?\Throwable $previous = null)
     {
-        $this->originalMessage = $message;
         $this->span = $span;
-        $this->primaryLabel = $primaryLabel;
-        $this->secondarySpans = $secondarySpans;
 
-        parent::__construct(ErrorUtil::formatErrorMessageMultiple($message, $span, $primaryLabel, $secondarySpans, $this->getSassTrace()), 0, $previous);
+        parent::__construct(ErrorUtil::formatErrorMessageMultiple($this->originalMessage, $span, $this->primaryLabel, $this->secondarySpans, $this->getSassTrace()), 0, $previous);
     }
 
     /**

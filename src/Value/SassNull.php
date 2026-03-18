@@ -55,7 +55,7 @@ final class SassNull extends Value
         return $other instanceof SassNull;
     }
 
-    public function unaryNot(): Value
+    public function unaryNot(): \ScssPhp\ScssPhp\Value\SassBoolean
     {
         return SassBoolean::create(true);
     }

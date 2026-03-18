@@ -25,23 +25,14 @@ use SourceSpan\FileSpan;
  */
 final class IfRule implements Statement
 {
-    /**
-     * @var list<IfClause>
-     */
-    private readonly array $clauses;
-
-    private readonly ?ElseClause $lastClause;
-
     private readonly FileSpan $span;
 
     /**
      * @param list<IfClause> $clauses
      */
-    public function __construct(array $clauses, FileSpan $span, ?ElseClause $lastClause = null)
+    public function __construct(private readonly array $clauses, FileSpan $span, private readonly ?ElseClause $lastClause = null)
     {
-        $this->clauses = $clauses;
         $this->span = $span;
-        $this->lastClause = $lastClause;
     }
 
     /**

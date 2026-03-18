@@ -33,14 +33,6 @@ final class MixinRule extends CallableDeclaration implements SassDeclaration
      */
     private ?bool $content = null;
 
-    /**
-     * @param Statement[] $children
-     */
-    public function __construct(string $name, ArgumentDeclaration $arguments, FileSpan $span, array $children, ?SilentComment $comment = null)
-    {
-        parent::__construct($name, $arguments, $span, $children, $comment);
-    }
-
     public function hasContent(): bool
     {
         if (!isset($this->content)) {
@@ -72,8 +64,6 @@ final class MixinRule extends CallableDeclaration implements SassDeclaration
             $buffer .= "({$this->getArguments()})";
         }
 
-        $buffer .= ' {' . implode(' ', $this->getChildren()) . '}';
-
-        return $buffer;
+        return $buffer . (' {' . implode(' ', $this->getChildren()) . '}');
     }
 }

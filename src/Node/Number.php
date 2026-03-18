@@ -31,17 +31,16 @@ use ScssPhp\ScssPhp\Util\NumberUtil;
  *
  * @template-implements \ArrayAccess<int, mixed>
  */
-final class Number extends Node implements \ArrayAccess, \JsonSerializable
+final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Stringable
 {
     const PRECISION = 10;
 
     /**
      * @see http://www.w3.org/TR/2012/WD-css3-values-20120308/
      *
-     * @var array
      * @phpstan-var array<string, array<string, float|int>>
      */
-    private static $unitTable = [
+    private static array $unitTable = [
         'in' => [
             'in' => 1,
             'pc' => 6,
@@ -73,11 +72,6 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
     ];
 
     /**
-     * @var int|float
-     */
-    private $dimension;
-
-    /**
      * @var string[]
      * @phpstan-var list<string>
      */
@@ -87,7 +81,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
      * @var string[]
      * @phpstan-var list<string>
      */
-    private $denominatorUnits;
+    private readonly array $denominatorUnits;
 
     /**
      * Initialize number
@@ -99,7 +93,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
      * @phpstan-param list<string>|string $numeratorUnits
      * @phpstan-param list<string>        $denominatorUnits
      */
-    public function __construct($dimension, $numeratorUnits, array $denominatorUnits = [])
+    public function __construct(private $dimension, $numeratorUnits, array $denominatorUnits = [])
     {
         if (is_string($numeratorUnits)) {
             $numeratorUnits = $numeratorUnits ? [$numeratorUnits] : [];
@@ -107,8 +101,6 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
             $denominatorUnits = $numeratorUnits['denominator_units'];
             $numeratorUnits = $numeratorUnits['numerator_units'];
         }
-
-        $this->dimension = $dimension;
         $this->numeratorUnits = $numeratorUnits;
         $this->denominatorUnits = $denominatorUnits;
     }
@@ -196,44 +188,34 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
                 return $this->dimension;
 
             case 2:
-                return array('numerator_units' => $this->numeratorUnits, 'denominator_units' => $this->denominatorUnits);
+                return ['numerator_units' => $this->numeratorUnits, 'denominator_units' => $this->denominatorUnits];
         }
     }
 
-    /**
-     * @return void
-     */
     #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new \BadMethodCallException('Number is immutable');
     }
 
-    /**
-     * @return void
-     */
     #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new \BadMethodCallException('Number is immutable');
     }
 
     /**
      * Returns true if the number is unitless
-     *
-     * @return bool
      */
-    public function unitless()
+    public function unitless(): bool
     {
         return \count($this->numeratorUnits) === 0 && \count($this->denominatorUnits) === 0;
     }
 
     /**
      * Returns true if the number has any units
-     *
-     * @return bool
      */
-    public function hasUnits()
+    public function hasUnits(): bool
     {
         return !$this->unitless();
     }
@@ -242,10 +224,8 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
      * Checks whether the number has exactly this unit
      *
      * @param string $unit
-     *
-     * @return bool
      */
-    public function hasUnit($unit)
+    public function hasUnit($unit): bool
     {
         return \count($this->numeratorUnits) === 1 && \count($this->denominatorUnits) === 0 && $this->numeratorUnits[0] === $unit;
     }
@@ -265,40 +245,28 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @param float|int $min
-     * @param float|int $max
-     * @param string|null $name
      *
-     * @return float
      * @throws SassScriptException
      */
-    public function valueInRange($min, $max, $name = null)
+    public function valueInRange(float $min, float $max, ?string $name = null): float
     {
         return NumberUtil::fuzzyCheckRange($this->dimension, $min, $max) ?? throw SassScriptException::forArgument(sprintf('Expected %s to be within %s%s and %s%3$s.', $this, $min, $this->unitStr(), $max), $name);
     }
 
     /**
-     * @param float|int $min
-     * @param float|int $max
      * @param string    $name
      * @param string    $unit
      *
-     * @return float
      * @throws SassScriptException
      *
      * @internal
      */
-    public function valueInRangeWithUnit($min, $max, $name, $unit)
+    public function valueInRangeWithUnit(float $min, float $max, ?string $name, $unit): float
     {
         return NumberUtil::fuzzyCheckRange($this->dimension, $min, $max) ?? throw SassScriptException::forArgument(sprintf('Expected %s to be within %s%s and %s%3$s.', $this, $min, $unit, $max), $name);
     }
 
-    /**
-     * @param string|null $varName
-     *
-     * @return void
-     */
-    public function assertNoUnits($varName = null)
+    public function assertNoUnits(?string $varName = null): void
     {
         if ($this->unitless()) {
             return;
@@ -309,11 +277,9 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
 
     /**
      * @param string      $unit
-     * @param string|null $varName
      *
-     * @return void
      */
-    public function assertUnit($unit, $varName = null)
+    public function assertUnit($unit, ?string $varName = null): void
     {
         if ($this->hasUnit($unit)) {
             return;
@@ -322,12 +288,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
         throw SassScriptException::forArgument(sprintf('Expected %s to have unit "%s".', $this, $unit), $varName);
     }
 
-    /**
-     * @param Number $other
-     *
-     * @return void
-     */
-    public function assertSameUnitOrUnitless(Number $other)
+    public function assertSameUnitOrUnitless(Number $other): void
     {
         if ($other->unitless()) {
             return;
@@ -355,24 +316,17 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
      * @param string[] $newNumeratorUnits
      * @param string[] $newDenominatorUnits
      *
-     * @return Number
      *
      * @phpstan-param list<string> $newNumeratorUnits
      * @phpstan-param list<string> $newDenominatorUnits
-     *
      * @throws SassScriptException if this number's units are not compatible with $newNumeratorUnits and $newDenominatorUnits
      */
-    public function coerce(array $newNumeratorUnits, array $newDenominatorUnits)
+    public function coerce(array $newNumeratorUnits, array $newDenominatorUnits): \ScssPhp\ScssPhp\Node\Number
     {
         return new Number($this->valueInUnits($newNumeratorUnits, $newDenominatorUnits), $newNumeratorUnits, $newDenominatorUnits);
     }
 
-    /**
-     * @param Number $other
-     *
-     * @return bool
-     */
-    public function isComparableTo(Number $other)
+    public function isComparableTo(Number $other): bool
     {
         if ($this->unitless() || $other->unitless()) {
             return true;
@@ -381,99 +335,70 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
         try {
             $this->greaterThan($other);
             return true;
-        } catch (SassScriptException $e) {
+        } catch (SassScriptException) {
             return false;
         }
     }
 
     /**
-     * @param Number $other
-     *
      * @return bool
      */
     public function lessThan(Number $other)
     {
-        return $this->coerceUnits($other, function ($num1, $num2) {
-            return $num1 < $num2;
-        });
+        return $this->coerceUnits($other, fn($num1, $num2) => $num1 < $num2);
     }
 
     /**
-     * @param Number $other
-     *
      * @return bool
      */
     public function lessThanOrEqual(Number $other)
     {
-        return $this->coerceUnits($other, function ($num1, $num2) {
-            return $num1 <= $num2;
-        });
+        return $this->coerceUnits($other, fn($num1, $num2) => $num1 <= $num2);
     }
 
     /**
-     * @param Number $other
-     *
      * @return bool
      */
     public function greaterThan(Number $other)
     {
-        return $this->coerceUnits($other, function ($num1, $num2) {
-            return $num1 > $num2;
-        });
+        return $this->coerceUnits($other, fn($num1, $num2) => $num1 > $num2);
     }
 
     /**
-     * @param Number $other
-     *
      * @return bool
      */
     public function greaterThanOrEqual(Number $other)
     {
-        return $this->coerceUnits($other, function ($num1, $num2) {
-            return $num1 >= $num2;
-        });
+        return $this->coerceUnits($other, fn($num1, $num2) => $num1 >= $num2);
     }
 
     /**
-     * @param Number $other
-     *
      * @return Number
      */
     public function plus(Number $other)
     {
-        return $this->coerceNumber($other, function ($num1, $num2) {
-            return $num1 + $num2;
-        });
+        return $this->coerceNumber($other, fn($num1, $num2) => $num1 + $num2);
     }
 
     /**
-     * @param Number $other
-     *
      * @return Number
      */
     public function minus(Number $other)
     {
-        return $this->coerceNumber($other, function ($num1, $num2) {
-            return $num1 - $num2;
-        });
+        return $this->coerceNumber($other, fn($num1, $num2) => $num1 - $num2);
     }
 
-    /**
-     * @return Number
-     */
-    public function unaryMinus()
+    public function unaryMinus(): \ScssPhp\ScssPhp\Node\Number
     {
         return new Number(-$this->dimension, $this->numeratorUnits, $this->denominatorUnits);
     }
 
     /**
-     * @param Number $other
-     *
      * @return Number
      */
     public function modulo(Number $other)
     {
-        return $this->coerceNumber($other, function ($num1, $num2) {
+        return $this->coerceNumber($other, function ($num1, $num2): int|float {
             if ($num2 == 0) {
                 return NAN;
             }
@@ -493,8 +418,6 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @param Number $other
-     *
      * @return Number
      */
     public function times(Number $other)
@@ -503,8 +426,6 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @param Number $other
-     *
      * @return Number
      */
     public function dividedBy(Number $other)
@@ -525,8 +446,6 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @param Number $other
-     *
      * @return bool
      */
     public function equals(Number $other)
@@ -546,10 +465,8 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
         }
 
         try {
-            return $this->coerceUnits($other, function ($num1, $num2) {
-                return round($num1, self::PRECISION) == round($num2, self::PRECISION);
-            });
-        } catch (SassScriptException $e) {
+            return $this->coerceUnits($other, fn($num1, $num2) => round($num1, self::PRECISION) == round($num2, self::PRECISION));
+        } catch (SassScriptException) {
             return false;
         }
     }
@@ -558,10 +475,8 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
      * Output number
      *
      * @param \ScssPhp\ScssPhp\Compiler $compiler
-     *
-     * @return string
      */
-    public function output(?Compiler $compiler = null)
+    public function output(?Compiler $compiler = null): string
     {
         $dimension = round($this->dimension, self::PRECISION);
 
@@ -593,20 +508,18 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->output();
     }
 
     /**
-     * @param Number   $other
      * @param callable $operation
      *
-     * @return Number
      *
      * @phpstan-param callable(int|float, int|float): (int|float) $operation
      */
-    private function coerceNumber(Number $other, $operation)
+    private function coerceNumber(Number $other, \Closure $operation): \ScssPhp\ScssPhp\Node\Number
     {
         $result = $this->coerceUnits($other, $operation);
 
@@ -618,16 +531,14 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @param Number $other
      * @param callable $operation
      *
-     * @return mixed
      *
      * @phpstan-template T
      * @phpstan-param callable(int|float, int|float): T $operation
      * @phpstan-return T
      */
-    private function coerceUnits(Number $other, $operation)
+    private function coerceUnits(Number $other, \Closure $operation): mixed
     {
         if (!$this->unitless()) {
             $num1 = $this->dimension;
@@ -718,22 +629,20 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @param int|float $value
      * @param string[] $numerators1
      * @param string[] $denominators1
      * @param string[] $numerators2
      * @param string[] $denominators2
      *
-     * @return Number
      *
      * @phpstan-param list<string> $numerators1
      * @phpstan-param list<string> $denominators1
      * @phpstan-param list<string> $numerators2
      * @phpstan-param list<string> $denominators2
      */
-    private function multiplyUnits($value, array $numerators1, array $denominators1, array $numerators2, array $denominators2)
+    private function multiplyUnits(int|float $value, array $numerators1, array $denominators1, array $numerators2, array $denominators2): \ScssPhp\ScssPhp\Node\Number
     {
-        $newNumerators = array();
+        $newNumerators = [];
 
         foreach ($numerators1 as $numerator) {
             foreach ($denominators2 as $key => $denominator) {
@@ -779,10 +688,8 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
      *
      * @param string $unit1
      * @param string $unit2
-     *
-     * @return float|int|null
      */
-    private static function getConversionFactor($unit1, $unit2)
+    private static function getConversionFactor($unit1, $unit2): int|float|null
     {
         if ($unit1 === $unit2) {
             return 1;
@@ -805,10 +712,8 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable
      *
      * @phpstan-param list<string> $numerators
      * @phpstan-param list<string> $denominators
-     *
-     * @return string
      */
-    private static function getUnitString(array $numerators, array $denominators)
+    private static function getUnitString(array $numerators, array $denominators): string
     {
         if (!\count($numerators)) {
             if (\count($denominators) === 0) {

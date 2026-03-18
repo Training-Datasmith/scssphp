@@ -29,31 +29,13 @@ use SourceSpan\FileSpan;
  */
 final class VariableDeclaration implements Statement, SassDeclaration
 {
-    private readonly ?string $namespace;
-
-    private readonly string $name;
-
-    private readonly ?SilentComment $comment;
-
-    private readonly Expression $expression;
-
-    private readonly bool $guarded;
-
-    private readonly bool $global;
-
     private readonly FileSpan $span;
 
-    public function __construct(string $name, Expression $expression, FileSpan $span, ?string $namespace = null, bool $guarded = false, bool $global = false, ?SilentComment $comment = null)
+    public function __construct(private readonly string $name, private readonly Expression $expression, FileSpan $span, private readonly ?string $namespace = null, private readonly bool $guarded = false, private readonly bool $global = false, private readonly ?SilentComment $comment = null)
     {
-        $this->name = $name;
-        $this->expression = $expression;
         $this->span = $span;
-        $this->namespace = $namespace;
-        $this->guarded = $guarded;
-        $this->global = $global;
-        $this->comment = $comment;
 
-        if ($namespace !== null && $global) {
+        if ($this->namespace !== null && $this->global) {
             throw new \InvalidArgumentException("Other modules' members can't be defined with !global.");
         }
     }
@@ -139,8 +121,7 @@ final class VariableDeclaration implements Statement, SassDeclaration
         if ($this->namespace !== null) {
             $buffer .= $this->namespace . '.';
         }
-        $buffer .= "\$$this->name: $this->expression;";
 
-        return $buffer;
+        return $buffer . "\$$this->name: $this->expression;";
     }
 }

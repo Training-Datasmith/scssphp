@@ -20,15 +20,11 @@ use SourceSpan\FileSpan;
  */
 final class MultiSpanSassRuntimeException extends MultiSpanSassException implements SassRuntimeException
 {
-    private readonly Trace $sassTrace;
-
     /**
      * @param array<string, FileSpan> $secondarySpans
      */
-    public function __construct(string $message, FileSpan $span, string $primaryLabel, array $secondarySpans, Trace $sassTrace, ?\Throwable $previous = null)
+    public function __construct(string $message, FileSpan $span, string $primaryLabel, array $secondarySpans, private readonly Trace $sassTrace, ?\Throwable $previous = null)
     {
-        $this->sassTrace = $sassTrace;
-
         parent::__construct($message, $span, $primaryLabel, $secondarySpans, $previous);
     }
 

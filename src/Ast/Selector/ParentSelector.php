@@ -25,18 +25,15 @@ use SourceSpan\FileSpan;
  */
 final class ParentSelector extends SimpleSelector
 {
-    /**
+    public function __construct(FileSpan $span, /**
      * The suffix that will be added to the parent selector after it's been
      * resolved.
      *
      * This is assumed to be a valid identifier suffix. It may be `null`,
      * indicating that the parent selector will not be modified.
      */
-    private readonly ?string $suffix;
-
-    public function __construct(FileSpan $span, ?string $suffix = null)
+    private readonly ?string $suffix = null)
     {
-        $this->suffix = $suffix;
         parent::__construct($span);
     }
 

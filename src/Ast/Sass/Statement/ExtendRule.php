@@ -26,17 +26,11 @@ use SourceSpan\FileSpan;
  */
 final class ExtendRule implements Statement
 {
-    private readonly Interpolation $selector;
-
     private readonly FileSpan $span;
 
-    private readonly bool $optional;
-
-    public function __construct(Interpolation $selector, FileSpan $span, bool $optional = false)
+    public function __construct(private readonly Interpolation $selector, FileSpan $span, private readonly bool $optional = false)
     {
-        $this->selector = $selector;
         $this->span = $span;
-        $this->optional = $optional;
     }
 
     public function getSelector(): Interpolation

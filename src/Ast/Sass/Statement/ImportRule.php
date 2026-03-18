@@ -24,19 +24,13 @@ use SourceSpan\FileSpan;
  */
 final class ImportRule implements Statement
 {
-    /**
-     * @var list<Import>
-     */
-    private readonly array $imports;
-
     private readonly FileSpan $span;
 
     /**
      * @param list<Import> $imports
      */
-    public function __construct(array $imports, FileSpan $span)
+    public function __construct(private readonly array $imports, FileSpan $span)
     {
-        $this->imports = $imports;
         $this->span = $span;
     }
 

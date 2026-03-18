@@ -37,7 +37,7 @@ final class MetaFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function featureExists(array $arguments): Value
+    public static function featureExists(array $arguments): \ScssPhp\ScssPhp\Value\SassBoolean
     {
         Warn::forDeprecation("The feature-exists() function is deprecated.\n\nMore info: https://sass-lang.com/d/feature-exists", Deprecation::featureExists);
 
@@ -49,7 +49,7 @@ final class MetaFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function inspect(array $arguments): Value
+    public static function inspect(array $arguments): \ScssPhp\ScssPhp\Value\SassString
     {
         return new SassString((string) $arguments[0], false);
     }
@@ -57,7 +57,7 @@ final class MetaFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function typeof(array $arguments): Value
+    public static function typeof(array $arguments): \ScssPhp\ScssPhp\Value\SassString
     {
         $value = $arguments[0];
 
@@ -80,7 +80,7 @@ final class MetaFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function keywords(array $arguments): Value
+    public static function keywords(array $arguments): \ScssPhp\ScssPhp\Value\SassMap
     {
         if ($arguments[0] instanceof SassArgumentList) {
             $map = new Map();

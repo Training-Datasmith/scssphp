@@ -18,17 +18,15 @@ namespace ScssPhp\ScssPhp\StackTrace;
 final class Trace
 {
     /**
-     * @var list<Frame>
-     * @readonly
-     */
-    private readonly array $frames;
-
-    /**
      * @param list<Frame> $frames
      */
-    public function __construct(array $frames)
+    public function __construct(
+        /**
+         * @readonly
+         */
+        private readonly array $frames
+    )
     {
-        $this->frames = $frames;
     }
 
     /**
@@ -48,6 +46,6 @@ final class Trace
             $longest = max($longest, $length);
         }
 
-        return implode(array_map(fn(Frame $frame) => str_pad($frame->getLocation(), $longest) . '  ' . $frame->getMember() . "\n", $this->frames));
+        return implode('', array_map(fn(Frame $frame): string => str_pad($frame->getLocation(), $longest) . '  ' . $frame->getMember() . "\n", $this->frames));
     }
 }

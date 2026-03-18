@@ -22,20 +22,11 @@ use ScssPhp\ScssPhp\Ast\Css\CssStylesheet;
  */
 final class EvaluateResult
 {
-    private readonly CssStylesheet $stylesheet;
-
-    /**
-     * @var list<string>
-     */
-    private readonly array $loadedUrls;
-
     /**
      * @param list<string> $loadedUrls
      */
-    public function __construct(CssStylesheet $stylesheet, array $loadedUrls)
+    public function __construct(private readonly CssStylesheet $stylesheet, private readonly array $loadedUrls)
     {
-        $this->stylesheet = $stylesheet;
-        $this->loadedUrls = $loadedUrls;
     }
 
     public function getStylesheet(): CssStylesheet

@@ -39,45 +39,31 @@ final class DeprecationProcessingLogger implements LoggerInterface
     private array $warningCounts = [];
 
     /**
-     * Deprecation warnings of these types will be ignored.
-     *
-     * @var Deprecation[]
-     */
-    private readonly array $silenceDeprecations;
-
-    /**
-     * Deprecation warnings of one of these types will cause an error to be
-     * thrown.
-     *
-     * Future deprecations in this list will still cause an error even if they
-     * are not also in {@see $futureDeprecations}.
-     *
-     * @var Deprecation[]
-     */
-    private readonly array $fatalDeprecations;
-
-    /**
-     * Future deprecations that the user has explicitly opted into.
-     *
-     * @var Deprecation[]
-     */
-    private readonly array $futureDeprecations;
-
-    /**
      * @param Deprecation[] $silenceDeprecations
      * @param Deprecation[] $fatalDeprecations
      * @param Deprecation[] $futureDeprecations
      */
     public function __construct(
         private readonly LoggerInterface $inner,
-        array $silenceDeprecations,
-        array $fatalDeprecations,
-        array $futureDeprecations,
-        private readonly bool $limitRepetition = true,
-    ) {
-        $this->silenceDeprecations = $silenceDeprecations;
-        $this->futureDeprecations = $futureDeprecations;
-        $this->fatalDeprecations = $fatalDeprecations;
+        /**
+         * Deprecation warnings of these types will be ignored.
+         */
+        private readonly array $silenceDeprecations,
+        /**
+         * Deprecation warnings of one of these types will cause an error to be
+         * thrown.
+         *
+         * Future deprecations in this list will still cause an error even if they
+         * are not also in {@see $futureDeprecations}.
+         */
+        private readonly array $fatalDeprecations,
+        /**
+         * Future deprecations that the user has explicitly opted into.
+         */
+        private readonly array $futureDeprecations,
+        private readonly bool $limitRepetition = true
+    )
+    {
     }
 
     /**

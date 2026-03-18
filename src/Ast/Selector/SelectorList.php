@@ -96,7 +96,7 @@ final class SelectorList extends Selector
      */
     public function asSassList(): SassList
     {
-        return new SassList(array_map(static function (ComplexSelector $complex) {
+        return new SassList(array_map(static function (ComplexSelector $complex): \ScssPhp\ScssPhp\Value\SassList {
             $result = [];
             foreach ($complex->getLeadingCombinators() as $combinator) {
                 $result[] = new SassString($combinator, false);
@@ -182,7 +182,7 @@ final class SelectorList extends Selector
                     return [$complex];
                 }
 
-                return array_map(fn(ComplexSelector $parentComplex) => $parentComplex->concatenate($complex, $complex->getSpan()), $parent->getComponents());
+                return array_map(fn(ComplexSelector $parentComplex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $parentComplex->concatenate($complex, $complex->getSpan()), $parent->getComponents());
             }
 
             /** @var list<ComplexSelector> $newComplexes */
@@ -194,13 +194,13 @@ final class SelectorList extends Selector
                     if (\count($newComplexes) === 0) {
                         $newComplexes[] = new ComplexSelector($complex->getLeadingCombinators(), [$component], $complex->getSpan(), false);
                     } else {
-                        $newComplexes = array_map(fn ($newComplex) => $newComplex->withAdditionalComponent($component, $complex->getSpan()), $newComplexes);
+                        $newComplexes = array_map(fn ($newComplex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $newComplex->withAdditionalComponent($component, $complex->getSpan()), $newComplexes);
                     }
                 } elseif (\count($newComplexes) === 0) {
                     if (\count($complex->getLeadingCombinators()) === 0) {
                         $newComplexes = $resolved;
                     } else {
-                        $newComplexes = array_map(fn (ComplexSelector $resolvedComplex) => new ComplexSelector(
+                        $newComplexes = array_map(fn (ComplexSelector $resolvedComplex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => new ComplexSelector(
                             array_merge($complex->getLeadingCombinators(), $resolvedComplex->getLeadingCombinators()),
                             $resolvedComplex->getComponents(),
                             $complex->getSpan(),
@@ -305,7 +305,7 @@ final class SelectorList extends Selector
             return $parent->withAdditionalCombinators($component->getCombinators())->getComponents();
         }
 
-        return array_map(function (ComplexSelector $complex) use ($parentSelector, $resolvedSimples, $component) {
+        return array_map(function (ComplexSelector $complex) use ($parentSelector, $resolvedSimples, $component): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
             $lastComponent = $complex->getLastComponent();
 
             if (\count($lastComponent->getCombinators()) !== 0) {
@@ -344,7 +344,7 @@ final class SelectorList extends Selector
             return $this;
         }
 
-        return new SelectorList(array_map(fn(ComplexSelector $complex) => $complex->withAdditionalCombinators($combinators), $this->components), $this->getSpan());
+        return new SelectorList(array_map(fn(ComplexSelector $complex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $complex->withAdditionalCombinators($combinators), $this->components), $this->getSpan());
     }
 
     /**

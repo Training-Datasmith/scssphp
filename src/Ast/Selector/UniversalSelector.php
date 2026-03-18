@@ -23,7 +23,7 @@ use SourceSpan\FileSpan;
  */
 final class UniversalSelector extends SimpleSelector
 {
-    /**
+    public function __construct(FileSpan $span, /**
      * The selector namespace.
      *
      * If this is `null`, this matches all elements in the default namespace. If
@@ -31,11 +31,8 @@ final class UniversalSelector extends SimpleSelector
      * namespace. If it's `*`, this matches all elements in any namespace.
      * Otherwise, it matches all elements in the given namespace.
      */
-    private readonly ?string $namespace;
-
-    public function __construct(FileSpan $span, ?string $namespace = null)
+    private readonly ?string $namespace = null)
     {
-        $this->namespace = $namespace;
         parent::__construct($span);
     }
 

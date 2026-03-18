@@ -22,26 +22,21 @@ use ScssPhp\ScssPhp\Importer\Importer;
  */
 final class LoadedStylesheet
 {
-    /**
-     * The stylesheet itself.
-     */
-    private readonly Stylesheet $stylesheet;
-
-    private readonly Importer $importer;
-
-    /**
-     * Whether this load counts as a dependency.
-     *
-     * That is, whether this was (transitively) loaded through a load path or
-     * importer rather than relative to the entrypoint.
-     */
-    private readonly bool $dependency;
-
-    public function __construct(Stylesheet $stylesheet, Importer $importer, bool $dependency)
+    public function __construct(
+        /**
+         * The stylesheet itself.
+         */
+        private readonly Stylesheet $stylesheet,
+        private readonly Importer $importer,
+        /**
+         * Whether this load counts as a dependency.
+         *
+         * That is, whether this was (transitively) loaded through a load path or
+         * importer rather than relative to the entrypoint.
+         */
+        private readonly bool $dependency
+    )
     {
-        $this->stylesheet = $stylesheet;
-        $this->importer = $importer;
-        $this->dependency = $dependency;
     }
 
     public function getStylesheet(): Stylesheet

@@ -30,22 +30,13 @@ use SourceSpan\FileSpan;
  */
 final class ArgumentDeclaration implements SassNode
 {
-    /**
-     * @var list<Argument>
-     */
-    private readonly array $arguments;
-
-    private readonly ?string $restArgument;
-
     private readonly FileSpan $span;
 
     /**
      * @param list<Argument> $arguments
      */
-    public function __construct(array $arguments, FileSpan $span, ?string $restArgument = null)
+    public function __construct(private readonly array $arguments, FileSpan $span, private readonly ?string $restArgument = null)
     {
-        $this->arguments = $arguments;
-        $this->restArgument = $restArgument;
         $this->span = $span;
     }
 
@@ -158,12 +149,12 @@ final class ArgumentDeclaration implements SassNode
         }
 
         if ($nameUsed < \count($names)) {
-            $unknownNames = array_values(array_diff(array_keys($names), array_map(fn($argument) => $argument->getName(), $this->arguments)));
+            $unknownNames = array_values(array_diff(array_keys($names), array_map(fn(\ScssPhp\ScssPhp\Ast\Sass\Argument $argument): string => $argument->getName(), $this->arguments)));
             \assert(\count($unknownNames) > 0);
             $message = sprintf(
                 'No %s named %s.',
                 StringUtil::pluralize('argument', \count($unknownNames)),
-                StringUtil::toSentence(array_map(fn ($name) => '$' . $name, $unknownNames), 'or')
+                StringUtil::toSentence(array_map(fn ($name): string => '$' . $name, $unknownNames), 'or')
             );
             throw new MultiSpanSassScriptException($message, 'invocation', ['declaration' => $this->getSpanWithName()]);
         }

@@ -27,11 +27,8 @@ use SourceSpan\FileSpan;
  */
 final class SupportsExpression implements Expression
 {
-    private readonly SupportsCondition $condition;
-
-    public function __construct(SupportsCondition $condition)
+    public function __construct(private readonly SupportsCondition $condition)
     {
-        $this->condition = $condition;
     }
 
     public function getCondition(): SupportsCondition

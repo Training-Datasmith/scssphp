@@ -26,15 +26,9 @@ use ScssPhp\ScssPhp\Util\EquatableUtil;
  */
 final class MergedExtension extends Extension
 {
-    public readonly Extension $left;
-    public readonly Extension $right;
-
-    private function __construct(Extension $left, Extension $right)
+    private function __construct(public readonly Extension $left, public readonly Extension $right)
     {
-        $this->left = $left;
-        $this->right = $right;
-
-        parent::__construct($left->extender->selector, $left->target, $left->span, $left->mediaContext ?? $right->mediaContext, true);
+        parent::__construct($this->left->extender->selector, $this->left->target, $this->left->span, $this->left->mediaContext ?? $this->right->mediaContext, true);
     }
 
     public static function merge(Extension $left, Extension $right): Extension

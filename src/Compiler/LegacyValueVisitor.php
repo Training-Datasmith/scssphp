@@ -42,12 +42,12 @@ final class LegacyValueVisitor implements ValueVisitor
         return $value->getValue() ? Compiler::$true : Compiler::$false;
     }
 
-    public function visitCalculation(SassCalculation $value)
+    public function visitCalculation(SassCalculation $value): array
     {
         return [Type::T_STRING, '', $value->toCssString()];
     }
 
-    public function visitColor(SassColor $value)
+    public function visitColor(SassColor $value): array
     {
         if (NumberUtil::fuzzyEquals($value->getAlpha(), 1)) {
             return [Type::T_COLOR, $value->getRed(), $value->getGreen(), $value->getBlue()];
@@ -56,17 +56,17 @@ final class LegacyValueVisitor implements ValueVisitor
         return [Type::T_COLOR, $value->getRed(), $value->getGreen(), $value->getBlue(), $value->getAlpha()];
     }
 
-    public function visitFunction(SassFunction $value)
+    public function visitFunction(SassFunction $value): never
     {
         throw new SassScriptException('Functions are not supported by the legacy value API. Migrate your custom function to the new API to accept mixins as arguments.');
     }
 
-    public function visitMixin(SassMixin $value)
+    public function visitMixin(SassMixin $value): never
     {
         throw new SassScriptException('Mixins are not supported by the legacy value API. Migrate your custom function to the new API to accept mixins as arguments.');
     }
 
-    public function visitList(SassList $value)
+    public function visitList(SassList $value): array
     {
         $items = [];
         foreach ($value->asList() as $item) {
@@ -87,7 +87,7 @@ final class LegacyValueVisitor implements ValueVisitor
         return $list;
     }
 
-    public function visitMap(SassMap $value)
+    public function visitMap(SassMap $value): array
     {
         $keys = [];
         $values = [];
@@ -105,12 +105,12 @@ final class LegacyValueVisitor implements ValueVisitor
         return Compiler::$null;
     }
 
-    public function visitNumber(SassNumber $value)
+    public function visitNumber(SassNumber $value): \ScssPhp\ScssPhp\Node\Number
     {
         return new Number($value->getValue(), $value->getNumeratorUnits(), $value->getDenominatorUnits());
     }
 
-    public function visitString(SassString $value)
+    public function visitString(SassString $value): array
     {
         return [Type::T_STRING, $value->hasQuotes() ? '"' : '', [$value->getText()]];
     }

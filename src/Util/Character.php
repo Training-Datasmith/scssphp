@@ -54,7 +54,10 @@ final class Character
      */
     public static function isAlphanumeric(string $character): bool
     {
-        return self::isAlphabetic($character) || self::isDigit($character);
+        if (self::isAlphabetic($character)) {
+            return true;
+        }
+        return self::isDigit($character);
     }
 
     /**
@@ -86,7 +89,13 @@ final class Character
      */
     public static function isNameStart(string $character): bool
     {
-        return $character === '_' || self::isAlphabetic($character) || \ord($character[0]) >= 0x80;
+        if ($character === '_') {
+            return true;
+        }
+        if (self::isAlphabetic($character)) {
+            return true;
+        }
+        return \ord($character[0]) >= 0x80;
     }
 
     /**
@@ -94,7 +103,13 @@ final class Character
      */
     public static function isName(string $character): bool
     {
-        return self::isNameStart($character) || self::isDigit($character) || $character === '-';
+        if (self::isNameStart($character)) {
+            return true;
+        }
+        if (self::isDigit($character)) {
+            return true;
+        }
+        return $character === '-';
     }
 
     /**

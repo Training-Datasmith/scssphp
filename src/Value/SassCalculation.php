@@ -32,21 +32,6 @@ use ScssPhp\ScssPhp\Warn;
 final class SassCalculation extends Value
 {
     /**
-     * The calculation's name, such as `"calc"`.
-     */
-    private readonly string $name;
-
-    /**
-     * The calculation's arguments.
-     *
-     * Each argument is either a {@see SassNumber}, a {@see SassCalculation}, an unquoted
-     * {@see SassString}, or a {@see CalculationOperation}.
-     *
-     * @var list<object>
-     */
-    private readonly array $arguments;
-
-    /**
      * Creates a new calculation with the given $name and $arguments
      * that will not be simplified.
      *
@@ -692,6 +677,7 @@ WARNING;
                 return self::roundWithStep($strategyOrNumber->getText(), $numberOrStep, $step);
 
             case $strategyOrNumber instanceof SassString && \in_array($strategyOrNumber->getText(), ['nearest', 'up', 'down', 'to-zero'], true) && $numberOrStep instanceof SassString && $step === null:
+            case $step === null:
                 return new SassCalculation('round', [$strategyOrNumber, $numberOrStep]);
 
             case $strategyOrNumber instanceof SassString && \in_array($strategyOrNumber->getText(), ['nearest', 'up', 'down', 'to-zero'], true) && $numberOrStep !== null && $step === null:
@@ -705,9 +691,6 @@ WARNING;
 
             case $numberOrStep === null && $step === null:
                 throw new SassScriptException("Single argument $strategyOrNumber expected to be simplifiable.");
-
-            case $step === null:
-                return new SassCalculation('round', [$strategyOrNumber, $numberOrStep]);
 
             case $strategyOrNumber instanceof SassString && (\in_array($strategyOrNumber->getText(), ['nearest', 'up', 'down', 'to-zero'], true) || $strategyOrNumber->isVar()) && $numberOrStep !== null:
                 return new SassCalculation('round', [$strategyOrNumber, $numberOrStep, $step]);
@@ -789,10 +772,20 @@ WARNING;
      *
      * @param list<object> $arguments
      */
-    private function __construct(string $name, array $arguments)
+    private function __construct(
+        /**
+         * The calculation's name, such as `"calc"`.
+         */
+        private readonly string $name,
+        /**
+         * The calculation's arguments.
+         *
+         * Each argument is either a {@see SassNumber}, a {@see SassCalculation}, an unquoted
+         * {@see SassString}, or a {@see CalculationOperation}.
+         */
+        private readonly array $arguments
+    )
     {
-        $this->name = $name;
-        $this->arguments = $arguments;
     }
 
     public function getName(): string

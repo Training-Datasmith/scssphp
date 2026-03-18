@@ -35,7 +35,7 @@ final class ArrayUtil
      *
      * @param-immediately-invoked-callable $combine
      */
-    public static function reduce(array $items, callable $combine)
+    public static function reduce(array $items, callable $combine): mixed
     {
         if (\count($items) === 0) {
             throw new \LogicException('Cannot reduce an empty array');

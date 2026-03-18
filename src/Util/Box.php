@@ -25,16 +25,10 @@ namespace ScssPhp\ScssPhp\Util;
 final class Box implements Equatable
 {
     /**
-     * @var ModifiableBox<T>
-     */
-    private readonly ModifiableBox $inner;
-
-    /**
      * @param ModifiableBox<T> $inner
      */
-    public function __construct(ModifiableBox $inner)
+    public function __construct(private readonly ModifiableBox $inner)
     {
-        $this->inner = $inner;
     }
 
     /**

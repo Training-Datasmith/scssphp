@@ -21,14 +21,8 @@ use SourceSpan\FileSpan;
  */
 final class VisitorEvaluationContext extends EvaluationContext
 {
-    private readonly EvaluateVisitor $visitor;
-
-    private readonly AstNode $defaultWarnNodeWithSpan;
-
-    public function __construct(EvaluateVisitor $visitor, AstNode $defaultWarnNodeWithSpan)
+    public function __construct(private readonly EvaluateVisitor $visitor, private readonly AstNode $defaultWarnNodeWithSpan)
     {
-        $this->visitor = $visitor;
-        $this->defaultWarnNodeWithSpan = $defaultWarnNodeWithSpan;
     }
 
     public function getCurrentCallableSpan(): FileSpan

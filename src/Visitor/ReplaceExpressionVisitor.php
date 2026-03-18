@@ -108,7 +108,7 @@ abstract class ReplaceExpressionVisitor implements ExpressionVisitor
     public function visitMapExpression(MapExpression $node): Expression
     {
         return new MapExpression(
-            array_map(fn(array $pair) => [$pair[0]->accept($this), $pair[1]->accept($this)], $node->getPairs()),
+            array_map(fn(array $pair): array => [$pair[0]->accept($this), $pair[1]->accept($this)], $node->getPairs()),
             $node->getSpan()
         );
     }
@@ -204,13 +204,11 @@ abstract class ReplaceExpressionVisitor implements ExpressionVisitor
             return new SupportsDeclaration($condition->getName()->accept($this), $condition->getValue()->accept($this), $condition->getSpan());
         }
 
-        throw new \UnexpectedValueException('BUG: Unknown SupportsCondition ' . get_class($condition));
+        throw new \UnexpectedValueException('BUG: Unknown SupportsCondition ' . $condition::class);
     }
 
     protected function visitInterpolation(Interpolation $interpolation): Interpolation
     {
-        return new Interpolation(array_map(function ($node) {
-            return $node instanceof Expression ? $node->accept($this) : $node;
-        }, $interpolation->getContents()), $interpolation->getSpan());
+        return new Interpolation(array_map(fn(\ScssPhp\ScssPhp\Ast\Sass\Expression|string $node) => $node instanceof Expression ? $node->accept($this) : $node, $interpolation->getContents()), $interpolation->getSpan());
     }
 }

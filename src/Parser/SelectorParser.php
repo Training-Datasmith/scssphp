@@ -52,13 +52,6 @@ final class SelectorParser extends Parser
      */
     private const SELECTOR_PSEUDO_ELEMENTS = ['slotted'];
 
-    private readonly bool $allowParent;
-
-    /**
-     * Whether to parse the selector as plain CSS.
-     */
-    private readonly bool $plainCss;
-
     /**
      * Creates a parser that parses CSS selectors.
      *
@@ -68,10 +61,11 @@ final class SelectorParser extends Parser
      * If $plainCss is `true`, this will parse the selector as a plain CSS
      * selector rather than a Sass selector.
      */
-    public function __construct(string $contents, ?LoggerInterface $logger = null, ?UriInterface $url = null, bool $allowParent = true, ?InterpolationMap $interpolationMap = null, bool $plainCss = false)
+    public function __construct(string $contents, ?LoggerInterface $logger = null, ?UriInterface $url = null, private readonly bool $allowParent = true, ?InterpolationMap $interpolationMap = null, /**
+     * Whether to parse the selector as plain CSS.
+     */
+    private readonly bool $plainCss = false)
     {
-        $this->allowParent = $allowParent;
-        $this->plainCss = $plainCss;
         parent::__construct($contents, $logger, $url, $interpolationMap);
     }
 
@@ -80,7 +74,7 @@ final class SelectorParser extends Parser
      */
     public function parse(): SelectorList
     {
-        return $this->wrapSpanFormatException(function () {
+        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Selector\SelectorList {
             $selector = $this->selectorList();
 
             if (!$this->scanner->isDone()) {
@@ -93,7 +87,7 @@ final class SelectorParser extends Parser
 
     public function parseComplexSelector(): ComplexSelector
     {
-        return $this->wrapSpanFormatException(function () {
+        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
             $complex = $this->complexSelector();
 
             if (!$this->scanner->isDone()) {
@@ -106,7 +100,7 @@ final class SelectorParser extends Parser
 
     public function parseCompoundSelector(): CompoundSelector
     {
-        return $this->wrapSpanFormatException(function () {
+        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Selector\CompoundSelector {
             $compound = $this->compoundSelector();
 
             if (!$this->scanner->isDone()) {
@@ -119,7 +113,7 @@ final class SelectorParser extends Parser
 
     public function parseSimpleSelector(): SimpleSelector
     {
-        return $this->wrapSpanFormatException(function () {
+        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Selector\SimpleSelector {
             $simple = $this->simpleSelector();
 
             if (!$this->scanner->isDone()) {

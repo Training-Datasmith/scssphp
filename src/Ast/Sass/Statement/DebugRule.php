@@ -26,13 +26,10 @@ use SourceSpan\FileSpan;
  */
 final class DebugRule implements Statement
 {
-    private readonly Expression $expression;
-
     private readonly FileSpan $span;
 
-    public function __construct(Expression $expression, FileSpan $span)
+    public function __construct(private readonly Expression $expression, FileSpan $span)
     {
-        $this->expression = $expression;
         $this->span = $span;
     }
 

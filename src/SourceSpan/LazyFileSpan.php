@@ -26,23 +26,18 @@ use SourceSpan\SourceSpan;
  */
 class LazyFileSpan implements FileSpan
 {
-    /**
-     * @var \Closure(): FileSpan
-     * @readonly
-     */
-    private readonly \Closure $builder;
-
-    /**
-     * @var FileSpan|null
-     */
     private ?FileSpan $span = null;
 
     /**
      * @param \Closure(): FileSpan $builder
      */
-    public function __construct(\Closure $builder)
+    public function __construct(
+        /**
+         * @readonly
+         */
+        private readonly \Closure $builder
+    )
     {
-        $this->builder = $builder;
     }
 
     public function getSpan(): FileSpan

@@ -22,17 +22,8 @@ use ScssPhp\ScssPhp\Evaluation\Environment;
  */
 final class UserDefinedCallable implements SassCallable
 {
-    private readonly CallableDeclaration $declaration;
-
-    private readonly Environment $environment;
-
-    private readonly bool $inDependency;
-
-    public function __construct(CallableDeclaration $declaration, Environment $environment, bool $inDependency)
+    public function __construct(private readonly CallableDeclaration $declaration, private readonly Environment $environment, private readonly bool $inDependency)
     {
-        $this->declaration = $declaration;
-        $this->environment = $environment;
-        $this->inDependency = $inDependency;
     }
 
     public function getDeclaration(): CallableDeclaration

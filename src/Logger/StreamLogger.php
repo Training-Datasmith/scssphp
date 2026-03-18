@@ -25,19 +25,11 @@ use SourceSpan\SourceSpan;
 final class StreamLogger implements LoggerInterface
 {
     /**
-     * @var resource
-     */
-    private $stream;
-    private bool $closeOnDestruct;
-
-    /**
      * @param resource $stream          A stream resource
      * @param bool     $closeOnDestruct If true, takes ownership of the stream and close it on destruct to avoid leaks.
      */
-    public function __construct($stream, bool $closeOnDestruct = false)
+    public function __construct(private $stream, private readonly bool $closeOnDestruct = false)
     {
-        $this->stream = $stream;
-        $this->closeOnDestruct = $closeOnDestruct;
     }
 
     /**

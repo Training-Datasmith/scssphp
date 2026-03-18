@@ -19,14 +19,8 @@ namespace ScssPhp\ScssPhp\Parser;
  */
 final class LineScanner extends StringScanner
 {
-    /**
-     * @var int
-     */
     private int $line = 0;
 
-    /**
-     * @var int
-     */
     private int $column = 0;
 
     public function getLine(): int

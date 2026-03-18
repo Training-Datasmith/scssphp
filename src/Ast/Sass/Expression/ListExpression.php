@@ -24,28 +24,16 @@ use SourceSpan\FileSpan;
  */
 final class ListExpression implements Expression
 {
-    /**
-     * @var list<Expression>
-     */
-    private readonly array $contents;
-
-    private readonly ListSeparator $separator;
-
     private readonly FileSpan $span;
-
-    private readonly bool $brackets;
 
     /**
      * ListExpression constructor.
      *
      * @param list<Expression> $contents
      */
-    public function __construct(array $contents, ListSeparator $separator, FileSpan $span, bool $brackets = false)
+    public function __construct(private readonly array $contents, private readonly ListSeparator $separator, FileSpan $span, private readonly bool $brackets = false)
     {
-        $this->contents = $contents;
-        $this->separator = $separator;
         $this->span = $span;
-        $this->brackets = $brackets;
     }
 
     /**
@@ -87,7 +75,7 @@ final class ListExpression implements Expression
 
         $buffer .= implode(
             $this->separator === ListSeparator::COMMA ? ', ' : ' ',
-            array_map(fn($element) => $this->elementNeedsParens($element) ? "($element)" : (string) $element, $this->contents)
+            array_map(fn(\ScssPhp\ScssPhp\Ast\Sass\Expression $element): string => $this->elementNeedsParens($element) ? "($element)" : (string) $element, $this->contents)
         );
 
         if ($this->hasBrackets()) {
@@ -124,7 +112,10 @@ final class ListExpression implements Expression
         }
 
         if ($expression instanceof UnaryOperationExpression) {
-            return $expression->getOperator() === UnaryOperator::PLUS || $expression->getOperator() === UnaryOperator::MINUS;
+            if ($expression->getOperator() === UnaryOperator::PLUS) {
+                return true;
+            }
+            return $expression->getOperator() === UnaryOperator::MINUS;
         }
 
         return false;

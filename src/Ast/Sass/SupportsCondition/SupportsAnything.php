@@ -24,16 +24,13 @@ use SourceSpan\FileSpan;
  */
 final class SupportsAnything implements SupportsCondition
 {
-    /**
-     * The contents of the condition.
-     */
-    private readonly Interpolation $contents;
-
     private readonly FileSpan $span;
 
-    public function __construct(Interpolation $contents, FileSpan $span)
+    public function __construct(/**
+     * The contents of the condition.
+     */
+    private readonly Interpolation $contents, FileSpan $span)
     {
-        $this->contents = $contents;
         $this->span = $span;
     }
 

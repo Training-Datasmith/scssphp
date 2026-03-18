@@ -21,11 +21,6 @@ namespace ScssPhp\ScssPhp\Value;
  */
 final class SassArgumentList extends SassList
 {
-    /**
-     * @var array<string, Value>
-     */
-    private readonly array $keywords;
-
     private bool $keywordAccessed = false;
 
     /**
@@ -34,10 +29,9 @@ final class SassArgumentList extends SassList
      * @param list<Value> $contents
      * @param array<string, Value> $keywords
      */
-    public function __construct(array $contents, array $keywords, ListSeparator $separator)
+    public function __construct(array $contents, private readonly array $keywords, ListSeparator $separator)
     {
         parent::__construct($contents, $separator);
-        $this->keywords = $keywords;
     }
 
     /**

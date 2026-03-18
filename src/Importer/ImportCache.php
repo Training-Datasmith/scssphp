@@ -26,13 +26,6 @@ use ScssPhp\ScssPhp\Util\UriUtil;
 final class ImportCache
 {
     /**
-     * @var list<Importer>
-     */
-    private readonly array $importers;
-
-    private readonly LoggerInterface $logger;
-
-    /**
      * The canonicalized URLs for each non-canonical URL.
      *
      * The `forImport` in each key is true when this canonicalization is for an
@@ -75,10 +68,8 @@ final class ImportCache
     /**
      * @param list<Importer> $importers
      */
-    public function __construct(array $importers, LoggerInterface $logger)
+    public function __construct(private readonly array $importers, private readonly LoggerInterface $logger)
     {
-        $this->importers = $importers;
-        $this->logger = $logger;
         $this->perImporterCanonicalizeCache = new \SplObjectStorage();
     }
 
@@ -200,7 +191,7 @@ final class ImportCache
         $passContainingUrl = $baseUrl !== null && ($url->getScheme() === null || $importer->isNonCanonicalScheme($url->getScheme()));
         $canonicalizeContext = new CanonicalizeContext($passContainingUrl ? $baseUrl : null, $forImport);
 
-        $result = ImportContext::withCanonicalizeContext($canonicalizeContext, fn () => $importer->canonicalize($url));
+        $result = ImportContext::withCanonicalizeContext($canonicalizeContext, fn (): ?\League\Uri\Contracts\UriInterface => $importer->canonicalize($url));
 
         $cacheable = !$passContainingUrl || !$canonicalizeContext->wasContainingUrlAccessed();
 
@@ -274,7 +265,7 @@ final class ImportCache
                     continue;
                 }
 
-                $originalUrlLength = \strlen($cacheValue->originalUrl->getPath());
+                $originalUrlLength = \strlen((string) $cacheValue->originalUrl->getPath());
 
                 if ($shortestUrl === null || $originalUrlLength < $shortestLength) {
                     $shortestUrl = $cacheValue->originalUrl;

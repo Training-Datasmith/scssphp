@@ -20,24 +20,16 @@ use SourceSpan\FileSpan;
 final class MultiSpanSassScriptException extends SassScriptException
 {
     /**
-     * {@see MultiSpanSassException::$primaryLabel}
-     */
-    public readonly string $primaryLabel;
-    /**
-     * {@see MultiSpanSassException::$secondarySpans}
-     *
-     * @var array<string, FileSpan>
-     */
-    public readonly array $secondarySpans;
-
-    /**
      * @param array<string, FileSpan> $secondarySpans
      */
-    public function __construct(string $message, string $primaryLabel, array $secondarySpans, ?\Throwable $previous = null)
+    public function __construct(string $message, /**
+     * {@see MultiSpanSassException::$primaryLabel}
+     */
+    public readonly string $primaryLabel, /**
+     * {@see MultiSpanSassException::$secondarySpans}
+     */
+    public readonly array $secondarySpans, ?\Throwable $previous = null)
     {
-        $this->primaryLabel = $primaryLabel;
-        $this->secondarySpans = $secondarySpans;
-
         parent::__construct($message, 0, $previous);
     }
 

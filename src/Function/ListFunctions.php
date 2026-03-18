@@ -114,7 +114,7 @@ class ListFunctions
      */
     public static function zip(array $arguments): Value
     {
-        $lists = array_map(fn (Value $list) => $list->asList(), $arguments[0]->asList());
+        $lists = array_map(fn (Value $list): array => $list->asList(), $arguments[0]->asList());
 
         if (\count($lists) === 0) {
             return SassList::createEmpty(ListSeparator::COMMA);
@@ -123,8 +123,8 @@ class ListFunctions
         $i = 0;
         $results = [];
 
-        while (IterableUtil::every($lists, fn ($list) => $i !== \count($list))) {
-            $results[] = new SassList(array_map(fn ($list) => $list[$i], $lists), ListSeparator::SPACE);
+        while (IterableUtil::every($lists, fn ($list): bool => $i !== \count($list))) {
+            $results[] = new SassList(array_map(fn (array $list): \ScssPhp\ScssPhp\Value\Value => $list[$i], $lists), ListSeparator::SPACE);
             $i++;
         }
 

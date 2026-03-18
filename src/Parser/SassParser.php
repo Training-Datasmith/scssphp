@@ -76,7 +76,7 @@ final class SassParser extends StylesheetParser
         do {
             $buffer->addInterpolation($this->almostAnyValue(omitComments: true));
             $buffer->write("\n");
-        } while (str_ends_with(rtrim($buffer->getTrailingString()), ',') && $this->scanCharIf(fn ($char) => Character::isNewline($char)));
+        } while (str_ends_with(rtrim($buffer->getTrailingString()), ',') && $this->scanCharIf(fn (?string $char): bool => Character::isNewline($char)));
 
         return $buffer->buildInterpolation($this->scanner->spanFrom($start));
     }
@@ -119,9 +119,8 @@ final class SassParser extends StylesheetParser
                         $this->scanner->setPosition($start);
 
                         return parent::importArgument();
-                    } else {
-                        $this->scanner->setPosition($start);
                     }
+                    $this->scanner->setPosition($start);
                 }
                 break;
 
@@ -182,7 +181,7 @@ final class SassParser extends StylesheetParser
     {
         $children = [];
 
-        $this->whileIndentedLower(function () use ($child, &$children) {
+        $this->whileIndentedLower(function () use ($child, &$children): void {
             $parsedChild = $this->child($child);
 
             if ($parsedChild !== null) {
@@ -531,7 +530,7 @@ final class SassParser extends StylesheetParser
 
                 return 0;
             }
-        } while ($this->scanCharIf(fn ($char) => Character::isNewline($char)));
+        } while ($this->scanCharIf(fn (?string $char): bool => Character::isNewline($char)));
 
         $this->checkIndentationConsistency($containsTab, $containsSpace);
 

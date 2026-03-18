@@ -22,16 +22,13 @@ use SourceSpan\FileSpan;
  */
 final class SimpleSassFormatException extends \Exception implements SassFormatException
 {
-    private readonly string $originalMessage;
-
     private readonly FileSpan $span;
 
-    public function __construct(string $message, FileSpan $span, ?\Throwable $previous = null)
+    public function __construct(private readonly string $originalMessage, FileSpan $span, ?\Throwable $previous = null)
     {
-        $this->originalMessage = $message;
         $this->span = $span;
 
-        parent::__construct(ErrorUtil::formatErrorMessage($message, $span, $this->getSassTrace()), 0, $previous);
+        parent::__construct(ErrorUtil::formatErrorMessage($this->originalMessage, $span, $this->getSassTrace()), 0, $previous);
     }
 
     /**

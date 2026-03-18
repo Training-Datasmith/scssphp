@@ -23,31 +23,28 @@ use ScssPhp\ScssPhp\Visitor\ValueVisitor;
  */
 final class SassString extends Value
 {
-    /**
-     * The contents of the string.
-     *
-     * For quoted strings, this is the semantic content—any escape sequences that
-     * were been written in the source text are resolved to their Unicode values.
-     * For unquoted strings, though, escape sequences are preserved as literal
-     * backslashes.
-     *
-     * This difference allows us to distinguish between identifiers with escapes,
-     * such as `url\u28 http://example.com\u29`, and unquoted strings that
-     * contain characters that aren't valid in identifiers, such as
-     * `url(http://example.com)`. Unfortunately, it also means that we don't
-     * consider `foo` and `f\6F\6F` the same string.
-     */
-    private readonly string $text;
-
-    /**
-     * Whether this string has quotes.
-     */
-    private readonly bool $quotes;
-
-    public function __construct(string $text, bool $quotes = true)
+    public function __construct(
+        /**
+         * The contents of the string.
+         *
+         * For quoted strings, this is the semantic content—any escape sequences that
+         * were been written in the source text are resolved to their Unicode values.
+         * For unquoted strings, though, escape sequences are preserved as literal
+         * backslashes.
+         *
+         * This difference allows us to distinguish between identifiers with escapes,
+         * such as `url\u28 http://example.com\u29`, and unquoted strings that
+         * contain characters that aren't valid in identifiers, such as
+         * `url(http://example.com)`. Unfortunately, it also means that we don't
+         * consider `foo` and `f\6F\6F` the same string.
+         */
+        private readonly string $text,
+        /**
+         * Whether this string has quotes.
+         */
+        private readonly bool $quotes = true
+    )
     {
-        $this->text = $text;
-        $this->quotes = $quotes;
     }
 
     public function getText(): string
@@ -220,7 +217,7 @@ final class SassString extends Value
         return $this;
     }
 
-    public function plus(Value $other): Value
+    public function plus(Value $other): \ScssPhp\ScssPhp\Value\SassString
     {
         if ($other instanceof SassString) {
             return new SassString($this->text . $other->getText(), $this->quotes);

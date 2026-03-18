@@ -27,42 +27,6 @@ use ScssPhp\ScssPhp\Util\Equatable;
 final class CssMediaQuery implements MediaQueryMergeResult, Equatable
 {
     /**
-     * The modifier, probably either "not" or "only".
-     *
-     * This may be `null` if no modifier is in use.
-     */
-    private readonly ?string $modifier;
-
-    /**
-     * The media type, for example "screen" or "print".
-     *
-     * This may be `null`. If so, {@see $conditions} will not be empty.
-     */
-    private readonly ?string $type;
-
-    /**
-     * Whether {@see $conditions} is a conjunction or a disjunction.
-     *
-     * In other words, if this is `true` this query matches when _all_
-     * {@see $conditions} are met, and if it's `false` this query matches when _any_
-     * condition in {@see $conditions} is met.
-     *
-     * If this is `false`, {@see $modifier} and {@see $type} will both be `null`.
-     */
-    private readonly bool $conjunction;
-
-    /**
-     * Media conditions, including parentheses.
-     *
-     * This is anything that can appear in the [`<media-in-parens>`] production.
-     *
-     * [`<media-in-parens>`]: https://drafts.csswg.org/mediaqueries-4/#typedef-media-in-parens
-     *
-     * @var list<string>
-     */
-    private readonly array $conditions;
-
-    /**
      * Parses a media query from $contents.
      *
      * If passed, $url is the name of the file from which $contents comes.
@@ -79,12 +43,39 @@ final class CssMediaQuery implements MediaQueryMergeResult, Equatable
     /**
      * @param list<string> $conditions
      */
-    private function __construct(array $conditions = [], bool $conjunction = true, ?string $type = null, ?string $modifier = null)
+    private function __construct(
+        /**
+         * Media conditions, including parentheses.
+         *
+         * This is anything that can appear in the [`<media-in-parens>`] production.
+         *
+         * [`<media-in-parens>`]: https://drafts.csswg.org/mediaqueries-4/#typedef-media-in-parens
+         */
+        private readonly array $conditions = [],
+        /**
+         * Whether {@see $conditions} is a conjunction or a disjunction.
+         *
+         * In other words, if this is `true` this query matches when _all_
+         * {@see $conditions} are met, and if it's `false` this query matches when _any_
+         * condition in {@see $conditions} is met.
+         *
+         * If this is `false`, {@see $modifier} and {@see $type} will both be `null`.
+         */
+        private readonly bool $conjunction = true,
+        /**
+         * The media type, for example "screen" or "print".
+         *
+         * This may be `null`. If so, {@see $conditions} will not be empty.
+         */
+        private readonly ?string $type = null,
+        /**
+         * The modifier, probably either "not" or "only".
+         *
+         * This may be `null` if no modifier is in use.
+         */
+        private readonly ?string $modifier = null
+    )
     {
-        $this->modifier = $modifier;
-        $this->type = $type;
-        $this->conditions = $conditions;
-        $this->conjunction = $conjunction;
     }
 
     /**

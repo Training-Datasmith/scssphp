@@ -25,25 +25,6 @@ use SourceSpan\FileSpan;
  */
 final class ModifiableCssDeclaration extends ModifiableCssNode implements CssDeclaration
 {
-    /**
-     * @var CssValue<string>
-     */
-    private readonly CssValue $name;
-
-    /**
-     * @var CssValue<Value>
-     */
-    private readonly CssValue $value;
-
-    /**
-     * @var list<CssStyleRule>
-     */
-    private readonly array $interleavedRules;
-
-    private readonly ?Trace $trace;
-
-    private readonly bool $parsedAsCustomProperty;
-
     private readonly FileSpan $valueSpanForMap;
 
     private readonly FileSpan $span;
@@ -53,23 +34,18 @@ final class ModifiableCssDeclaration extends ModifiableCssNode implements CssDec
      * @param CssValue<Value> $value
      * @param list<CssStyleRule> $interleavedRules
      */
-    public function __construct(CssValue $name, CssValue $value, FileSpan $span, bool $parsedAsCustomProperty, array $interleavedRules = [], ?Trace $trace = null, ?FileSpan $valueSpanForMap = null)
+    public function __construct(private readonly CssValue $name, private readonly CssValue $value, FileSpan $span, private readonly bool $parsedAsCustomProperty, private readonly array $interleavedRules = [], private readonly ?Trace $trace = null, ?FileSpan $valueSpanForMap = null)
     {
-        $this->name = $name;
-        $this->value = $value;
-        $this->parsedAsCustomProperty = $parsedAsCustomProperty;
-        $this->interleavedRules = $interleavedRules;
-        $this->trace = $trace;
-        $this->valueSpanForMap = $valueSpanForMap ?? $value->getSpan();
+        $this->valueSpanForMap = $valueSpanForMap ?? $this->value->getSpan();
         $this->span = $span;
 
-        if ($parsedAsCustomProperty) {
+        if ($this->parsedAsCustomProperty) {
             if (!$this->isCustomProperty()) {
                 throw new \InvalidArgumentException('parsedAsCustomProperty must be false if name doesn\'t begin with "--".');
             }
 
-            if (!$value->getValue() instanceof SassString) {
-                throw new \InvalidArgumentException(sprintf('If parsedAsCustomProperty is true, value must contain a SassString (was %s).', get_debug_type($value->getValue())));
+            if (!$this->value->getValue() instanceof SassString) {
+                throw new \InvalidArgumentException(sprintf('If parsedAsCustomProperty is true, value must contain a SassString (was %s).', get_debug_type($this->value->getValue())));
             }
         }
     }

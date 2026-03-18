@@ -25,33 +25,24 @@ final class Frame
      */
     private readonly UriInterface $url;
 
-    /**
+    public function __construct(UriInterface $url, /**
      * The line number on which the code location is located.
      *
      * This can be null, indicating that the line number is unknown or
      * unimportant.
      */
-    private readonly ?int $line;
-
-    /**
+    private readonly ?int $line, /**
      * The column number of the code location.
      *
      * This can be null, indicating that the column number is unknown or
      * unimportant.
      */
-    private readonly ?int $column;
-
-    /**
+    private readonly ?int $column, /**
      * The name of the member in which the code location occurs.
      */
-    private readonly ?string $member;
-
-    public function __construct(UriInterface $url, ?int $line, ?int $column, ?string $member)
+    private readonly ?string $member)
     {
         $this->url = $url;
-        $this->line = $line;
-        $this->column = $column;
-        $this->member = $member;
     }
 
     /**

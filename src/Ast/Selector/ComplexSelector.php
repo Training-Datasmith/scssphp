@@ -60,18 +60,16 @@ final class ComplexSelector extends Selector
      */
     private readonly array $components;
 
-    /**
-     * Whether a line break should be emitted *before* this selector.
-     */
-    private readonly bool $lineBreak;
-
     private ?int $specificity = null;
 
     /**
      * @param list<CssValue<Combinator>>     $leadingCombinators
      * @param list<ComplexSelectorComponent> $components
      */
-    public function __construct(array $leadingCombinators, array $components, FileSpan $span, bool $lineBreak = false)
+    public function __construct(array $leadingCombinators, array $components, FileSpan $span, /**
+     * Whether a line break should be emitted *before* this selector.
+     */
+    private readonly bool $lineBreak = false)
     {
         if ($leadingCombinators === [] && $components === []) {
             throw new \InvalidArgumentException('leadingCombinators and components may not both be empty.');
@@ -79,7 +77,6 @@ final class ComplexSelector extends Selector
 
         $this->leadingCombinators = $leadingCombinators;
         $this->components = $components;
-        $this->lineBreak = $lineBreak;
         parent::__construct($span);
     }
 
@@ -118,8 +115,6 @@ final class ComplexSelector extends Selector
      * no combinators, returns it.
      *
      * Otherwise, returns null.
-     *
-     * @return CompoundSelector|null
      */
     public function getSingleCompound(): ?CompoundSelector
     {

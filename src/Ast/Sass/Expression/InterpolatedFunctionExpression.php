@@ -28,23 +28,17 @@ use SourceSpan\FileSpan;
  */
 final class InterpolatedFunctionExpression implements Expression, CallableInvocation
 {
-    /**
-     * The name of the function being invoked.
-     */
-    private readonly Interpolation $name;
-
-    /**
-     * The arguments to pass to the function.
-     */
-    private readonly ArgumentInvocation $arguments;
-
     private readonly FileSpan $span;
 
-    public function __construct(Interpolation $name, ArgumentInvocation $arguments, FileSpan $span)
+    public function __construct(/**
+     * The name of the function being invoked.
+     */
+    private readonly Interpolation $name, /**
+     * The arguments to pass to the function.
+     */
+    private readonly ArgumentInvocation $arguments, FileSpan $span)
     {
         $this->span = $span;
-        $this->name = $name;
-        $this->arguments = $arguments;
     }
 
     public function getName(): Interpolation

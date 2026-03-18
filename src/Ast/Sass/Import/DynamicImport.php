@@ -25,18 +25,15 @@ use SourceSpan\FileSpan;
  */
 final class DynamicImport implements Import
 {
-    /**
+    private readonly FileSpan $span;
+
+    public function __construct(/**
      * The URI of the file to import.
      *
      * If this is relative, it's relative to the containing file.
      */
-    private readonly string $urlString;
-
-    private readonly FileSpan $span;
-
-    public function __construct(string $urlString, FileSpan $span)
+    private readonly string $urlString, FileSpan $span)
     {
-        $this->urlString = $urlString;
         $this->span = $span;
     }
 

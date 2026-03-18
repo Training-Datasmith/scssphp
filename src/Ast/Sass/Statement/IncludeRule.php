@@ -27,26 +27,14 @@ use SourceSpan\FileSpan;
  */
 final class IncludeRule implements Statement, CallableInvocation, SassReference
 {
-    private readonly ?string $namespace;
-
     private readonly string $name;
-
-    private readonly string $originalName;
-
-    private readonly ArgumentInvocation $arguments;
-
-    private readonly ?ContentBlock $content;
 
     private readonly FileSpan $span;
 
-    public function __construct(string $originalName, ArgumentInvocation $arguments, FileSpan $span, ?string $namespace = null, ?ContentBlock $content = null)
+    public function __construct(private readonly string $originalName, private readonly ArgumentInvocation $arguments, FileSpan $span, private readonly ?string $namespace = null, private readonly ?ContentBlock $content = null)
     {
-        $this->originalName = $originalName;
-        $this->name = str_replace('_', '-', $originalName);
-        $this->arguments = $arguments;
+        $this->name = str_replace('_', '-', $this->originalName);
         $this->span = $span;
-        $this->namespace = $namespace;
-        $this->content = $content;
     }
 
     public function getNamespace(): ?string

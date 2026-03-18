@@ -23,26 +23,20 @@ use SourceSpan\FileSpan;
  */
 final class StaticImport implements Import
 {
-    /**
+    private readonly FileSpan $span;
+
+    public function __construct(/**
      * The URL for this import.
      *
      * This already contains quotes.
      */
-    private readonly Interpolation $url;
-
-    /**
+    private readonly Interpolation $url, FileSpan $span, /**
      * The modifiers (such as media or supports queries) attached to this import,
      * or `null` if none are attached.
      */
-    private readonly ?Interpolation $modifiers;
-
-    private readonly FileSpan $span;
-
-    public function __construct(Interpolation $url, FileSpan $span, ?Interpolation $modifiers = null)
+    private readonly ?Interpolation $modifiers = null)
     {
-        $this->url = $url;
         $this->span = $span;
-        $this->modifiers = $modifiers;
     }
 
     public function getUrl(): Interpolation

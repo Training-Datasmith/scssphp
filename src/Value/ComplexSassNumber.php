@@ -80,13 +80,13 @@ final class ComplexSassNumber extends SassNumber
         throw new \BadMethodCallException(__METHOD__ . 'is not implemented.');
     }
 
-    protected function withValue(float $value): SassNumber
+    protected function withValue(float $value): \ScssPhp\ScssPhp\Value\ComplexSassNumber
     {
         return new self($value, $this->numeratorUnits, $this->denominatorUnits);
     }
 
-    public function withSlash(SassNumber $numerator, SassNumber $denominator): SassNumber
+    public function withSlash(SassNumber $numerator, SassNumber $denominator): \ScssPhp\ScssPhp\Value\ComplexSassNumber
     {
-        return new self($this->getValue(), $this->numeratorUnits, $this->denominatorUnits, array($numerator, $denominator));
+        return new self($this->getValue(), $this->numeratorUnits, $this->denominatorUnits, [$numerator, $denominator]);
     }
 }

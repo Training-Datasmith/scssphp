@@ -20,24 +20,16 @@ use SourceSpan\FileSpan;
 final class MultiSourceFormatException extends FormatException
 {
     /**
-     * {@see MultiSpanSassException::$primaryLabel}
-     */
-    public readonly string $primaryLabel;
-    /**
-     * {@see MultiSpanSassException::$secondarySpans}
-     *
-     * @var array<string, FileSpan>
-     */
-    public readonly array $secondarySpans;
-
-    /**
      * @param array<string, FileSpan> $secondarySpans
      */
-    public function __construct(string $message, FileSpan $span, string $primaryLabel, array $secondarySpans, ?\Throwable $previous = null)
+    public function __construct(string $message, FileSpan $span, /**
+     * {@see MultiSpanSassException::$primaryLabel}
+     */
+    public readonly string $primaryLabel, /**
+     * {@see MultiSpanSassException::$secondarySpans}
+     */
+    public readonly array $secondarySpans, ?\Throwable $previous = null)
     {
-        $this->primaryLabel = $primaryLabel;
-        $this->secondarySpans = $secondarySpans;
-
         parent::__construct($message, $span, $previous);
     }
 }

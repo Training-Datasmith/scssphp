@@ -23,16 +23,10 @@ use SourceSpan\FileSpan;
  */
 final class Argument implements SassNode, SassDeclaration
 {
-    private readonly string $name;
-
-    private readonly ?Expression $defaultValue;
-
     private readonly FileSpan $span;
 
-    public function __construct(string $name, FileSpan $span, ?Expression $defaultValue = null)
+    public function __construct(private readonly string $name, FileSpan $span, private readonly ?Expression $defaultValue = null)
     {
-        $this->name = $name;
-        $this->defaultValue = $defaultValue;
         $this->span = $span;
     }
 

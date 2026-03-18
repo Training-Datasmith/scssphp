@@ -26,16 +26,13 @@ use SourceSpan\FileSpan;
  */
 final class MediaRule extends ParentStatement
 {
-    private readonly Interpolation $query;
-
     private readonly FileSpan $span;
 
     /**
      * @param Statement[] $children
      */
-    public function __construct(Interpolation $query, array $children, FileSpan $span)
+    public function __construct(private readonly Interpolation $query, array $children, FileSpan $span)
     {
-        $this->query = $query;
         $this->span = $span;
         parent::__construct($children);
     }

@@ -56,7 +56,7 @@ final class StringFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function length(array $arguments): Value
+    public static function length(array $arguments): \ScssPhp\ScssPhp\Value\SassNumber
     {
         $string = $arguments[0]->assertString('string');
 
@@ -66,7 +66,7 @@ final class StringFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function insert(array $arguments): Value
+    public static function insert(array $arguments): \ScssPhp\ScssPhp\Value\SassString
     {
         $string = $arguments[0]->assertString('string');
         $insert = $arguments[1]->assertString('insert');
@@ -113,7 +113,7 @@ final class StringFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function slice(array $arguments): Value
+    public static function slice(array $arguments): \ScssPhp\ScssPhp\Value\SassString
     {
         $string = $arguments[0]->assertString('string');
         $start = $arguments[1]->assertNumber('start-at');
@@ -150,7 +150,7 @@ final class StringFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function toUpperCase(array $arguments): Value
+    public static function toUpperCase(array $arguments): \ScssPhp\ScssPhp\Value\SassString
     {
         $string = $arguments[0]->assertString('string');
 
@@ -160,29 +160,23 @@ final class StringFunctions
     /**
      * @param list<Value> $arguments
      */
-    public static function toLowerCase(array $arguments): Value
+    public static function toLowerCase(array $arguments): \ScssPhp\ScssPhp\Value\SassString
     {
         $string = $arguments[0]->assertString('string');
 
         return new SassString(StringUtil::toAsciiLowerCase($string->getText()), $string->hasQuotes());
     }
 
-    /**
-     * @param list<Value> $arguments
-     */
-    public static function uniqueId(array $arguments): Value
+    public static function uniqueId(): \ScssPhp\ScssPhp\Value\SassString
     {
         if (self::$previousId === null) {
             self::$previousId = random_int(0, 36 ** 6);
         }
-
         // Make it difficult to guess the next ID by randomizing the increase.
         self::$previousId += random_int(0, 36) + 1;
-
         if (self::$previousId > 36 ** 6) {
             self::$previousId %= 36 ** 6;
         }
-
         // The leading "u" ensures that the result is a valid identifier.
         return new SassString('u' . str_pad(base_convert((string) self::$previousId, 10, 36), 6, '0', STR_PAD_LEFT), false);
     }

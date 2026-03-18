@@ -28,16 +28,13 @@ use SourceSpan\FileSpan;
  */
 final class AtRootRule extends ParentStatement
 {
-    private readonly ?Interpolation $query;
-
     private readonly FileSpan $span;
 
     /**
      * @param Statement[] $children
      */
-    public function __construct(array $children, FileSpan $span, ?Interpolation $query = null)
+    public function __construct(array $children, FileSpan $span, private readonly ?Interpolation $query = null)
     {
-        $this->query = $query;
         $this->span = $span;
         parent::__construct($children);
     }

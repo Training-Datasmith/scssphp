@@ -23,20 +23,14 @@ use SourceSpan\FileSpan;
  */
 final class ModifiableCssMediaRule extends ModifiableCssParentNode implements CssMediaRule
 {
-    /**
-     * @var list<CssMediaQuery>
-     */
-    private readonly array $queries;
-
     private readonly FileSpan $span;
 
     /**
      * @param list<CssMediaQuery> $queries
      */
-    public function __construct(array $queries, FileSpan $span)
+    public function __construct(private readonly array $queries, FileSpan $span)
     {
         parent::__construct();
-        $this->queries = $queries;
         $this->span = $span;
     }
 

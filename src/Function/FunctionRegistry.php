@@ -180,7 +180,7 @@ class FunctionRegistry
         $callable = BuiltInCallable::overloadedFunction(self::BUILTIN_FUNCTIONS[$name]['canonical_name'] ?? $name, self::BUILTIN_FUNCTIONS[$name]['overloads'], $url);
 
         if (isset(self::BUILTIN_FUNCTIONS[$name]['canonical_name'])) {
-            $callable = $callable->withName($name);
+            return $callable->withName($name);
         }
 
         return $callable;

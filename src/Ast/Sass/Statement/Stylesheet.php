@@ -34,17 +34,14 @@ use SourceSpan\FileSpan;
  */
 final class Stylesheet extends ParentStatement
 {
-    private readonly bool $plainCss;
-
     private readonly FileSpan $span;
 
     /**
      * @param Statement[] $children
      */
-    public function __construct(array $children, FileSpan $span, bool $plainCss = false)
+    public function __construct(array $children, FileSpan $span, private readonly bool $plainCss = false)
     {
         $this->span = $span;
-        $this->plainCss = $plainCss;
         parent::__construct($children);
     }
 

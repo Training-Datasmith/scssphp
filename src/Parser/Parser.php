@@ -31,15 +31,6 @@ class Parser
 {
     protected readonly StringScanner $scanner;
 
-    protected readonly LoggerInterface $logger;
-
-    /**
-     * A map used to map source spans in the text being parsed back to their
-     * original locations in the source file, if this isn't being parsed directly
-     * from source.
-     */
-    private readonly ?InterpolationMap $interpolationMap;
-
     /**
      * Parses $text as a CSS identifier and returns the result.
      *
@@ -64,11 +55,14 @@ class Parser
         }
     }
 
-    public function __construct(string $contents, ?LoggerInterface $logger = null, ?UriInterface $sourceUrl = null, ?InterpolationMap $interpolationMap = null)
+    public function __construct(string $contents, protected readonly ?LoggerInterface $logger = new QuietLogger(), ?UriInterface $sourceUrl = null, /**
+     * A map used to map source spans in the text being parsed back to their
+     * original locations in the source file, if this isn't being parsed directly
+     * from source.
+     */
+    private readonly ?InterpolationMap $interpolationMap = null)
     {
         $this->scanner = new StringScanner($contents, $sourceUrl);
-        $this->logger = $logger ?? new QuietLogger();
-        $this->interpolationMap = $interpolationMap;
     }
 
     /**
@@ -76,7 +70,7 @@ class Parser
      */
     private function doParseIdentifier(): string
     {
-        return $this->wrapSpanFormatException(function () {
+        return $this->wrapSpanFormatException(function (): string {
             $result = $this->identifier();
             $this->scanner->expectDone();
 
@@ -211,9 +205,8 @@ class Parser
 
             if ($this->scanner->scanChar('-')) {
                 $text .= '-';
-                $text .= $this->consumeIdentifierBody($normalize, $unit);
 
-                return $text;
+                return $text . $this->consumeIdentifierBody($normalize, $unit);
             }
         }
 
@@ -234,9 +227,7 @@ class Parser
             $this->scanner->error('Expected identifier.');
         }
 
-        $text .= $this->consumeIdentifierBody($normalize, $unit);
-
-        return $text;
+        return $text . $this->consumeIdentifierBody($normalize, $unit);
     }
 
     /**
@@ -519,9 +510,7 @@ class Parser
                     break;
                 }
             } elseif ($next === ')') {
-                $buffer .= $this->scanner->readChar();
-
-                return $buffer;
+                return $buffer . $this->scanner->readChar();
             } else {
                 break;
             }
@@ -900,7 +889,7 @@ class Parser
 
         $interpolationMap = $this->interpolationMap;
 
-        return new LazyFileSpan(static fn() => $interpolationMap->mapSpan($span));
+        return new LazyFileSpan(static fn(): \SourceSpan\FileSpan => $interpolationMap->mapSpan($span));
     }
 
     /**
@@ -951,7 +940,7 @@ class Parser
 
             if (0 === stripos($error->getMessage(), 'expected')) {
                 $span = $this->adjustExceptionSpan($span);
-                $secondarySpans = array_map(fn (FileSpan $span) => $this->adjustExceptionSpan($span), $secondarySpans);
+                $secondarySpans = array_map($this->adjustExceptionSpan(...), $secondarySpans);
             }
 
             throw new MultiSpanSassFormatException($error->getMessage(), $span, $error->primaryLabel, $secondarySpans, $error);

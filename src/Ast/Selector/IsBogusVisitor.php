@@ -21,14 +21,13 @@ use ScssPhp\ScssPhp\Visitor\AnySelectorVisitor;
  */
 final class IsBogusVisitor extends AnySelectorVisitor
 {
-    /**
-     * Whether to consider selectors with leading combinators as bogus.
-     */
-    private readonly bool $includeLeadingCombinator;
-
-    public function __construct(bool $includeLeadingCombinator)
+    public function __construct(
+        /**
+         * Whether to consider selectors with leading combinators as bogus.
+         */
+        private readonly bool $includeLeadingCombinator
+    )
     {
-        $this->includeLeadingCombinator = $includeLeadingCombinator;
     }
 
     public function visitComplexSelector(ComplexSelector $complex): bool

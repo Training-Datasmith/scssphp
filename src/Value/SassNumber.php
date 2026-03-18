@@ -101,23 +101,19 @@ abstract class SassNumber extends Value
         'dppx' => 'pixel density',
     ];
 
-    private readonly float $value;
-
-    /**
-     * The representation of this number as two slash-separated numbers, if it has one.
-     *
-     * @var array{SassNumber, SassNumber}|null
-     * @internal
-     */
-    private readonly ?array $asSlash;
-
     /**
      * @param array{SassNumber, SassNumber}|null $asSlash
      */
-    protected function __construct(float $value, ?array $asSlash = null)
+    protected function __construct(
+        private readonly float $value,
+        /**
+         * The representation of this number as two slash-separated numbers, if it has one.
+         *
+         * @internal
+         */
+        private readonly ?array $asSlash = null
+    )
     {
-        $this->value = $value;
-        $this->asSlash = $asSlash;
     }
 
     /**
@@ -614,7 +610,7 @@ abstract class SassNumber extends Value
             //
             // see: https://github.com/php/php-src/commit/b3e26c3036a54e9821ea7119c26cdabe484fe36d
             // see: https://github.com/scssphp/scssphp/issues/752#issuecomment-2423857568
-            return SassBoolean::create($this->coerceUnits($other, [NumberUtil::class, 'fuzzyGreaterThan']));
+            return SassBoolean::create($this->coerceUnits($other, NumberUtil::fuzzyGreaterThan(...)));
         }
 
         throw new SassScriptException("Undefined operation \"$this > $other\".");
@@ -659,7 +655,7 @@ abstract class SassNumber extends Value
     public function plus(Value $other): Value
     {
         if ($other instanceof SassNumber) {
-            return $this->withValue($this->coerceUnits($other, fn($num1, $num2) => $num1 + $num2));
+            return $this->withValue($this->coerceUnits($other, fn($num1, $num2): float => $num1 + $num2));
         }
 
         if (!$other instanceof SassColor) {
@@ -672,7 +668,7 @@ abstract class SassNumber extends Value
     public function minus(Value $other): Value
     {
         if ($other instanceof SassNumber) {
-            return $this->withValue($this->coerceUnits($other, fn($num1, $num2) => $num1 - $num2));
+            return $this->withValue($this->coerceUnits($other, fn($num1, $num2): float => $num1 - $num2));
         }
 
         if (!$other instanceof SassColor) {
@@ -752,7 +748,7 @@ abstract class SassNumber extends Value
      */
     private static function getCanonicalMultiplier(array $units): float
     {
-        return array_reduce($units, fn($multiplier, $unit) => $multiplier * self::getCanonicalMultiplierForUnit($unit), 1.0);
+        return array_reduce($units, fn($multiplier, string $unit): float => $multiplier * self::getCanonicalMultiplierForUnit($unit), 1.0);
     }
 
     private static function getCanonicalMultiplierForUnit(string $unit): float
@@ -814,7 +810,7 @@ abstract class SassNumber extends Value
      *
      * @param-immediately-invoked-callable $operation
      */
-    private function coerceUnits(SassNumber $other, callable $operation)
+    private function coerceUnits(SassNumber $other, callable $operation): mixed
     {
         try {
             return \call_user_func($operation, $this->value, $other->coerceValueToMatch($this));
@@ -937,7 +933,7 @@ abstract class SassNumber extends Value
      */
     protected function multiplyUnits(float $value, array $otherNumerators, array $otherDenominators): SassNumber
     {
-        $newNumerators = array();
+        $newNumerators = [];
 
         foreach ($this->getNumeratorUnits() as $numerator) {
             foreach ($otherDenominators as $key => $denominator) {
@@ -1036,8 +1032,8 @@ abstract class SassNumber extends Value
     public function unitSuggestion(string $name, ?string $unit = null): string
     {
         $result = "\$$name"
-            . implode(array_map(fn($unit) => " * 1$unit", $this->getDenominatorUnits()))
-            . implode(array_map(fn($unit) => " / 1$unit", $this->getNumeratorUnits()))
+            . implode('', array_map(fn(string $unit): string => " * 1$unit", $this->getDenominatorUnits()))
+            . implode('', array_map(fn(string $unit): string => " / 1$unit", $this->getNumeratorUnits()))
             . ($unit === null ? '' : " * 1$unit");
 
         return $this->getNumeratorUnits() === [] ? $result : "calc($result)";

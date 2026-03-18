@@ -20,29 +20,24 @@ use ScssPhp\ScssPhp\Util\Equatable;
  */
 final class CalculationOperation implements Equatable, \Stringable
 {
-    private readonly CalculationOperator $operator;
-
-    /**
-     * The left-hand operand.
-     *
-     * This is either a {@see SassNumber}, a {@see SassCalculation}, an unquoted
-     * {@see SassString}, or a {@see CalculationOperation}.
-     */
-    private readonly object $left;
-
-    /**
-     * The right-hand operand.
-     *
-     * This is either a {@see SassNumber}, a {@see SassCalculation}, an unquoted
-     * {@see SassString}, or a {@see CalculationOperation}.
-     */
-    private readonly object $right;
-
-    public function __construct(CalculationOperator $operator, object $left, object $right)
+    public function __construct(
+        private readonly CalculationOperator $operator,
+        /**
+         * The left-hand operand.
+         *
+         * This is either a {@see SassNumber}, a {@see SassCalculation}, an unquoted
+         * {@see SassString}, or a {@see CalculationOperation}.
+         */
+        private readonly object $left,
+        /**
+         * The right-hand operand.
+         *
+         * This is either a {@see SassNumber}, a {@see SassCalculation}, an unquoted
+         * {@see SassString}, or a {@see CalculationOperation}.
+         */
+        private readonly object $right
+    )
     {
-        $this->operator = $operator;
-        $this->left = $left;
-        $this->right = $right;
     }
 
     public function getOperator(): CalculationOperator

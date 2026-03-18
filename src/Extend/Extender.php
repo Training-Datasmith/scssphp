@@ -23,34 +23,25 @@ use ScssPhp\ScssPhp\Util\EquatableUtil;
  */
 final class Extender
 {
-    public readonly ComplexSelector $selector;
-
     /**
      * The minimum specificity required for any selector generated from this
      * extender.
      */
     public readonly int $specificity;
 
-    /**
+    private function __construct(public readonly ComplexSelector $selector, ?int $specificity = null, /**
      * Whether this extender represents a selector that was originally in the
      * document, rather than one defined with `@extend`.
      */
-    public readonly bool $isOriginal;
-
-    /**
+    public readonly bool $isOriginal = false, /**
      * The extension that created this Extender.
      *
      * Not all {@see Extender}s are created by extensions. Some simply represent the
      * original selectors that exist in the document.
      */
-    private readonly ?Extension $extension;
-
-    private function __construct(ComplexSelector $selector, ?int $specificity = null, bool $original = false, ?Extension $extension = null)
+    private readonly ?Extension $extension = null)
     {
-        $this->selector = $selector;
-        $this->specificity = $specificity ?? $selector->getSpecificity();
-        $this->isOriginal = $original;
-        $this->extension = $extension;
+        $this->specificity = $specificity ?? $this->selector->getSpecificity();
     }
 
     public static function create(ComplexSelector $selector, ?int $specificity = null, bool $original = false): self

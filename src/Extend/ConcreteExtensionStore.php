@@ -38,49 +38,6 @@ use SourceSpan\FileSpan;
 final class ConcreteExtensionStore implements ExtensionStore
 {
     /**
-     * A map from all simple selectors in the stylesheet to the selector lists
-     * that contain them.
-     *
-     * This is used to find which selectors an `@extend` applies to and adjust
-     * them.
-     *
-     * @var SimpleSelectorMap<ObjectSet<ModifiableBox<SelectorList>>>
-     */
-    private readonly SimpleSelectorMap $selectors;
-    /**
-     * A map from all extended simple selectors to the sources of those
-     * extensions.
-     *
-     * @var SimpleSelectorMap<ComplexSelectorMap<Extension>>
-     */
-    private SimpleSelectorMap $extensions;
-    /**
-     * A map from all simple selectors in extenders to the extensions that those
-     * extenders define.
-     *
-     * @var SimpleSelectorMap<list<Extension>>
-     */
-    private SimpleSelectorMap $extensionsByExtender;
-    /**
-     * A map from CSS selectors to the media query contexts they're defined in.
-     *
-     * This tracks the contexts in which each selector's style rule is defined.
-     * If a rule is defined at the top level, it doesn't have an entry.
-     *
-     * @var \SplObjectStorage<ModifiableBox<SelectorList>, list<CssMediaQuery>>
-     */
-    private readonly \SplObjectStorage $mediaContexts;
-    /**
-     * @var \SplObjectStorage<SimpleSelector, int>
-     */
-    private \SplObjectStorage $sourceSpecificity;
-    /**
-     * @var \SplObjectStorage<ComplexSelector, mixed>
-     */
-    private readonly \SplObjectStorage $originals;
-    private readonly ExtendMode $mode;
-
-    /**
      * Extends $selector with $source extender and $targets extendees.
      *
      * This works as though `source {@extend target}` were written in the
@@ -146,21 +103,36 @@ final class ConcreteExtensionStore implements ExtensionStore
      * @param \SplObjectStorage<ComplexSelector, mixed> $originals
      */
     private function __construct(
-        SimpleSelectorMap $selectors,
-        SimpleSelectorMap $extensions,
-        SimpleSelectorMap $extensionsByExtender,
-        \SplObjectStorage $mediaContexts,
-        \SplObjectStorage $sourceSpecificity,
-        \SplObjectStorage $originals,
-        ExtendMode $mode,
-    ) {
-        $this->selectors = $selectors;
-        $this->extensions = $extensions;
-        $this->extensionsByExtender = $extensionsByExtender;
-        $this->mediaContexts = $mediaContexts;
-        $this->sourceSpecificity = $sourceSpecificity;
-        $this->originals = $originals;
-        $this->mode = $mode;
+        /**
+         * A map from all simple selectors in the stylesheet to the selector lists
+         * that contain them.
+         *
+         * This is used to find which selectors an `@extend` applies to and adjust
+         * them.
+         */
+        private readonly SimpleSelectorMap $selectors,
+        /**
+         * A map from all extended simple selectors to the sources of those
+         * extensions.
+         */
+        private SimpleSelectorMap $extensions,
+        /**
+         * A map from all simple selectors in extenders to the extensions that those
+         * extenders define.
+         */
+        private SimpleSelectorMap $extensionsByExtender,
+        /**
+         * A map from CSS selectors to the media query contexts they're defined in.
+         *
+         * This tracks the contexts in which each selector's style rule is defined.
+         * If a rule is defined at the top level, it doesn't have an entry.
+         */
+        private readonly \SplObjectStorage $mediaContexts,
+        private \SplObjectStorage $sourceSpecificity,
+        private readonly \SplObjectStorage $originals,
+        private readonly ExtendMode $mode
+    )
+    {
     }
 
     public static function create(): self
@@ -682,8 +654,8 @@ final class ConcreteExtensionStore implements ExtensionStore
 
         $first = true;
 
-        return iterator_to_array(self::expandIterable(ExtendUtil::paths($extendedNotExpanded), function ($path) use (&$first, $complex) {
-            return array_map(function (ComplexSelector $outputComplex) use (&$first, $complex) {
+        return iterator_to_array(self::expandIterable(ExtendUtil::paths($extendedNotExpanded), function (array $path) use (&$first, $complex): array {
+            return array_map(function (ComplexSelector $outputComplex) use (&$first, $complex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
                 // Make sure that copies of $complex retain their status as "original"
                 // selectors. This includes selectors that are modified because a :not()
                 // was extended into.
@@ -844,10 +816,10 @@ final class ConcreteExtensionStore implements ExtensionStore
 
         // If we're preserving the original selector, mark the first unification as
         // such so {@see trim} doesn't get rid of it.
-        $isOriginal = fn (ComplexSelector $complex) => false;
+        $isOriginal = fn (ComplexSelector $complex): bool => false;
         if ($inOriginal && $this->mode !== ExtendMode::replace) {
             $original = $result[0];
-            $isOriginal = fn (ComplexSelector $complex) => EquatableUtil::equals($complex, $original);
+            $isOriginal = fn (ComplexSelector $complex): bool => EquatableUtil::equals($complex, $original);
         }
 
         return $this->trim($result, $isOriginal);
@@ -914,7 +886,7 @@ final class ConcreteExtensionStore implements ExtensionStore
     {
         // Extends $simple without extending the contents of any selector pseudos
         // it contains.
-        $withoutPseudo = function (SimpleSelector $simple) use ($extensions, $targetsUsed) {
+        $withoutPseudo = function (SimpleSelector $simple) use ($extensions, $targetsUsed): ?array {
             $extensionsForSimple = $extensions[$simple] ?? null;
 
             if ($extensionsForSimple === null) {
@@ -940,7 +912,7 @@ final class ConcreteExtensionStore implements ExtensionStore
             $extended = $this->extendPseudo($simple, $extensions, $mediaQueryContext);
 
             if ($extended !== null) {
-                return array_map(fn ($pseudo) => $withoutPseudo($pseudo) ?? [$this->extenderForSimple($pseudo)], $extended);
+                return array_map(fn (\ScssPhp\ScssPhp\Ast\Selector\PseudoSelector $pseudo): array => $withoutPseudo($pseudo) ?? [$this->extenderForSimple($pseudo)], $extended);
             }
         }
 
@@ -1018,13 +990,13 @@ final class ConcreteExtensionStore implements ExtensionStore
         $complexes = $extended->getComponents();
         if (
             $pseudo->getNormalizedName() === 'not'
-            && !IterableUtil::any($selector->getComponents(), fn ($complex) => \count($complex->getComponents()) > 1)
-            && IterableUtil::any($extended->getComponents(), fn ($complex) => \count($complex->getComponents()) === 1)
+            && !IterableUtil::any($selector->getComponents(), fn ($complex): bool => \count($complex->getComponents()) > 1)
+            && IterableUtil::any($extended->getComponents(), fn ($complex): bool => \count($complex->getComponents()) === 1)
         ) {
-            $complexes = array_filter($extended->getComponents(), fn ($complex) => \count($complex->getComponents()) <= 1);
+            $complexes = array_filter($extended->getComponents(), fn ($complex): bool => \count($complex->getComponents()) <= 1);
         }
 
-        $complexes = iterator_to_array(self::expandIterable($complexes, function (ComplexSelector $complex) use ($pseudo) {
+        $complexes = iterator_to_array(self::expandIterable($complexes, function (ComplexSelector $complex) use ($pseudo): array {
             $innerPseudo = $complex->getSingleCompound()?->getSingleSimple();
             if (!$innerPseudo instanceof PseudoSelector) {
                 return [$complex];
@@ -1086,7 +1058,7 @@ final class ConcreteExtensionStore implements ExtensionStore
         // In order to support those browsers, we break up the contents of a `:not`
         // unless it originally contained a selector list.
         if ($pseudo->getNormalizedName() === 'not' && \count($selector->getComponents()) === 1) {
-            $result = array_map(fn (ComplexSelector $complex) => $pseudo->withSelector(new SelectorList([$complex], $selector->getSpan())), $complexes);
+            $result = array_map(fn (ComplexSelector $complex): \ScssPhp\ScssPhp\Ast\Selector\PseudoSelector => $pseudo->withSelector(new SelectorList([$complex], $selector->getSpan())), $complexes);
 
             return \count($result) === 0 ? null : $result;
         }
@@ -1178,11 +1150,11 @@ final class ConcreteExtensionStore implements ExtensionStore
             // ensures that we aren't comparing against a selector that's already been
             // trimmed, and thus that if there are two identical selectors only one is
             // trimmed.
-            if (IterableUtil::any($result, fn (ComplexSelector $complex2) => $complex2->getSpecificity() >= $maxSpecificity && $complex2->isSuperselector($complex1))) {
+            if (IterableUtil::any($result, fn (ComplexSelector $complex2): bool => $complex2->getSpecificity() >= $maxSpecificity && $complex2->isSuperselector($complex1))) {
                 continue;
             }
 
-            if (IterableUtil::any(array_slice($selectors, 0, $i), fn (ComplexSelector $complex2) => $complex2->getSpecificity() >= $maxSpecificity && $complex2->isSuperselector($complex1))) {
+            if (IterableUtil::any(array_slice($selectors, 0, $i), fn (ComplexSelector $complex2): bool => $complex2->getSpecificity() >= $maxSpecificity && $complex2->isSuperselector($complex1))) {
                 continue;
             }
 

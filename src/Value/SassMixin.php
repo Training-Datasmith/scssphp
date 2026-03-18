@@ -24,14 +24,11 @@ use ScssPhp\ScssPhp\Visitor\ValueVisitor;
  */
 final class SassMixin extends Value
 {
-    private readonly SassCallable $callable;
-
     /**
      * @internal
      */
-    public function __construct(SassCallable $callable)
+    public function __construct(private readonly SassCallable $callable)
     {
-        $this->callable = $callable;
     }
 
     /**

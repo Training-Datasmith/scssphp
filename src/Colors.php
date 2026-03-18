@@ -196,7 +196,6 @@ final class Colors
     /**
      * Convert named color in a [r,g,b[,a]] array
      *
-     * @param string $colorName
      *
      * @return int[]|null
      */
@@ -206,7 +205,7 @@ final class Colors
             $rgba = explode(',', self::CSS_COLORS[$colorName]);
 
             // only case with opacity is transparent, with opacity=0, so we can intval on opacity also
-            return array_map('intval', $rgba);
+            return array_map(intval(...), $rgba);
         }
 
         return null;
@@ -238,10 +237,6 @@ final class Colors
             }
         }
 
-        if (isset($reverseColorTable[$r][$g][$b])) {
-            return $reverseColorTable[$r][$g][$b];
-        }
-
-        return null;
+        return $reverseColorTable[$r][$g][$b] ?? null;
     }
 }

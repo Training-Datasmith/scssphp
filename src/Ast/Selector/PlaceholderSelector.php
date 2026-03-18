@@ -27,14 +27,11 @@ use SourceSpan\FileSpan;
  */
 final class PlaceholderSelector extends SimpleSelector
 {
-    /**
+    public function __construct(/**
      * The name of the placeholder.
      */
-    private readonly string $name;
-
-    public function __construct(string $name, FileSpan $span)
+    private readonly string $name, FileSpan $span)
     {
-        $this->name = $name;
         parent::__construct($span);
     }
 
@@ -57,7 +54,7 @@ final class PlaceholderSelector extends SimpleSelector
         return $visitor->visitPlaceholderSelector($this);
     }
 
-    public function addSuffix(string $suffix): SimpleSelector
+    public function addSuffix(string $suffix): \ScssPhp\ScssPhp\Ast\Selector\PlaceholderSelector
     {
         return new PlaceholderSelector($this->name . $suffix, $this->getSpan());
     }

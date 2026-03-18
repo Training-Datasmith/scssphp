@@ -83,7 +83,7 @@ final class Path
 
         // The Symfony Path class always uses / as separator, while we want to use the platform one to get a real path
         if (\DIRECTORY_SEPARATOR === '\\') {
-            $normalized = str_replace('/', '\\', $normalized);
+            return str_replace('/', '\\', $normalized);
         }
 
         return $normalized;
@@ -105,7 +105,7 @@ final class Path
 
         // The Symfony Path class always uses / as separator, while we want to use the platform one to get a real path
         if (\DIRECTORY_SEPARATOR === '\\') {
-            $relativePath = str_replace('/', '\\', $relativePath);
+            return str_replace('/', '\\', $relativePath);
         }
 
         return $relativePath;
@@ -153,7 +153,7 @@ final class Path
             return $path;
         }
 
-        $matches = array_values(array_filter($files, fn ($realPath) => StringUtil::equalsIgnoreCase(basename($realPath), $basename)));
+        $matches = array_values(array_filter($files, fn (string $realPath): bool => StringUtil::equalsIgnoreCase(basename($realPath), $basename)));
 
         if (\count($matches) === 1) {
             return self::join($realDirname, $matches[0]);

@@ -31,31 +31,6 @@ use ScssPhp\ScssPhp\Parser\InterpolationMap;
 final class AtRootQuery
 {
     /**
-     * Whether the query includes or excludes rules with the specified names.
-     */
-    private readonly bool $include;
-
-    /**
-     * The names of the rules included or excluded by this query.
-     *
-     * There are two special names. "all" indicates that all rules are included
-     * or excluded, and "rule" indicates style rules are included or excluded.
-     *
-     * @var string[]
-     */
-    private readonly array $names;
-
-    /**
-     * Whether this includes or excludes *all* rules.
-     */
-    private readonly bool $all;
-
-    /**
-     * Whether this includes or excludes style rules.
-     */
-    private readonly bool $rule;
-
-    /**
      * Parses an at-root query from $contents.
      *
      * If passed, $url is the name of the file from which $contents comes.
@@ -86,12 +61,28 @@ final class AtRootQuery
     /**
      * @param string[] $names
      */
-    private function __construct(array $names, bool $include, bool $all, bool $rule)
+    private function __construct(
+        /**
+         * The names of the rules included or excluded by this query.
+         *
+         * There are two special names. "all" indicates that all rules are included
+         * or excluded, and "rule" indicates style rules are included or excluded.
+         */
+        private readonly array $names,
+        /**
+         * Whether the query includes or excludes rules with the specified names.
+         */
+        private readonly bool $include,
+        /**
+         * Whether this includes or excludes *all* rules.
+         */
+        private readonly bool $all,
+        /**
+         * Whether this includes or excludes style rules.
+         */
+        private readonly bool $rule
+    )
     {
-        $this->include = $include;
-        $this->names = $names;
-        $this->all = $all;
-        $this->rule = $rule;
     }
 
     public function getInclude(): bool

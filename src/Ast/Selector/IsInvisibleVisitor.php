@@ -21,14 +21,13 @@ use ScssPhp\ScssPhp\Visitor\AnySelectorVisitor;
  */
 final class IsInvisibleVisitor extends AnySelectorVisitor
 {
-    /**
-     * Whether to consider selectors with bogus combinators invisible.
-     */
-    private readonly bool $includeBogus;
-
-    public function __construct(bool $includeBogus)
+    public function __construct(
+        /**
+         * Whether to consider selectors with bogus combinators invisible.
+         */
+        private readonly bool $includeBogus
+    )
     {
-        $this->includeBogus = $includeBogus;
     }
 
     public function visitSelectorList(SelectorList $list): bool
@@ -44,7 +43,10 @@ final class IsInvisibleVisitor extends AnySelectorVisitor
 
     public function visitComplexSelector(ComplexSelector $complex): bool
     {
-        return parent::visitComplexSelector($complex) || ($this->includeBogus && $complex->isBogusOtherThanLeadingCombinator());
+        if (parent::visitComplexSelector($complex)) {
+            return true;
+        }
+        return $this->includeBogus && $complex->isBogusOtherThanLeadingCombinator();
     }
 
     public function visitPlaceholderSelector(PlaceholderSelector $placeholder): bool

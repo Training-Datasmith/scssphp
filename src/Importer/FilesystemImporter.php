@@ -53,7 +53,7 @@ final class FilesystemImporter extends Importer
         return Path::toUri(Path::canonicalize($resolved));
     }
 
-    public function load(UriInterface $url): ?ImporterResult
+    public function load(UriInterface $url): \ScssPhp\ScssPhp\Importer\ImporterResult
     {
         $path = Path::fromUri($url);
         $content = file_get_contents($path);

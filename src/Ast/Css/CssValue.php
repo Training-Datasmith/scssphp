@@ -30,19 +30,13 @@ use SourceSpan\FileSpan;
  */
 final class CssValue implements AstNode, Equatable
 {
-    /**
-     * @var T
-     */
-    private readonly mixed $value;
-
     private readonly FileSpan $span;
 
     /**
      * @param T $value
      */
-    public function __construct(mixed $value, FileSpan $span)
+    public function __construct(private readonly mixed $value, FileSpan $span)
     {
-        $this->value = $value;
         $this->span = $span;
     }
 
@@ -71,7 +65,7 @@ final class CssValue implements AstNode, Equatable
         }
 
         if (\is_array($this->value)) {
-            return implode($this->value);
+            return implode('', $this->value);
         }
 
         return (string) $this->value;

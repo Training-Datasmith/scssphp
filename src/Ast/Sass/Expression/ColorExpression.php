@@ -24,13 +24,10 @@ use SourceSpan\FileSpan;
  */
 final class ColorExpression implements Expression
 {
-    private readonly SassColor $value;
-
     private readonly FileSpan $span;
 
-    public function __construct(SassColor $value, FileSpan $span)
+    public function __construct(private readonly SassColor $value, FileSpan $span)
     {
-        $this->value = $value;
         $this->span = $span;
     }
 

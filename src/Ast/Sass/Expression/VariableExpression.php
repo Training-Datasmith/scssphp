@@ -25,24 +25,18 @@ use SourceSpan\FileSpan;
  */
 final class VariableExpression implements Expression, SassReference
 {
-    /**
+    private readonly FileSpan $span;
+
+    public function __construct(/**
      * The name of this variable, with underscores converted to hyphens.
      */
-    private readonly string $name;
-
-    /**
+    private readonly string $name, FileSpan $span, /**
      * The namespace of the variable being referenced, or `null` if it's
      * referenced without a namespace.
      */
-    private ?string $namespace;
-
-    private readonly FileSpan $span;
-
-    public function __construct(string $name, FileSpan $span, ?string $namespace = null)
+    private readonly ?string $namespace = null)
     {
         $this->span = $span;
-        $this->name = $name;
-        $this->namespace = $namespace;
     }
 
     public function getName(): string
@@ -85,6 +79,6 @@ final class VariableExpression implements Expression, SassReference
 
     public function __toString(): string
     {
-        return $this->span->getText();
+        return (string) $this->span->getText();
     }
 }

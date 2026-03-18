@@ -28,26 +28,19 @@ use ScssPhp\ScssPhp\Ast\Sass\Statement;
  */
 abstract class ParentStatement implements Statement
 {
-    /**
-     * @var T
-     */
-    private readonly ?array $children;
-
     private readonly bool $declarations;
 
     /**
      * @param T $children
      */
-    public function __construct(?array $children)
+    public function __construct(private readonly ?array $children)
     {
-        $this->children = $children;
-
-        if ($children === null) {
+        if ($this->children === null) {
             $this->declarations = false;
             return;
         }
 
-        foreach ($children as $child) {
+        foreach ($this->children as $child) {
             if ($child instanceof VariableDeclaration || $child instanceof FunctionRule || $child instanceof MixinRule) {
                 $this->declarations = true;
                 return;

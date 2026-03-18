@@ -21,20 +21,17 @@ use ScssPhp\ScssPhp\Visitor\EveryCssVisitor;
  */
 final class IsInvisibleVisitor extends EveryCssVisitor
 {
-    /**
-     * Whether to consider selectors with bogus combinators invisible.
-     */
-    private readonly bool $includeBogus;
-
-    /**
-     * Whether to consider comments invisible.
-     */
-    private readonly bool $includeComments;
-
-    public function __construct(bool $includeBogus, bool $includeComments)
+    public function __construct(
+        /**
+         * Whether to consider selectors with bogus combinators invisible.
+         */
+        private readonly bool $includeBogus,
+        /**
+         * Whether to consider comments invisible.
+         */
+        private readonly bool $includeComments
+    )
     {
-        $this->includeBogus = $includeBogus;
-        $this->includeComments = $includeComments;
     }
 
     public function visitCssAtRule(CssAtRule $node): bool

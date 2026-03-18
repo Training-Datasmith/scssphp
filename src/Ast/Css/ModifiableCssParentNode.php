@@ -20,16 +20,10 @@ namespace ScssPhp\ScssPhp\Ast\Css;
 abstract class ModifiableCssParentNode extends ModifiableCssNode implements CssParentNode
 {
     /**
-     * @var list<ModifiableCssNode>
-     */
-    private array $children;
-
-    /**
      * @param list<ModifiableCssNode> $children
      */
-    public function __construct(array $children = [])
+    public function __construct(private array $children = [])
     {
-        $this->children = $children;
     }
 
     /**

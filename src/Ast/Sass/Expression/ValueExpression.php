@@ -27,13 +27,10 @@ use SourceSpan\FileSpan;
  */
 final class ValueExpression implements Expression
 {
-    private readonly Value $value;
-
     private readonly FileSpan $span;
 
-    public function __construct(Value $value, FileSpan $span)
+    public function __construct(private readonly Value $value, FileSpan $span)
     {
-        $this->value = $value;
         $this->span = $span;
     }
 

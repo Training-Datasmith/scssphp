@@ -210,9 +210,7 @@ final class Compiler
     public function setImportPaths($path): void
     {
         $paths = (array) $path;
-        $actualImportPaths = array_filter($paths, function ($path) {
-            return $path !== '';
-        });
+        $actualImportPaths = array_filter($paths, fn(callable|string $path) => $path !== '');
 
         if (\count($actualImportPaths) !== \count($paths)) {
             throw new \InvalidArgumentException('Passing an empty string in the import paths to refer to the current working directory is not supported anymore. If that\'s the intended behavior, the value of "getcwd()" should be used directly instead. If this was used for resolving relative imports of the input alongside "chdir" with the source directory, the path of the input file should be passed to "compileString()" instead.');
@@ -451,7 +449,7 @@ final class Compiler
         $functions = [];
         foreach ($this->userFunctions as $name => $userFunction) {
             $ref = new \ReflectionFunction($userFunction[0](...));
-            $signature = implode(', ', array_map(fn (string $arg) => '$' . $arg, $userFunction[1]));
+            $signature = implode(', ', array_map(fn (string $arg): string => '$' . $arg, $userFunction[1]));
 
             if ($ref->hasReturnType() && $ref->getReturnType() instanceof \ReflectionNamedType && $ref->getReturnType()->getName() === Value::class) {
                 $callback = $userFunction[0];
@@ -564,7 +562,7 @@ final class Compiler
      *
      * @param array|Number $legacyValue
      */
-    private function legacyValueToValue($legacyValue): Value
+    private function legacyValueToValue(array $legacyValue): Value
     {
         if ($legacyValue instanceof Number) {
             return SassNumber::withUnits($legacyValue->getDimension(), $legacyValue->getNumeratorUnits(), $legacyValue->getDenominatorUnits());
@@ -685,7 +683,7 @@ final class Compiler
             }
         }
 
-        return implode($parts);
+        return implode('', $parts);
     }
 
     /**
@@ -737,7 +735,7 @@ final class Compiler
      *
      * @param Number|array $item
      */
-    private function tryMap($item): ?array
+    private function tryMap(array $item): ?array
     {
         if ($item instanceof Number) {
             return null;

@@ -366,7 +366,7 @@ final class ExtendUtil
         foreach ($lcs as $group) {
             $newChoice = [];
             /** @var list<list<list<ComplexSelectorComponent>>> $chunks */
-            $chunks = self::chunks($groups1, $groups2, fn($sequence) => self::complexIsParentSuperselector($sequence[0], $group));
+            $chunks = self::chunks($groups1, $groups2, fn($sequence): bool => self::complexIsParentSuperselector($sequence[0], $group));
             foreach ($chunks as $chunk) {
                 $flattened = [];
                 foreach ($chunk as $chunkGroup) {
@@ -385,7 +385,7 @@ final class ExtendUtil
 
         $newChoice = [];
         /** @var list<list<list<ComplexSelectorComponent>>> $chunks */
-        $chunks = self::chunks($groups1, $groups2, fn($sequence) => count($sequence) === 0);
+        $chunks = self::chunks($groups1, $groups2, fn($sequence): bool => count($sequence) === 0);
         foreach ($chunks as $chunk) {
             $flattened = [];
             foreach ($chunk as $chunkGroup) {
@@ -400,11 +400,11 @@ final class ExtendUtil
             $choices[] = $finalCombinator;
         }
 
-        $choices = array_filter($choices, fn($choice) => $choice !== []);
+        $choices = array_filter($choices, fn($choice): bool => $choice !== []);
 
         $paths = self::paths($choices);
 
-        return array_map(function (array $path) use ($leadingCombinators, $prefix, $base, $span) {
+        return array_map(function (array $path) use ($leadingCombinators, $prefix, $base, $span): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
             $result = [];
 
             foreach ($path as $group) {
@@ -420,8 +420,6 @@ final class ExtendUtil
      * that element.
      *
      * @param list<ComplexSelectorComponent> $queue
-     *
-     * @return ComplexSelectorComponent|null
      */
     private static function firstIfRootish(array &$queue): ?ComplexSelectorComponent
     {
@@ -740,7 +738,7 @@ final class ExtendUtil
      */
     public static function paths(array $choices): array
     {
-        return array_reduce($choices, function (array $paths, array $choice) {
+        return array_reduce($choices, function (array $paths, array $choice): array {
             $newPaths = [];
 
             foreach ($choice as $option) {
@@ -879,7 +877,7 @@ final class ExtendUtil
                 return false;
             }
             if ($remaining1 === 1) {
-                if (IterableUtil::any($complex2, fn (ComplexSelectorComponent $parent) => \count($parent->getCombinators()) > 1)) {
+                if (IterableUtil::any($complex2, fn (ComplexSelectorComponent $parent): bool => \count($parent->getCombinators()) > 1)) {
                     return false;
                 }
 
@@ -1020,7 +1018,7 @@ final class ExtendUtil
 
             return IterableUtil::every(
                 $compound1->getComponents(),
-                fn (SimpleSelector $simple1) => IterableUtil::any($compound2->getComponents(), $simple1->isSuperselector(...))
+                fn (SimpleSelector $simple1): bool => IterableUtil::any($compound2->getComponents(), $simple1->isSuperselector(...))
             );
         }
 
@@ -1033,7 +1031,6 @@ final class ExtendUtil
         // before them must
         $tuple1 = self::findPseudoElementIndexed($compound1);
         $tuple2 = self::findPseudoElementIndexed($compound2);
-
         if ($tuple1 !== null && $tuple2 !== null) {
             return $tuple1[0]->isSuperselector($tuple2[0]) &&
                 self::compoundComponentsIsSuperselector(
@@ -1046,7 +1043,9 @@ final class ExtendUtil
                     array_slice($compound2->getComponents(), $tuple2[1] + 1),
                     $parents
                 );
-        } elseif ($tuple1 !== null || $tuple2 !== null) {
+        }
+
+        if ($tuple1 !== null || $tuple2 !== null) {
             return false;
         }
 
@@ -1275,8 +1274,10 @@ final class ExtendUtil
             if (!$simple instanceof PseudoSelector) {
                 continue;
             }
-
-            if ($simple->isClass() !== $isClass || $simple->getName() !== $name) {
+            if ($simple->isClass() !== $isClass) {
+                continue;
+            }
+            if ($simple->getName() !== $name) {
                 continue;
             }
 

@@ -23,43 +23,6 @@ use ScssPhp\ScssPhp\Visitor\ValueVisitor;
 final class SassColor extends Value
 {
     /**
-     * This color's red channel, between `0` and `255`.
-     */
-    private ?int $red;
-
-    /**
-     * This color's blue channel, between `0` and `255`.
-     */
-    private ?int $blue;
-
-    /**
-     * This color's green channel, between `0` and `255`.
-     */
-    private ?int $green;
-
-    /**
-     * This color's hue, between `0` and `360`.
-     */
-    private ?float $hue;
-
-    /**
-     * This color's saturation, a percentage between `0` and `100`.
-     */
-    private ?float $saturation;
-
-    /**
-     * This color's lightness, a percentage between `0` and `100`.
-     */
-    private ?float $lightness;
-
-    /**
-     * This color's alpha channel, between `0` and `1`.
-     */
-    private readonly float $alpha;
-
-    private readonly ?ColorFormat $format;
-
-    /**
      * Creates a RGB color
      *
      * @throws \OutOfRangeException if values are outside the expected range.
@@ -135,7 +98,7 @@ final class SassColor extends Value
 
         $factor = 1 - $scaledWhiteness - $scaledBlackness;
 
-        $toRgb = function (float $hue) use ($factor, $scaledWhiteness) {
+        $toRgb = function (float $hue) use ($factor, $scaledWhiteness): int {
             $channel = self::hueToRgb(0, 1, $hue) * $factor + $scaledWhiteness;
 
             return NumberUtil::fuzzyRound($channel * 255);
@@ -150,16 +113,38 @@ final class SassColor extends Value
      * revalidated. This constructor does not revalidate ranges either.
      * Use named factories when this cannot be guaranteed.
      */
-    private function __construct(?int $red, ?int $green, ?int $blue, ?float $hue, ?float $saturation, ?float $lightness, float $alpha, ?ColorFormat $format = null)
+    private function __construct(
+        /**
+         * This color's red channel, between `0` and `255`.
+         */
+        private ?int $red,
+        /**
+         * This color's green channel, between `0` and `255`.
+         */
+        private ?int $green,
+        /**
+         * This color's blue channel, between `0` and `255`.
+         */
+        private ?int $blue,
+        /**
+         * This color's hue, between `0` and `360`.
+         */
+        private ?float $hue,
+        /**
+         * This color's saturation, a percentage between `0` and `100`.
+         */
+        private ?float $saturation,
+        /**
+         * This color's lightness, a percentage between `0` and `100`.
+         */
+        private ?float $lightness,
+        /**
+         * This color's alpha channel, between `0` and `1`.
+         */
+        private readonly float $alpha,
+        private readonly ?ColorFormat $format = null
+    )
     {
-        $this->red = $red;
-        $this->green = $green;
-        $this->blue = $blue;
-        $this->hue = $hue;
-        $this->saturation = $saturation;
-        $this->lightness = $lightness;
-        $this->alpha = $alpha;
-        $this->format = $format;
     }
 
     public function getRed(): int

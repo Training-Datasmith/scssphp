@@ -17,7 +17,7 @@ namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
  *
  * @internal
  */
-final class ElseClause extends IfRuleClause
+final class ElseClause extends IfRuleClause implements \Stringable
 {
     public function __toString(): string
     {

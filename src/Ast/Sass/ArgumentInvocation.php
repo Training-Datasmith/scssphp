@@ -23,16 +23,6 @@ use SourceSpan\FileSpan;
  */
 final class ArgumentInvocation implements SassNode
 {
-    /**
-     * @var list<Expression>
-     */
-    private readonly array $positional;
-
-    /**
-     * @var array<string, Expression>
-     */
-    private readonly array $named;
-
     private readonly ?Expression $rest;
 
     private readonly ?Expression $keywordRest;
@@ -43,12 +33,9 @@ final class ArgumentInvocation implements SassNode
      * @param list<Expression>          $positional
      * @param array<string, Expression> $named
      */
-    public function __construct(array $positional, array $named, FileSpan $span, ?Expression $rest = null, ?Expression $keywordRest = null)
+    public function __construct(private readonly array $positional, private readonly array $named, FileSpan $span, ?Expression $rest = null, ?Expression $keywordRest = null)
     {
         assert($keywordRest === null || $rest !== null);
-
-        $this->positional = $positional;
-        $this->named = $named;
         $this->rest = $rest;
         $this->keywordRest = $keywordRest;
         $this->span = $span;

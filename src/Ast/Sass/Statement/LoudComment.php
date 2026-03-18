@@ -24,11 +24,8 @@ use SourceSpan\FileSpan;
  */
 final class LoudComment implements Statement
 {
-    private readonly Interpolation $text;
-
-    public function __construct(Interpolation $text)
+    public function __construct(private readonly Interpolation $text)
     {
-        $this->text = $text;
     }
 
     public function getText(): Interpolation

@@ -24,33 +24,25 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class ComplexSelectorComponent implements Equatable
+final class ComplexSelectorComponent implements Equatable, \Stringable
 {
-    /**
-     * This component's compound selector.
-     */
-    private readonly CompoundSelector $selector;
-
-    /**
-     * This selector's combinators.
-     *
-     * If this is empty, that indicates that it has an implicit descendent
-     * combinator. If it's more than one element, that means it's invalid CSS;
-     * however, we still support this for backwards-compatibility purposes.
-     *
-     * @var list<CssValue<Combinator>>
-     */
-    private readonly array $combinators;
-
     private readonly FileSpan $span;
 
     /**
      * @param list<CssValue<Combinator>> $combinators
      */
-    public function __construct(CompoundSelector $selector, array $combinators, FileSpan $span)
+    public function __construct(/**
+     * This component's compound selector.
+     */
+    private readonly CompoundSelector $selector, /**
+     * This selector's combinators.
+     *
+     * If this is empty, that indicates that it has an implicit descendent
+     * combinator. If it's more than one element, that means it's invalid CSS;
+     * however, we still support this for backwards-compatibility purposes.
+     */
+    private readonly array $combinators, FileSpan $span)
     {
-        $this->selector = $selector;
-        $this->combinators = $combinators;
         $this->span = $span;
     }
 
@@ -94,6 +86,6 @@ final class ComplexSelectorComponent implements Equatable
 
     public function __toString(): string
     {
-        return $this->selector . implode('', array_map(fn ($combinator) => ' ' . $combinator, $this->combinators));
+        return $this->selector . implode('', array_map(fn (\ScssPhp\ScssPhp\Ast\Css\CssValue $combinator): string => ' ' . $combinator, $this->combinators));
     }
 }

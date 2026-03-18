@@ -14,23 +14,11 @@ namespace ScssPhp\ScssPhp;
 
 final class CompilationResult
 {
-    private string $css;
-
-    private ?string $sourceMap;
-
-    /**
-     * @var list<string>
-     */
-    private array $includedFiles;
-
     /**
      * @param list<string> $includedFiles
      */
-    public function __construct(string $css, ?string $sourceMap, array $includedFiles)
+    public function __construct(private readonly string $css, private readonly ?string $sourceMap, private readonly array $includedFiles)
     {
-        $this->css = $css;
-        $this->sourceMap = $sourceMap;
-        $this->includedFiles = $includedFiles;
     }
 
     public function getCss(): string

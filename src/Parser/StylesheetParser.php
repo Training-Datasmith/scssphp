@@ -153,11 +153,6 @@ abstract class StylesheetParser extends Parser
      */
     private array $globalVariables = [];
 
-    public function __construct(string $contents, ?LoggerInterface $logger = null, ?UriInterface $sourceUrl = null)
-    {
-        parent::__construct($contents, $logger, $sourceUrl);
-    }
-
     protected function inExpression(): bool
     {
         return $this->inExpression;
@@ -168,13 +163,13 @@ abstract class StylesheetParser extends Parser
      */
     public function parse(): Stylesheet
     {
-        return $this->wrapSpanFormatException(function () {
+        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Sass\Statement\Stylesheet {
             $start = $this->scanner->getPosition();
 
             // Allow a byte-order mark at the beginning of the document.
             $this->scanner->scan("\u{FEFF}");
 
-            $statements = $this->statements(function () {
+            $statements = $this->statements(function (): ?\ScssPhp\ScssPhp\Ast\Sass\Statement {
                 // Handle this specially so that {@see atRule} always returns a non-nullable Statement.
                 if ($this->scanner->scan('@charset')) {
                     $this->whitespace();
@@ -200,7 +195,7 @@ abstract class StylesheetParser extends Parser
 
     public function parseArgumentDeclaration(): ArgumentDeclaration
     {
-        return $this->wrapSpanFormatException(function () {
+        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Sass\ArgumentDeclaration {
             $this->scanner->expectChar('@', '@-rule');
             $this->identifier();
             $this->whitespace();
@@ -284,12 +279,12 @@ abstract class StylesheetParser extends Parser
     {
         $precedingComment = $this->lastSilentComment;
         $this->lastSilentComment = null;
-        $start = $start ?? $this->scanner->getPosition();
+        $start ??= $this->scanner->getPosition();
 
         $name = $this->variableName();
 
         if ($namespace !== null) {
-            $this->assertPublic($name, fn() => $this->scanner->spanFrom($start));
+            $this->assertPublic($name, fn(): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
         }
 
         if ($this->isPlainCss()) {
@@ -581,7 +576,7 @@ abstract class StylesheetParser extends Parser
      */
     private function styleRule(?InterpolationBuffer $buffer = null, ?int $start = null): StyleRule
     {
-        $start = $start ?? $this->scanner->getPosition();
+        $start ??= $this->scanner->getPosition();
         $interpolation = $this->styleRuleSelector();
 
         if ($buffer !== null) {
@@ -596,7 +591,7 @@ abstract class StylesheetParser extends Parser
         $wasInStyleRule = $this->inStyleRule;
         $this->inStyleRule = true;
 
-        return $this->withChildren($this->statement(...), $start, function (array $children) use ($wasInStyleRule, $start, $interpolation) {
+        return $this->withChildren($this->statement(...), $start, function (array $children) use ($wasInStyleRule, $start, $interpolation): \ScssPhp\ScssPhp\Ast\Sass\Statement\StyleRule {
             if ($this->isIndented() && $children === []) {
                 $this->warn("This selector doesn't have any properties and won't be rendered.", $interpolation->getSpan());
             }
@@ -688,7 +683,7 @@ abstract class StylesheetParser extends Parser
             $this->scanner->error("Nested declarations aren't allowed in plain CSS.");
         }
 
-        return $this->withChildren($this->declarationChild(...), $start, fn(array $children, FileSpan $span) => Declaration::nested($name, $children, $span, $value));
+        return $this->withChildren($this->declarationChild(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\Declaration => Declaration::nested($name, $children, $span, $value));
     }
 
     /**
@@ -904,11 +899,11 @@ abstract class StylesheetParser extends Parser
             $query = $this->atRootQuery();
             $this->whitespace();
 
-            return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span) => new AtRootRule($children, $span, $query));
+            return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule => new AtRootRule($children, $span, $query));
         }
 
         if ($this->lookingAtChildren() || ($this->isIndented() && $this->atEndOfStatement())) {
-            return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span) => new AtRootRule($children, $span));
+            return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule => new AtRootRule($children, $span));
         }
 
         $child = $this->styleRule();
@@ -1010,7 +1005,7 @@ abstract class StylesheetParser extends Parser
 
         $list = $this->expression();
 
-        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($variables, $wasInControlDirective, $list) {
+        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($variables, $wasInControlDirective, $list): \ScssPhp\ScssPhp\Ast\Sass\Statement\EachRule {
             $this->inControlDirective = $wasInControlDirective;
 
             return new EachRule($variables, $list, $children, $span);
@@ -1104,7 +1099,7 @@ abstract class StylesheetParser extends Parser
         return $this->withChildren(
             $this->functionChild(...),
             $start,
-            fn(array $children, FileSpan $span) => new FunctionRule($name, $arguments, $span, $children, $precedingComment)
+            fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\FunctionRule => new FunctionRule($name, $arguments, $span, $children, $precedingComment)
         );
     }
 
@@ -1130,7 +1125,7 @@ abstract class StylesheetParser extends Parser
         $this->whitespace();
 
         $exclusive = null;
-        $from = $this->expression(function () use (&$exclusive) {
+        $from = $this->expression(function () use (&$exclusive): bool {
             if (!$this->lookingAtIdentifier()) {
                 return false;
             }
@@ -1157,7 +1152,7 @@ abstract class StylesheetParser extends Parser
         $this->whitespace();
         $to = $this->expression();
 
-        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($variable, $from, $to, $exclusive, $wasInControlDirective) {
+        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($variable, $from, $to, $exclusive, $wasInControlDirective): \ScssPhp\ScssPhp\Ast\Sass\Statement\ForRule {
             $this->inControlDirective = $wasInControlDirective;
 
             return new ForRule($variable, $from, $to, $children, $span, $exclusive);
@@ -1463,11 +1458,11 @@ abstract class StylesheetParser extends Parser
 
         $content = null;
         if ($contentArguments !== null || $this->lookingAtChildren()) {
-            $contentArguments = $contentArguments ?? ArgumentDeclaration::createEmpty($this->scanner->getEmptySpan());
+            $contentArguments ??= ArgumentDeclaration::createEmpty($this->scanner->getEmptySpan());
             $wasInContentBlock = $this->inContentBlock;
             $this->inContentBlock = true;
 
-            $content = $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span) => new ContentBlock($contentArguments, $children, $span));
+            $content = $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\ContentBlock => new ContentBlock($contentArguments, $children, $span));
 
             $this->inContentBlock = $wasInContentBlock;
         } else {
@@ -1493,7 +1488,7 @@ abstract class StylesheetParser extends Parser
     {
         $query = $this->mediaQueryList();
 
-        return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span) => new MediaRule($query, $children, $span));
+        return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\MediaRule => new MediaRule($query, $children, $span));
     }
 
     /**
@@ -1533,7 +1528,7 @@ abstract class StylesheetParser extends Parser
         $this->whitespace();
         $this->inMixin = true;
 
-        return $this->withChildren($this->statement(...), $start, function (array $children, FileSpan $span) use ($name, $arguments, $precedingComment) {
+        return $this->withChildren($this->statement(...), $start, function (array $children, FileSpan $span) use ($name, $arguments, $precedingComment): \ScssPhp\ScssPhp\Ast\Sass\Statement\MixinRule {
             $this->inMixin = false;
 
             return new MixinRule($name, $arguments, $span, $children, $precedingComment);
@@ -1617,7 +1612,7 @@ abstract class StylesheetParser extends Parser
 
         $value = $buffer->buildInterpolation($this->scanner->spanFrom($valueStart));
 
-        return $this->withChildren($this->statement(...), $start, function (array $children, FileSpan $span) use ($name, $value, $needsDeprecationWarning) {
+        return $this->withChildren($this->statement(...), $start, function (array $children, FileSpan $span) use ($name, $value, $needsDeprecationWarning): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule {
             if ($needsDeprecationWarning) {
                 LoggerUtil::warnForDeprecation($this->logger, Deprecation::mozDocument, "@-moz-document is deprecated and support will be removed in Dart Sass 2.0.0.\n\nFor details, see https://sass-lang.com/d/moz-document.", $span);
             }
@@ -1649,7 +1644,7 @@ abstract class StylesheetParser extends Parser
         $condition = $this->supportsCondition();
         $this->whitespace();
 
-        return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span) => new SupportsRule($condition, $children, $span));
+        return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\SupportsRule => new SupportsRule($condition, $children, $span));
     }
 
     /**
@@ -1682,7 +1677,7 @@ abstract class StylesheetParser extends Parser
 
         $condition = $this->expression();
 
-        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($condition, $wasInControlDirective) {
+        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($condition, $wasInControlDirective): \ScssPhp\ScssPhp\Ast\Sass\Statement\WhileRule {
             $this->inControlDirective = $wasInControlDirective;
 
             return new WhileRule($condition, $children, $span);
@@ -1706,7 +1701,7 @@ abstract class StylesheetParser extends Parser
         }
 
         if ($this->lookingAtChildren()) {
-            $rule = $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span) => new AtRule($name, $span, $value, $children));
+            $rule = $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule => new AtRule($name, $span, $value, $children));
         } else {
             $this->expectStatementSeparator();
             $rule = new AtRule($name, $this->scanner->spanFrom($start), $value);
@@ -2007,7 +2002,7 @@ WARNING;
                     }
                 }
 
-                $spaceExpressions = $spaceExpressions ?? [];
+                $spaceExpressions ??= [];
                 $resolveOperations();
 
                 $spaceExpressions[] = $singleExpression;
@@ -2033,8 +2028,8 @@ WARNING;
 
             $allowSlash = $allowSlash && $operator === BinaryOperator::DIVIDED_BY;
 
-            $operators = $operators ?? [];
-            $operands = $operands ?? [];
+            $operators ??= [];
+            $operands ??= [];
 
             $precedence = $operator->getPrecedence();
 
@@ -2298,7 +2293,7 @@ WARNING;
                         }
                     }
 
-                    $commaExpressions = $commaExpressions ?? [];
+                    $commaExpressions ??= [];
 
                     if ($singleExpression === null) {
                         $this->scanner->error('Expected expression.');
@@ -2370,7 +2365,7 @@ WARNING;
      */
     protected function expressionUntilComma(bool $singleEquals = false): Expression
     {
-        return $this->expression(fn() => $this->scanner->peekChar() === ',', $singleEquals);
+        return $this->expression(fn(): bool => $this->scanner->peekChar() === ',', $singleEquals);
     }
 
     /**
@@ -2395,6 +2390,16 @@ WARNING;
             case '/':
                 return $this->unaryOperation();
             case '.':
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
                 return $this->number();
             case '[':
                 return $this->expression(null, false, true);
@@ -2426,18 +2431,6 @@ WARNING;
                 }
 
                 return $this->identifierLike();
-
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                return $this->number();
 
             case 'a':
             case 'b':
@@ -3132,7 +3125,7 @@ WARNING;
     {
         if ($this->scanner->peekChar() === '$') {
             $name = $this->variableName();
-            $this->assertPublic($name, fn() => $this->scanner->spanFrom($start));
+            $this->assertPublic($name, fn(): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
 
             // TODO remove this when implementing modules
             $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
@@ -3893,7 +3886,7 @@ WARNING;
      */
     private function expressionUntilComparison(): Expression
     {
-        return $this->expression(function () {
+        return $this->expression(function (): bool {
             $next = $this->scanner->peekChar();
 
             if ($next === '=') {
@@ -4187,20 +4180,43 @@ WARNING;
 
             return $next === null || $next === 'i' || $next === 'I' || Character::isWhitespace($next);
         }
-
-        return $character === '(' ||
-            $character === '/' ||
-            $character === '[' ||
-            $character === "'" ||
-            $character === '"' ||
-            $character === '#' ||
-            $character === '+' ||
-            $character === '-' ||
-            $character === '\\' ||
-            $character === '$' ||
-            $character === '&' ||
-            Character::isNameStart($character) ||
-            Character::isDigit($character);
+        if ($character === '(') {
+            return true;
+        }
+        if ($character === '/') {
+            return true;
+        }
+        if ($character === '[') {
+            return true;
+        }
+        if ($character === "'") {
+            return true;
+        }
+        if ($character === '"') {
+            return true;
+        }
+        if ($character === '#') {
+            return true;
+        }
+        if ($character === '+') {
+            return true;
+        }
+        if ($character === '-') {
+            return true;
+        }
+        if ($character === '\\') {
+            return true;
+        }
+        if ($character === '$') {
+            return true;
+        }
+        if ($character === '&') {
+            return true;
+        }
+        if (Character::isNameStart($character)) {
+            return true;
+        }
+        return Character::isDigit($character);
     }
 
     /**
@@ -4231,7 +4247,7 @@ WARNING;
     {
         $start = $this->scanner->getPosition();
         $result = $this->identifier();
-        $this->assertPublic($result, fn() => $this->scanner->spanFrom($start));
+        $this->assertPublic($result, fn(): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
 
         return $result;
     }

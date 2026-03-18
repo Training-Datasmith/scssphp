@@ -26,41 +26,6 @@ use SourceSpan\FileSpan;
 final class AttributeSelector extends SimpleSelector
 {
     /**
-     * The name of the attribute being selected for.
-     */
-    private readonly QualifiedName $name;
-
-    /**
-     * The operator that defines the semantics of {@see value}.
-     *
-     * If this is `null`, this matches any element with the given property,
-     * regardless of this value. It's `null` if and only if {@see value} is `null`.
-     */
-    private readonly ?AttributeOperator $op;
-
-    /**
-     * An assertion about the value of {@see name}.
-     *
-     * The precise semantics of this string are defined by {@see op}.
-     *
-     * If this is `null`, this matches any element with the given property,
-     * regardless of this value. It's `null` if and only if {@see op} is `null`.
-     */
-    private readonly ?string $value;
-
-    /**
-     * The modifier which indicates how the attribute selector should be
-     * processed.
-     *
-     * See for example [case-sensitivity][] modifiers.
-     *
-     * [case-sensitivity]: https://www.w3.org/TR/selectors-4/#attribute-case
-     *
-     * If {@see op} is `null`, this is always `null` as well.
-     */
-    private readonly ?string $modifier;
-
-    /**
      * Creates an attribute selector that matches any element with a property of
      * the given name.
      */
@@ -78,12 +43,35 @@ final class AttributeSelector extends SimpleSelector
         return new AttributeSelector($name, $span, $op, $value, $modifier);
     }
 
-    private function __construct(QualifiedName $name, FileSpan $span, ?AttributeOperator $op, ?string $value, ?string $modifier)
+    private function __construct(/**
+     * The name of the attribute being selected for.
+     */
+    private readonly QualifiedName $name, FileSpan $span, /**
+     * The operator that defines the semantics of {@see value}.
+     *
+     * If this is `null`, this matches any element with the given property,
+     * regardless of this value. It's `null` if and only if {@see value} is `null`.
+     */
+    private readonly ?AttributeOperator $op, /**
+     * An assertion about the value of {@see name}.
+     *
+     * The precise semantics of this string are defined by {@see op}.
+     *
+     * If this is `null`, this matches any element with the given property,
+     * regardless of this value. It's `null` if and only if {@see op} is `null`.
+     */
+    private readonly ?string $value, /**
+     * The modifier which indicates how the attribute selector should be
+     * processed.
+     *
+     * See for example [case-sensitivity][] modifiers.
+     *
+     * [case-sensitivity]: https://www.w3.org/TR/selectors-4/#attribute-case
+     *
+     * If {@see op} is `null`, this is always `null` as well.
+     */
+    private readonly ?string $modifier)
     {
-        $this->name = $name;
-        $this->op = $op;
-        $this->value = $value;
-        $this->modifier = $modifier;
         parent::__construct($span);
     }
 

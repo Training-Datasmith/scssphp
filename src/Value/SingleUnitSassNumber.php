@@ -91,15 +91,12 @@ final class SingleUnitSassNumber extends SassNumber
         'dppx' => ['dpi', 'dpcm', 'dppx'],
     ];
 
-    private readonly string $unit;
-
     /**
      * @param array{SassNumber, SassNumber}|null $asSlash
      */
-    public function __construct(float $value, string $unit, ?array $asSlash = null)
+    public function __construct(float $value, private readonly string $unit, ?array $asSlash = null)
     {
         parent::__construct($value, $asSlash);
-        $this->unit = $unit;
     }
 
     public function getNumeratorUnits(): array
@@ -122,14 +119,14 @@ final class SingleUnitSassNumber extends SassNumber
         return false;
     }
 
-    protected function withValue(float $value): SassNumber
+    protected function withValue(float $value): \ScssPhp\ScssPhp\Value\SingleUnitSassNumber
     {
         return new self($value, $this->unit);
     }
 
-    public function withSlash(SassNumber $numerator, SassNumber $denominator): SassNumber
+    public function withSlash(SassNumber $numerator, SassNumber $denominator): \ScssPhp\ScssPhp\Value\SingleUnitSassNumber
     {
-        return new self($this->getValue(), $this->unit, array($numerator, $denominator));
+        return new self($this->getValue(), $this->unit, [$numerator, $denominator]);
     }
 
     public function hasUnit(string $unit): bool
@@ -260,7 +257,7 @@ final class SingleUnitSassNumber extends SassNumber
         return parent::coerceValueToUnit($unit, $name);
     }
 
-    public function unaryMinus(): Value
+    public function unaryMinus(): \ScssPhp\ScssPhp\Value\SingleUnitSassNumber
     {
         return new self(-$this->getValue(), $this->unit);
     }

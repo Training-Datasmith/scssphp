@@ -30,19 +30,16 @@ use SourceSpan\FileSpan;
  */
 final class IfExpression implements Expression, CallableInvocation
 {
-    /**
-     * The arguments passed to `if()`.
-     */
-    private readonly ArgumentInvocation $arguments;
-
     private readonly FileSpan $span;
 
     private static ?ArgumentDeclaration $declaration = null;
 
-    public function __construct(ArgumentInvocation $arguments, FileSpan $span)
+    public function __construct(/**
+     * The arguments passed to `if()`.
+     */
+    private readonly ArgumentInvocation $arguments, FileSpan $span)
     {
         $this->span = $span;
-        $this->arguments = $arguments;
     }
 
     /**

@@ -24,17 +24,11 @@ use SourceSpan\FileSpan;
  */
 final class NumberExpression implements Expression
 {
-    private readonly float $value;
-
     private readonly FileSpan $span;
 
-    private readonly ?string $unit;
-
-    public function __construct(float $value, FileSpan $span, ?string $unit = null)
+    public function __construct(private readonly float $value, FileSpan $span, private readonly ?string $unit = null)
     {
-        $this->value = $value;
         $this->span = $span;
-        $this->unit = $unit;
     }
 
     public function getValue(): float

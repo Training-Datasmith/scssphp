@@ -23,13 +23,10 @@ use SourceSpan\FileSpan;
  */
 final class SilentComment implements Statement
 {
-    private readonly string $text;
-
     private readonly FileSpan $span;
 
-    public function __construct(string $text, FileSpan $span)
+    public function __construct(private readonly string $text, FileSpan $span)
     {
-        $this->text = $text;
         $this->span = $span;
     }
 

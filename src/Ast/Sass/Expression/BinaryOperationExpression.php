@@ -24,22 +24,13 @@ use SourceSpan\FileSpan;
  */
 final class BinaryOperationExpression implements Expression
 {
-    private readonly BinaryOperator $operator;
-
-    private readonly Expression $left;
-
-    private readonly Expression $right;
-
     /**
      * Whether this is a dividedBy operation that may be interpreted as slash-separated numbers.
      */
     private bool $allowsSlash = false;
 
-    public function __construct(BinaryOperator $operator, Expression $left, Expression $right)
+    public function __construct(private readonly BinaryOperator $operator, private readonly Expression $left, private readonly Expression $right)
     {
-        $this->operator = $operator;
-        $this->left = $left;
-        $this->right = $right;
     }
 
     /**
