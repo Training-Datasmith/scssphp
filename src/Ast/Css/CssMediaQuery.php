@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -74,8 +76,7 @@ final class CssMediaQuery implements MediaQueryMergeResult, Equatable
          * This may be `null` if no modifier is in use.
          */
         private readonly ?string $modifier = null
-    )
-    {
+    ) {
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -27,8 +29,9 @@ final class IDSelector extends SimpleSelector
     public function __construct(/**
      * The ID name this selects for.
      */
-    private readonly string $name, FileSpan $span)
-    {
+        private readonly string $name,
+        FileSpan $span
+    ) {
         parent::__construct($span);
     }
 

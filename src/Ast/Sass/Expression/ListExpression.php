@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -75,7 +77,7 @@ final class ListExpression implements Expression
 
         $buffer .= implode(
             $this->separator === ListSeparator::COMMA ? ', ' : ' ',
-            array_map(fn(\ScssPhp\ScssPhp\Ast\Sass\Expression $element): string => $this->elementNeedsParens($element) ? "($element)" : (string) $element, $this->contents)
+            array_map(fn (\ScssPhp\ScssPhp\Ast\Sass\Expression $element): string => $this->elementNeedsParens($element) ? "($element)" : (string) $element, $this->contents)
         );
 
         if ($this->hasBrackets()) {

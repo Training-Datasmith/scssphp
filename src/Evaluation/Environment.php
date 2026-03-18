@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -133,8 +135,7 @@ final class Environment
          * this is not in a mixin, or if no content block was passed.
          */
         private ?UserDefinedCallable $content = null
-    )
-    {
+    ) {
     }
 
     public function getContent(): ?UserDefinedCallable

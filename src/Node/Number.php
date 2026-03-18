@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -33,7 +35,7 @@ use ScssPhp\ScssPhp\Util\NumberUtil;
  */
 final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Stringable
 {
-    const PRECISION = 10;
+    public const PRECISION = 10;
 
     /**
      * @see http://www.w3.org/TR/2012/WD-css3-values-20120308/
@@ -345,7 +347,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Str
      */
     public function lessThan(Number $other)
     {
-        return $this->coerceUnits($other, fn($num1, $num2) => $num1 < $num2);
+        return $this->coerceUnits($other, fn ($num1, $num2) => $num1 < $num2);
     }
 
     /**
@@ -353,7 +355,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Str
      */
     public function lessThanOrEqual(Number $other)
     {
-        return $this->coerceUnits($other, fn($num1, $num2) => $num1 <= $num2);
+        return $this->coerceUnits($other, fn ($num1, $num2) => $num1 <= $num2);
     }
 
     /**
@@ -361,7 +363,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Str
      */
     public function greaterThan(Number $other)
     {
-        return $this->coerceUnits($other, fn($num1, $num2) => $num1 > $num2);
+        return $this->coerceUnits($other, fn ($num1, $num2) => $num1 > $num2);
     }
 
     /**
@@ -369,7 +371,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Str
      */
     public function greaterThanOrEqual(Number $other)
     {
-        return $this->coerceUnits($other, fn($num1, $num2) => $num1 >= $num2);
+        return $this->coerceUnits($other, fn ($num1, $num2) => $num1 >= $num2);
     }
 
     /**
@@ -377,7 +379,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Str
      */
     public function plus(Number $other)
     {
-        return $this->coerceNumber($other, fn($num1, $num2) => $num1 + $num2);
+        return $this->coerceNumber($other, fn ($num1, $num2) => $num1 + $num2);
     }
 
     /**
@@ -385,7 +387,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Str
      */
     public function minus(Number $other)
     {
-        return $this->coerceNumber($other, fn($num1, $num2) => $num1 - $num2);
+        return $this->coerceNumber($other, fn ($num1, $num2) => $num1 - $num2);
     }
 
     public function unaryMinus(): \ScssPhp\ScssPhp\Node\Number
@@ -465,7 +467,7 @@ final class Number extends Node implements \ArrayAccess, \JsonSerializable, \Str
         }
 
         try {
-            return $this->coerceUnits($other, fn($num1, $num2) => round($num1, self::PRECISION) == round($num2, self::PRECISION));
+            return $this->coerceUnits($other, fn ($num1, $num2) => round($num1, self::PRECISION) == round($num2, self::PRECISION));
         } catch (SassScriptException) {
             return false;
         }

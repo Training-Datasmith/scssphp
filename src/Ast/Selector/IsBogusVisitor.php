@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -26,8 +28,7 @@ final class IsBogusVisitor extends AnySelectorVisitor
          * Whether to consider selectors with leading combinators as bogus.
          */
         private readonly bool $includeLeadingCombinator
-    )
-    {
+    ) {
     }
 
     public function visitComplexSelector(ComplexSelector $complex): bool

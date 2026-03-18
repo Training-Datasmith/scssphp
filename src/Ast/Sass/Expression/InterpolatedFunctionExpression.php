@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -33,11 +35,12 @@ final class InterpolatedFunctionExpression implements Expression, CallableInvoca
     public function __construct(/**
      * The name of the function being invoked.
      */
-    private readonly Interpolation $name, /**
+        private readonly Interpolation $name, /**
      * The arguments to pass to the function.
      */
-    private readonly ArgumentInvocation $arguments, FileSpan $span)
-    {
+        private readonly ArgumentInvocation $arguments,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

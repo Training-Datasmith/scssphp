@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ScssPhp\ScssPhp\Visitor;
 
 use ScssPhp\ScssPhp\Ast\Selector\AttributeSelector;
@@ -68,12 +70,12 @@ abstract class SelectorSearchVisitor implements SelectorVisitor
 
     public function visitComplexSelector(ComplexSelector $complex)
     {
-        return IterableUtil::search($complex->getComponents(), fn(ComplexSelectorComponent $component) => $this->visitCompoundSelector($component->getSelector()));
+        return IterableUtil::search($complex->getComponents(), fn (ComplexSelectorComponent $component) => $this->visitCompoundSelector($component->getSelector()));
     }
 
     public function visitCompoundSelector(CompoundSelector $compound)
     {
-        return IterableUtil::search($compound->getComponents(), fn(SimpleSelector $simple) => $simple->accept($this));
+        return IterableUtil::search($compound->getComponents(), fn (SimpleSelector $simple) => $simple->accept($this));
     }
 
     public function visitPseudoSelector(PseudoSelector $pseudo)

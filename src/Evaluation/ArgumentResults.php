@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -44,8 +46,7 @@ final class ArgumentResults
          */
         private readonly array $namedNodes,
         private readonly ListSeparator $separator
-    )
-    {
+    ) {
     }
 
     /**

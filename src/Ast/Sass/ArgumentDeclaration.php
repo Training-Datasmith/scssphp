@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -149,7 +151,7 @@ final class ArgumentDeclaration implements SassNode
         }
 
         if ($nameUsed < \count($names)) {
-            $unknownNames = array_values(array_diff(array_keys($names), array_map(fn(\ScssPhp\ScssPhp\Ast\Sass\Argument $argument): string => $argument->getName(), $this->arguments)));
+            $unknownNames = array_values(array_diff(array_keys($names), array_map(fn (\ScssPhp\ScssPhp\Ast\Sass\Argument $argument): string => $argument->getName(), $this->arguments)));
             \assert(\count($unknownNames) > 0);
             $message = sprintf(
                 'No %s named %s.',

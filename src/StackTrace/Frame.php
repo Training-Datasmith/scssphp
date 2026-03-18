@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -31,16 +33,16 @@ final class Frame
      * This can be null, indicating that the line number is unknown or
      * unimportant.
      */
-    private readonly ?int $line, /**
+        private readonly ?int $line, /**
      * The column number of the code location.
      *
      * This can be null, indicating that the column number is unknown or
      * unimportant.
      */
-    private readonly ?int $column, /**
+        private readonly ?int $column, /**
      * The name of the member in which the code location occurs.
      */
-    private readonly ?string $member)
+        private readonly ?string $member)
     {
         $this->url = $url;
     }

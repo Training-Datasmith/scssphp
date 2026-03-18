@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -37,8 +39,9 @@ final class IfExpression implements Expression, CallableInvocation
     public function __construct(/**
      * The arguments passed to `if()`.
      */
-    private readonly ArgumentInvocation $arguments, FileSpan $span)
-    {
+        private readonly ArgumentInvocation $arguments,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

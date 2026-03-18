@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -28,8 +30,9 @@ final class SupportsInterpolation implements SupportsCondition
     public function __construct(/**
      * The expression in the interpolation.
      */
-    private readonly Expression $expression, FileSpan $span)
-    {
+        private readonly Expression $expression,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

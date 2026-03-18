@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -19,5 +21,5 @@ namespace ScssPhp\ScssPhp;
  */
 final class Version
 {
-    const VERSION = '2.1.0';
+    public const VERSION = '2.1.0';
 }

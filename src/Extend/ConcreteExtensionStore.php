@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -131,8 +133,7 @@ final class ConcreteExtensionStore implements ExtensionStore
         private \SplObjectStorage $sourceSpecificity,
         private readonly \SplObjectStorage $originals,
         private readonly ExtendMode $mode
-    )
-    {
+    ) {
     }
 
     public static function create(): self

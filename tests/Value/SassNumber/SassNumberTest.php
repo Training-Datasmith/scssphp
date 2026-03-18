@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -12,8 +14,8 @@
 
 namespace ScssPhp\ScssPhp\Tests\Value\SassNumber;
 
-use ScssPhp\ScssPhp\Value\SassNumber;
 use PHPUnit\Framework\TestCase;
+use ScssPhp\ScssPhp\Value\SassNumber;
 
 class SassNumberTest extends TestCase
 {

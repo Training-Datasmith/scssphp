@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -39,7 +41,7 @@ final class InterpolationMap
      * {@see $interpolation->getContents()}. Its length is always one less than
      * {@see $interpolation->getContents()} because the last element always ends the string.
      */
-    private readonly array $targetLocations)
+        private readonly array $targetLocations)
     {
         $expectedLocations = max(0, \count($this->interpolation->getContents()) - 1);
         if (\count($this->targetLocations) !== $expectedLocations) {

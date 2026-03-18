@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -36,8 +38,7 @@ class LazyFileSpan implements FileSpan
          * @readonly
          */
         private readonly \Closure $builder
-    )
-    {
+    ) {
     }
 
     public function getSpan(): FileSpan

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -277,7 +279,7 @@ class ColorFunctions
         $argList = $arguments[0]->asList();
         $argumentCount = \count($argList);
 
-        if ($argumentCount > 0 && IterableUtil::every($argList, fn($argument): bool => $argument instanceof SassString && !$argument->hasQuotes() && preg_match('/^[a-zA-Z]+\s*=/', $argument->getText()))) {
+        if ($argumentCount > 0 && IterableUtil::every($argList, fn ($argument): bool => $argument instanceof SassString && !$argument->hasQuotes() && preg_match('/^[a-zA-Z]+\s*=/', $argument->getText()))) {
             // Support the proprietary Microsoft alpha() function.
             return self::functionString('alpha', $arguments);
         }
@@ -490,7 +492,7 @@ TXT,
             throw new SassScriptException(sprintf(
                 'No %s named %s.',
                 StringUtil::pluralize('argument', \count($keywords)),
-                StringUtil::toSentence(array_map(fn($name): string => "\$$name", array_keys($keywords)), 'or')
+                StringUtil::toSentence(array_map(fn ($name): string => "\$$name", array_keys($keywords)), 'or')
             ));
         }
 
@@ -523,7 +525,7 @@ TXT,
             return $current + ($param > 0 ? $max - $current : $current) * $param / 100;
         };
 
-        $updateRgb = (fn(int $current, ?float $param): int => NumberUtil::fuzzyRound($updateValue($current, $param, 255)));
+        $updateRgb = (fn (int $current, ?float $param): int => NumberUtil::fuzzyRound($updateValue($current, $param, 255)));
 
         if ($hasRgb) {
             return $color->changeRgb(
@@ -567,7 +569,7 @@ TXT,
      */
     private static function functionString(string $name, array $arguments): SassString
     {
-        return new SassString($name . '(' . implode(', ', array_map(fn(Value $argument): string => $argument->toCssString(), $arguments)) . ')', false);
+        return new SassString($name . '(' . implode(', ', array_map(fn (Value $argument): string => $argument->toCssString(), $arguments)) . ')', false);
     }
 
     /**

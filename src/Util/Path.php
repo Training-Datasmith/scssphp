@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ScssPhp\ScssPhp\Util;
 
 use League\Uri\Contracts\UriInterface;

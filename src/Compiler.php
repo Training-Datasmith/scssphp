@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -48,9 +50,9 @@ use ScssPhp\ScssPhp\Visitor\CssVisitor;
 
 final class Compiler
 {
-    const SOURCE_MAP_NONE   = 0;
-    const SOURCE_MAP_INLINE = 1;
-    const SOURCE_MAP_FILE   = 2;
+    public const SOURCE_MAP_NONE   = 0;
+    public const SOURCE_MAP_INLINE = 1;
+    public const SOURCE_MAP_FILE   = 2;
 
     public static $true         = [Type::T_KEYWORD, 'true'];
     public static $false        = [Type::T_KEYWORD, 'false'];
@@ -210,7 +212,7 @@ final class Compiler
     public function setImportPaths($path): void
     {
         $paths = (array) $path;
-        $actualImportPaths = array_filter($paths, fn(callable|string $path) => $path !== '');
+        $actualImportPaths = array_filter($paths, fn (callable|string $path) => $path !== '');
 
         if (\count($actualImportPaths) !== \count($paths)) {
             throw new \InvalidArgumentException('Passing an empty string in the import paths to refer to the current working directory is not supported anymore. If that\'s the intended behavior, the value of "getcwd()" should be used directly instead. If this was used for resolving relative imports of the input alongside "chdir" with the source directory, the path of the input file should be passed to "compileString()" instead.');

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -34,8 +36,9 @@ final class ContentRule implements Statement
      *
      * This will be an empty invocation if `@content` has no arguments.
      */
-    private readonly ArgumentInvocation $arguments, FileSpan $span)
-    {
+        private readonly ArgumentInvocation $arguments,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

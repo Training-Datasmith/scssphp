@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -62,8 +64,8 @@ final class MakeExpressionCalculationSafe extends ReplaceExpressionVisitor
                     $node->getOperand()
                 );
 
-            // Other unary operations don't produce numbers, so keep them as-is to
-            // give the user a more useful syntax error after serialization.
+                // Other unary operations don't produce numbers, so keep them as-is to
+                // give the user a more useful syntax error after serialization.
             default:
                 return parent::visitUnaryOperationExpression($node);
         }

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ScssPhp\ScssPhp\Tests\Util;
 
 use League\Uri\Contracts\UriInterface;
 use League\Uri\Uri;
-use ScssPhp\ScssPhp\Util\UriUtil;
 use PHPUnit\Framework\TestCase;
+use ScssPhp\ScssPhp\Util\UriUtil;
 
 class UriUtilTest extends TestCase
 {

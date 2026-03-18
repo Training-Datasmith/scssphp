@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -29,7 +31,7 @@ use ScssPhp\ScssPhp\Visitor\ValueVisitor;
 #[Sealed(permits: [UnitlessSassNumber::class, SingleUnitSassNumber::class, ComplexSassNumber::class])]
 abstract class SassNumber extends Value
 {
-    final const PRECISION = 10;
+    final public const PRECISION = 10;
 
     /**
      * @see https://www.w3.org/TR/css-values-3/
@@ -74,7 +76,7 @@ abstract class SassNumber extends Value
         'angle' => ['deg', 'grad', 'rad', 'turn'],
         'time' => ['s', 'ms'],
         'frequency' => ['Hz', 'kHz'],
-        'pixel density' => ['dpi', 'dpcm', 'dppx']
+        'pixel density' => ['dpi', 'dpcm', 'dppx'],
     ];
 
     /**
@@ -112,8 +114,7 @@ abstract class SassNumber extends Value
          * @internal
          */
         private readonly ?array $asSlash = null
-    )
-    {
+    ) {
     }
 
     /**
@@ -655,7 +656,7 @@ abstract class SassNumber extends Value
     public function plus(Value $other): Value
     {
         if ($other instanceof SassNumber) {
-            return $this->withValue($this->coerceUnits($other, fn($num1, $num2): float => $num1 + $num2));
+            return $this->withValue($this->coerceUnits($other, fn ($num1, $num2): float => $num1 + $num2));
         }
 
         if (!$other instanceof SassColor) {
@@ -668,7 +669,7 @@ abstract class SassNumber extends Value
     public function minus(Value $other): Value
     {
         if ($other instanceof SassNumber) {
-            return $this->withValue($this->coerceUnits($other, fn($num1, $num2): float => $num1 - $num2));
+            return $this->withValue($this->coerceUnits($other, fn ($num1, $num2): float => $num1 - $num2));
         }
 
         if (!$other instanceof SassColor) {
@@ -748,7 +749,7 @@ abstract class SassNumber extends Value
      */
     private static function getCanonicalMultiplier(array $units): float
     {
-        return array_reduce($units, fn($multiplier, string $unit): float => $multiplier * self::getCanonicalMultiplierForUnit($unit), 1.0);
+        return array_reduce($units, fn ($multiplier, string $unit): float => $multiplier * self::getCanonicalMultiplierForUnit($unit), 1.0);
     }
 
     private static function getCanonicalMultiplierForUnit(string $unit): float
@@ -834,7 +835,7 @@ abstract class SassNumber extends Value
      */
     private function convertOrCoerceValue(array $newNumeratorUnits, array $newDenominatorUnits, bool $coerceUnitless, ?string $name = null, ?SassNumber $other = null, ?string $otherName = null): float
     {
-        assert($other === null || ($other->getNumeratorUnits() === $newNumeratorUnits && $other->getDenominatorUnits() === $newDenominatorUnits), sprintf("Expected %s to have units %s.", $other, self::buildUnitString($newNumeratorUnits, $newDenominatorUnits)));
+        assert($other === null || ($other->getNumeratorUnits() === $newNumeratorUnits && $other->getDenominatorUnits() === $newDenominatorUnits), sprintf('Expected %s to have units %s.', $other, self::buildUnitString($newNumeratorUnits, $newDenominatorUnits)));
 
         if ($this->getNumeratorUnits() === $newNumeratorUnits && $this->getDenominatorUnits() === $newDenominatorUnits) {
             return $this->value;
@@ -1032,8 +1033,8 @@ abstract class SassNumber extends Value
     public function unitSuggestion(string $name, ?string $unit = null): string
     {
         $result = "\$$name"
-            . implode('', array_map(fn(string $unit): string => " * 1$unit", $this->getDenominatorUnits()))
-            . implode('', array_map(fn(string $unit): string => " / 1$unit", $this->getNumeratorUnits()))
+            . implode('', array_map(fn (string $unit): string => " * 1$unit", $this->getDenominatorUnits()))
+            . implode('', array_map(fn (string $unit): string => " / 1$unit", $this->getNumeratorUnits()))
             . ($unit === null ? '' : " * 1$unit");
 
         return $this->getNumeratorUnits() === [] ? $result : "calc($result)";

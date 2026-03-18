@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -32,7 +34,7 @@ final class ParentSelector extends SimpleSelector
      * This is assumed to be a valid identifier suffix. It may be `null`,
      * indicating that the parent selector will not be modified.
      */
-    private readonly ?string $suffix = null)
+        private readonly ?string $suffix = null)
     {
         parent::__construct($span);
     }

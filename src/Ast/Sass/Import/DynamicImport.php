@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -32,8 +34,9 @@ final class DynamicImport implements Import
      *
      * If this is relative, it's relative to the containing file.
      */
-    private readonly string $urlString, FileSpan $span)
-    {
+        private readonly string $urlString,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

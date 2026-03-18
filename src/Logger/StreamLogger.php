@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -69,6 +71,6 @@ final class StreamLogger implements LoggerInterface
         $line = $span->getStart()->getLine() + 1;
         $location = "$url:$line ";
 
-        fwrite($this->stream, \sprintf("%sDEBUG: %s", $location, $message) . "\n");
+        fwrite($this->stream, \sprintf('%sDEBUG: %s', $location, $message) . "\n");
     }
 }

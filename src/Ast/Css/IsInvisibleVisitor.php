@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -30,8 +32,7 @@ final class IsInvisibleVisitor extends EveryCssVisitor
          * Whether to consider comments invisible.
          */
         private readonly bool $includeComments
-    )
-    {
+    ) {
     }
 
     public function visitCssAtRule(CssAtRule $node): bool

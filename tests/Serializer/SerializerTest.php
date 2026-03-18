@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -12,8 +14,8 @@
 
 namespace ScssPhp\ScssPhp\Tests\Serializer;
 
-use ScssPhp\ScssPhp\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;
+use ScssPhp\ScssPhp\Serializer\Serializer;
 use ScssPhp\ScssPhp\Value\SassString;
 
 class SerializerTest extends TestCase

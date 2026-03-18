@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -98,7 +100,7 @@ class SassSpecTest extends TestCase
      */
     private function canonicalTestName(string $testName): string
     {
-        $testName = preg_replace(",^\d+/\d+\.\s*,", "", $testName);
+        $testName = preg_replace(",^\d+/\d+\.\s*,", '', $testName);
         return trim($testName);
     }
 
@@ -242,7 +244,7 @@ class SassSpecTest extends TestCase
             }
 
             if ($memoryInBytes < 256 * 1024 * 1024) {
-                @ini_set('memory_limit', "256M");
+                @ini_set('memory_limit', '256M');
             }
         }
 
@@ -289,7 +291,7 @@ class SassSpecTest extends TestCase
         $css = self::normalizeOutput($css);
 
         // build a dir with files and set the ImportPaths
-        $basedir = sys_get_temp_dir() . '/sass-spec/' . preg_replace(",^\d+/\d+\.\s*,", "", $name);
+        $basedir = sys_get_temp_dir() . '/sass-spec/' . preg_replace(",^\d+/\d+\.\s*,", '', $name);
         $this->dirToClean = $basedir;
 
         foreach ($includes as $f => $c) {
@@ -320,7 +322,7 @@ class SassSpecTest extends TestCase
         // SassSpec use @import "core_functions/.../..."
         $compiler->addImportPath(self::sassSpecDir());
 
-        $fp_err_stream = fopen("php://memory", 'r+');
+        $fp_err_stream = fopen('php://memory', 'r+');
         $compiler->setLogger(new StreamLogger($fp_err_stream));
 
         if (! strlen($error)) {
@@ -612,7 +614,7 @@ class SassSpecTest extends TestCase
                 $test = [
                     $baseTestName . $subNname,
                     [$options, $input, $includes, $baseDir, $indented],
-                    [$output, $warning, $error, $alternativeOutputs, $alternativeWarnings]
+                    [$output, $warning, $error, $alternativeOutputs, $alternativeWarnings],
                 ];
 
                 if (
@@ -633,7 +635,7 @@ class SassSpecTest extends TestCase
         ksort($tests);
         $tests = array_values($tests);
 
-        $testCases = array();
+        $testCases = [];
 
         foreach ($tests as $k => $test) {
             $testName = ($k + 1) . '/' . $nb_tests . '. ' . $test[0];
@@ -641,7 +643,7 @@ class SassSpecTest extends TestCase
             $testCases[$testName] = $test;
         }
 
-        if (getenv("DEBUG_SKIPPED")) {
+        if (getenv('DEBUG_SKIPPED')) {
             var_dump($skippedTests);
         }
 

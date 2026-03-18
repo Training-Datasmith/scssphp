@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -70,7 +72,7 @@ final class SelectorFunctions
 
         $span = EvaluationContext::getCurrent()->getCurrentCallableSpan();
 
-        return ArrayUtil::reduce(array_map(fn(Value $selector): \ScssPhp\ScssPhp\Ast\Selector\SelectorList => $selector->assertSelector(), $selectors), fn(SelectorList $parent, SelectorList $child) => (new SelectorList(array_map(function (ComplexSelector $complex) use ($span, $parent): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
+        return ArrayUtil::reduce(array_map(fn (Value $selector): \ScssPhp\ScssPhp\Ast\Selector\SelectorList => $selector->assertSelector(), $selectors), fn (SelectorList $parent, SelectorList $child) => (new SelectorList(array_map(function (ComplexSelector $complex) use ($span, $parent): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
             if (\count($complex->getLeadingCombinators()) > 0) {
                 throw new SassScriptException("Can't append $complex to $parent.");
             }

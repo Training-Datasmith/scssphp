@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -56,7 +58,7 @@ final class IsCalculationSafeVisitor implements ExpressionVisitor
 
     public function visitListExpression(ListExpression $node): bool
     {
-        return $node->getSeparator() === ListSeparator::SPACE && !$node->hasBrackets() && \count($node->getContents()) > 1 && IterableUtil::every($node->getContents(), fn(Expression $expression) => $expression->accept($this));
+        return $node->getSeparator() === ListSeparator::SPACE && !$node->hasBrackets() && \count($node->getContents()) > 1 && IterableUtil::every($node->getContents(), fn (Expression $expression) => $expression->accept($this));
     }
 
     public function visitMapExpression(MapExpression $node): bool

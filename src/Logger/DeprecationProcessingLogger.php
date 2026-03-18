@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -62,8 +64,7 @@ final class DeprecationProcessingLogger implements LoggerInterface
          */
         private readonly array $futureDeprecations,
         private readonly bool $limitRepetition = true
-    )
-    {
+    ) {
     }
 
     /**

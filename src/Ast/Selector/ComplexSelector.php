@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -69,7 +71,7 @@ final class ComplexSelector extends Selector
     public function __construct(array $leadingCombinators, array $components, FileSpan $span, /**
      * Whether a line break should be emitted *before* this selector.
      */
-    private readonly bool $lineBreak = false)
+        private readonly bool $lineBreak = false)
     {
         if ($leadingCombinators === [] && $components === []) {
             throw new \InvalidArgumentException('leadingCombinators and components may not both be empty.');

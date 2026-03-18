@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -30,12 +32,13 @@ final class StaticImport implements Import
      *
      * This already contains quotes.
      */
-    private readonly Interpolation $url, FileSpan $span, /**
+        private readonly Interpolation $url,
+        FileSpan $span, /**
      * The modifiers (such as media or supports queries) attached to this import,
      * or `null` if none are attached.
      */
-    private readonly ?Interpolation $modifiers = null)
-    {
+        private readonly ?Interpolation $modifiers = null
+    ) {
         $this->span = $span;
     }
 

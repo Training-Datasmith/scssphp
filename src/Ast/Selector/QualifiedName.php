@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -36,8 +38,7 @@ final class QualifiedName implements Equatable, \Stringable
          * to any namespace. Otherwise, {@see name} belongs to the given namespace.
          */
         private readonly ?string $namespace = null
-    )
-    {
+    ) {
     }
 
     public function getName(): string

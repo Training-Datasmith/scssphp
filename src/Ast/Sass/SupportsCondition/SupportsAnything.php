@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -29,8 +31,9 @@ final class SupportsAnything implements SupportsCondition
     public function __construct(/**
      * The contents of the condition.
      */
-    private readonly Interpolation $contents, FileSpan $span)
-    {
+        private readonly Interpolation $contents,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

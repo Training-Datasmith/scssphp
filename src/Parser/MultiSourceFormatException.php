@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -25,10 +27,10 @@ final class MultiSourceFormatException extends FormatException
     public function __construct(string $message, FileSpan $span, /**
      * {@see MultiSpanSassException::$primaryLabel}
      */
-    public readonly string $primaryLabel, /**
+        public readonly string $primaryLabel, /**
      * {@see MultiSpanSassException::$secondarySpans}
      */
-    public readonly array $secondarySpans, ?\Throwable $previous = null)
+        public readonly array $secondarySpans, ?\Throwable $previous = null)
     {
         parent::__construct($message, $span, $previous);
     }

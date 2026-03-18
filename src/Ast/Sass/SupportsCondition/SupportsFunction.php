@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -28,11 +30,12 @@ final class SupportsFunction implements SupportsCondition
     public function __construct(/**
      * The name of the function.
      */
-    private readonly Interpolation $name, /**
+        private readonly Interpolation $name, /**
      * The arguments of the function.
      */
-    private readonly Interpolation $arguments, FileSpan $span)
-    {
+        private readonly Interpolation $arguments,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

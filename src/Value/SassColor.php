@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -143,8 +145,7 @@ final class SassColor extends Value
          */
         private readonly float $alpha,
         private readonly ?ColorFormat $format = null
-    )
-    {
+    ) {
     }
 
     public function getRed(): int

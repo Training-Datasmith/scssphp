@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ScssPhp\ScssPhp\Exception;
 
 use JiriPudil\SealedClasses\Sealed;

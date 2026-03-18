@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -26,8 +28,7 @@ final class IsInvisibleVisitor extends AnySelectorVisitor
          * Whether to consider selectors with bogus combinators invisible.
          */
         private readonly bool $includeBogus
-    )
-    {
+    ) {
     }
 
     public function visitSelectorList(SelectorList $list): bool

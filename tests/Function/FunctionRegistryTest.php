@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ScssPhp\ScssPhp\Tests\Function;
 
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ScssPhp\ScssPhp\Function\FunctionRegistry;
-use PHPUnit\Framework\TestCase;
 
 class FunctionRegistryTest extends TestCase
 {

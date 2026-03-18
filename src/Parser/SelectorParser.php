@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -64,7 +66,7 @@ final class SelectorParser extends Parser
     public function __construct(string $contents, ?LoggerInterface $logger = null, ?UriInterface $url = null, private readonly bool $allowParent = true, ?InterpolationMap $interpolationMap = null, /**
      * Whether to parse the selector as plain CSS.
      */
-    private readonly bool $plainCss = false)
+        private readonly bool $plainCss = false)
     {
         parent::__construct($contents, $logger, $url, $interpolationMap);
     }

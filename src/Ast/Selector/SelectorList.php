@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -182,7 +184,7 @@ final class SelectorList extends Selector
                     return [$complex];
                 }
 
-                return array_map(fn(ComplexSelector $parentComplex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $parentComplex->concatenate($complex, $complex->getSpan()), $parent->getComponents());
+                return array_map(fn (ComplexSelector $parentComplex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $parentComplex->concatenate($complex, $complex->getSpan()), $parent->getComponents());
             }
 
             /** @var list<ComplexSelector> $newComplexes */
@@ -344,7 +346,7 @@ final class SelectorList extends Selector
             return $this;
         }
 
-        return new SelectorList(array_map(fn(ComplexSelector $complex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $complex->withAdditionalCombinators($combinators), $this->components), $this->getSpan());
+        return new SelectorList(array_map(fn (ComplexSelector $complex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $complex->withAdditionalCombinators($combinators), $this->components), $this->getSpan());
     }
 
     /**

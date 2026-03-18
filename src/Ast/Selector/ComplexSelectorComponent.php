@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -34,15 +36,16 @@ final class ComplexSelectorComponent implements Equatable, \Stringable
     public function __construct(/**
      * This component's compound selector.
      */
-    private readonly CompoundSelector $selector, /**
+        private readonly CompoundSelector $selector, /**
      * This selector's combinators.
      *
      * If this is empty, that indicates that it has an implicit descendent
      * combinator. If it's more than one element, that means it's invalid CSS;
      * however, we still support this for backwards-compatibility purposes.
      */
-    private readonly array $combinators, FileSpan $span)
-    {
+        private readonly array $combinators,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

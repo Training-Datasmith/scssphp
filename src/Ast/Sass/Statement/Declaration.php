@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -39,7 +41,7 @@ final class Declaration extends ParentStatement
      * If {@see getChildren} is `null`, this is never `null`. Otherwise, it may or may
      * not be `null`.
      */
-    private readonly ?Expression $value, FileSpan $span, ?array $children = null)
+        private readonly ?Expression $value, FileSpan $span, ?array $children = null)
     {
         $this->span = $span;
         parent::__construct($children);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -19,14 +21,14 @@ namespace ScssPhp\ScssPhp;
  */
 final class Type
 {
-    const T_COLOR = 'color';
+    public const T_COLOR = 'color';
     /**
      * @internal
      */
-    const T_KEYWORD = 'keyword';
-    const T_LIST = 'list';
-    const T_MAP = 'map';
-    const T_NULL = 'null';
-    const T_NUMBER = 'number';
-    const T_STRING = 'string';
+    public const T_KEYWORD = 'keyword';
+    public const T_LIST = 'list';
+    public const T_MAP = 'map';
+    public const T_NULL = 'null';
+    public const T_NUMBER = 'number';
+    public const T_STRING = 'string';
 }

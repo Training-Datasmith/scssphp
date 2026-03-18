@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -33,8 +35,10 @@ final class ModifiableCssImport extends ModifiableCssNode implements CssImport
      *
      * This includes quotes.
      */
-    private readonly CssValue $url, FileSpan $span, private readonly ?CssValue $modifiers = null)
-    {
+        private readonly CssValue $url,
+        FileSpan $span,
+        private readonly ?CssValue $modifiers = null
+    ) {
         $this->span = $span;
     }
 

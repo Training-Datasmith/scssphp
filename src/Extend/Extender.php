@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -33,13 +35,13 @@ final class Extender
      * Whether this extender represents a selector that was originally in the
      * document, rather than one defined with `@extend`.
      */
-    public readonly bool $isOriginal = false, /**
+        public readonly bool $isOriginal = false, /**
      * The extension that created this Extender.
      *
      * Not all {@see Extender}s are created by extensions. Some simply represent the
      * original selectors that exist in the document.
      */
-    private readonly ?Extension $extension = null)
+        private readonly ?Extension $extension = null)
     {
         $this->specificity = $specificity ?? $this->selector->getSpecificity();
     }

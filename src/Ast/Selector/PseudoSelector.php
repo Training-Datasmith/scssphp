@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -43,20 +45,22 @@ final class PseudoSelector extends SimpleSelector
     public function __construct(/**
      * The name of this selector.
      */
-    private readonly string $name, FileSpan $span, bool $element = false, /**
+        private readonly string $name,
+        FileSpan $span,
+        bool $element = false, /**
      * The non-selector argument passed to this selector.
      *
      * This is `null` if there's no argument. If {@see argument} and {@see selector} are
      * both non-`null`, the selector follows the argument.
      */
-    private readonly ?string $argument = null, /**
+        private readonly ?string $argument = null, /**
      * The selector argument passed to this selector.
      *
      * This is `null` if there's no selector. If {@see argument} and {@see selector} are
      * both non-`null`, the selector follows the argument.
      */
-    private readonly ?SelectorList $selector = null)
-    {
+        private readonly ?SelectorList $selector = null
+    ) {
         $this->isClass = !$element && !self::isFakePseudoElement($this->name);
         $this->isSyntacticClass = !$element;
         $this->normalizedName = Util::unvendor($this->name);

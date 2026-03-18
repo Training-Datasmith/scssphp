@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -36,8 +38,11 @@ final class ModifiableCssStyleRule extends ModifiableCssParentNode implements Cs
      * A reference to the modifiable selector list provided by the extension
      * store, which may update it over time as new extensions are applied.
      */
-    private readonly Box $selector, FileSpan $span, ?SelectorList $originalSelector = null, private readonly bool $fromPlainCss = false)
-    {
+        private readonly Box $selector,
+        FileSpan $span,
+        ?SelectorList $originalSelector = null,
+        private readonly bool $fromPlainCss = false
+    ) {
         parent::__construct();
         $this->originalSelector = $originalSelector ?? $this->selector->getValue();
         $this->span = $span;

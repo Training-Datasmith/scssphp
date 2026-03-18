@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -27,11 +29,13 @@ final class SupportsOperation implements SupportsCondition
     public function __construct(/**
      * The left-hand operand.
      */
-    private readonly SupportsCondition $left, /**
+        private readonly SupportsCondition $left, /**
      * The right-hand operand.
      */
-    private readonly SupportsCondition $right, private readonly string $operator, FileSpan $span)
-    {
+        private readonly SupportsCondition $right,
+        private readonly string $operator,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

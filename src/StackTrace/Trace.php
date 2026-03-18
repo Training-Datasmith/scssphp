@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -25,8 +27,7 @@ final class Trace
          * @readonly
          */
         private readonly array $frames
-    )
-    {
+    ) {
     }
 
     /**
@@ -46,6 +47,6 @@ final class Trace
             $longest = max($longest, $length);
         }
 
-        return implode('', array_map(fn(Frame $frame): string => str_pad($frame->getLocation(), $longest) . '  ' . $frame->getMember() . "\n", $this->frames));
+        return implode('', array_map(fn (Frame $frame): string => str_pad($frame->getLocation(), $longest) . '  ' . $frame->getMember() . "\n", $this->frames));
     }
 }

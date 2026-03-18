@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -43,15 +45,16 @@ final class FunctionExpression implements Expression, CallableInvocation, SassRe
     public function __construct(/**
      * The name of the function being invoked, with underscores left as-is.
      */
-    private readonly string $originalName, /**
+        private readonly string $originalName, /**
      * The arguments to pass to the function.
      */
-    private readonly ArgumentInvocation $arguments, FileSpan $span, /**
+        private readonly ArgumentInvocation $arguments,
+        FileSpan $span, /**
      * The namespace of the function being invoked, or `null` if it's invoked
      * without a namespace.
      */
-    private readonly ?string $namespace = null)
-    {
+        private readonly ?string $namespace = null
+    ) {
         $this->span = $span;
         $this->name = str_replace('_', '-', $this->originalName);
     }

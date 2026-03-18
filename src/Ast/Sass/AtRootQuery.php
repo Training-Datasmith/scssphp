@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -81,8 +83,7 @@ final class AtRootQuery
          * Whether this includes or excludes style rules.
          */
         private readonly bool $rule
-    )
-    {
+    ) {
     }
 
     public function getInclude(): bool

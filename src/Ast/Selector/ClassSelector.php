@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -28,8 +30,9 @@ final class ClassSelector extends SimpleSelector
     public function __construct(/**
      * The class name this selects for.
      */
-    private readonly string $name, FileSpan $span)
-    {
+        private readonly string $name,
+        FileSpan $span
+    ) {
         parent::__construct($span);
     }
 

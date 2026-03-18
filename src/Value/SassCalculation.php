@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -784,8 +786,7 @@ WARNING;
          * {@see SassString}, or a {@see CalculationOperation}.
          */
         private readonly array $arguments
-    )
-    {
+    ) {
     }
 
     public function getName(): string

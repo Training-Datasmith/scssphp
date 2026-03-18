@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -46,13 +48,14 @@ final class AttributeSelector extends SimpleSelector
     private function __construct(/**
      * The name of the attribute being selected for.
      */
-    private readonly QualifiedName $name, FileSpan $span, /**
+        private readonly QualifiedName $name,
+        FileSpan $span, /**
      * The operator that defines the semantics of {@see value}.
      *
      * If this is `null`, this matches any element with the given property,
      * regardless of this value. It's `null` if and only if {@see value} is `null`.
      */
-    private readonly ?AttributeOperator $op, /**
+        private readonly ?AttributeOperator $op, /**
      * An assertion about the value of {@see name}.
      *
      * The precise semantics of this string are defined by {@see op}.
@@ -60,7 +63,7 @@ final class AttributeSelector extends SimpleSelector
      * If this is `null`, this matches any element with the given property,
      * regardless of this value. It's `null` if and only if {@see op} is `null`.
      */
-    private readonly ?string $value, /**
+        private readonly ?string $value, /**
      * The modifier which indicates how the attribute selector should be
      * processed.
      *
@@ -70,8 +73,8 @@ final class AttributeSelector extends SimpleSelector
      *
      * If {@see op} is `null`, this is always `null` as well.
      */
-    private readonly ?string $modifier)
-    {
+        private readonly ?string $modifier
+    ) {
         parent::__construct($span);
     }
 

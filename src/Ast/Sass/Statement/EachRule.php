@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -65,6 +67,6 @@ final class EachRule extends ParentStatement
 
     public function __toString(): string
     {
-        return '@each ' . implode(', ', array_map(fn(string $variable): string => '$' . $variable, $this->variables)) . ' in ' . $this->list . ' {' . implode(' ', $this->getChildren()) . '}';
+        return '@each ' . implode(', ', array_map(fn (string $variable): string => '$' . $variable, $this->variables)) . ' in ' . $this->list . ' {' . implode(' ', $this->getChildren()) . '}';
     }
 }

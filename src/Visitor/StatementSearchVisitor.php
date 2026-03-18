@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -122,10 +124,10 @@ abstract class StatementSearchVisitor implements StatementVisitor
 
     public function visitIfRule(IfRule $node)
     {
-        $value = IterableUtil::search($node->getClauses(), fn(IfClause $clause) => IterableUtil::search($clause->getChildren(), fn(Statement $child) => $child->accept($this)));
+        $value = IterableUtil::search($node->getClauses(), fn (IfClause $clause) => IterableUtil::search($clause->getChildren(), fn (Statement $child) => $child->accept($this)));
 
         if ($node->getLastClause() !== null) {
-            $value ??= IterableUtil::search($node->getLastClause()->getChildren(), fn(Statement $child) => $child->accept($this));
+            $value ??= IterableUtil::search($node->getLastClause()->getChildren(), fn (Statement $child) => $child->accept($this));
         }
 
         return $value;

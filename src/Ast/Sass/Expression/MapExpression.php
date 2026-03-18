@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -53,6 +55,6 @@ final class MapExpression implements Expression
 
     public function __toString(): string
     {
-        return '(' . implode(', ', array_map(fn(array $pair): string => $pair[0] . ': ' . $pair[1], $this->pairs)) . ')';
+        return '(' . implode(', ', array_map(fn (array $pair): string => $pair[0] . ': ' . $pair[1], $this->pairs)) . ')';
     }
 }

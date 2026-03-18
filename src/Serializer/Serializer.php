@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -20,7 +22,6 @@ use ScssPhp\ScssPhp\Logger\LoggerInterface;
 use ScssPhp\ScssPhp\OutputStyle;
 use ScssPhp\ScssPhp\Value\Value;
 use ScssPhp\ScssPhp\Visitor\CssVisitor;
-use ScssPhp\ScssPhp\Visitor\ModifiableCssVisitor;
 
 /**
  * @internal

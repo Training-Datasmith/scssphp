@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -101,7 +103,7 @@ class ApiTest extends TestCase
     {
         $this->scss = new Compiler();
 
-        $logStream = fopen("php://memory", 'r+');
+        $logStream = fopen('php://memory', 'r+');
         assert($logStream !== false);
         $this->scss->setLogger(new StreamLogger($logStream));
 
@@ -119,7 +121,7 @@ class ApiTest extends TestCase
     {
         $this->scss = new Compiler();
 
-        $logStream = fopen("php://memory", 'r+');
+        $logStream = fopen('php://memory', 'r+');
         assert($logStream !== false);
         $this->scss->setLogger(new StreamLogger($logStream));
 
@@ -137,7 +139,7 @@ class ApiTest extends TestCase
     {
         $this->scss = new Compiler();
 
-        $logStream = fopen("php://memory", 'r+');
+        $logStream = fopen('php://memory', 'r+');
         assert($logStream !== false);
         $this->scss->setLogger(new StreamLogger($logStream));
 
@@ -155,7 +157,7 @@ class ApiTest extends TestCase
     {
         $this->scss = new Compiler();
 
-        $logStream = fopen("php://memory", 'r+');
+        $logStream = fopen('php://memory', 'r+');
         assert($logStream !== false);
         $this->scss->setLogger(new StreamLogger($logStream));
 
@@ -242,8 +244,8 @@ class ApiTest extends TestCase
                 "a {\n  b: d, e;\n}",
                 'a { b: $c; }',
                 [
-                    'c' => 'd, /* comment */ e'
-                ]
+                    'c' => 'd, /* comment */ e',
+                ],
             ],
         ];
     }

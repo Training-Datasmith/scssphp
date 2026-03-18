@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -35,8 +37,7 @@ final class LoadedStylesheet
          * importer rather than relative to the entrypoint.
          */
         private readonly bool $dependency
-    )
-    {
+    ) {
     }
 
     public function getStylesheet(): Stylesheet

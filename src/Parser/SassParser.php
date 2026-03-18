@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -405,6 +407,7 @@ final class SassParser extends StylesheetParser
             case ';':
                 $this->scanner->error("semicolons aren't allowed in the indented syntax.");
 
+                // no break
             case "\r":
                 $this->scanner->readChar();
                 if ($this->scanner->peekChar() === "\n") {

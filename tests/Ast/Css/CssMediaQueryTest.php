@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -12,8 +14,8 @@
 
 namespace ScssPhp\ScssPhp\Tests\Ast\Css;
 
-use ScssPhp\ScssPhp\Ast\Css\CssMediaQuery;
 use PHPUnit\Framework\TestCase;
+use ScssPhp\ScssPhp\Ast\Css\CssMediaQuery;
 use ScssPhp\ScssPhp\Ast\Css\MediaQueryMergeResult;
 use ScssPhp\ScssPhp\Ast\Css\MediaQuerySingletonMergeResult;
 

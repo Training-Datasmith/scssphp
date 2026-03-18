@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -32,7 +34,7 @@ final class Util
      */
     public static function indent(string $string, int $indentation): string
     {
-        return implode("\n", array_map(fn($line) => str_repeat(' ', $indentation) . $line, explode("\n", $string)));
+        return implode("\n", array_map(fn ($line) => str_repeat(' ', $indentation) . $line, explode("\n", $string)));
     }
 
     /**

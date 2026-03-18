@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -30,11 +32,12 @@ final class SupportsDeclaration implements SupportsCondition
     public function __construct(/**
      * The name of the declaration being tested.
      */
-    private readonly Expression $name, /**
+        private readonly Expression $name, /**
      * The value of the declaration being tested.
      */
-    private readonly Expression $value, FileSpan $span)
-    {
+        private readonly Expression $value,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

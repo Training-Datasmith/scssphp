@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -31,7 +33,7 @@ final class UniversalSelector extends SimpleSelector
      * namespace. If it's `*`, this matches all elements in any namespace.
      * Otherwise, it matches all elements in the given namespace.
      */
-    private readonly ?string $namespace = null)
+        private readonly ?string $namespace = null)
     {
         parent::__construct($span);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -40,11 +42,11 @@ class Extension
     public function __construct(ComplexSelector $extender, /**
      * The selector that's being extended.
      */
-    public readonly SimpleSelector $target, FileSpan $span, /**
+        public readonly SimpleSelector $target, FileSpan $span, /**
      * The media query context to which this extension is restricted, or `null`
      * if it can apply within any context.
      */
-    public readonly ?array $mediaContext = null, public readonly bool $isOptional = false)
+        public readonly ?array $mediaContext = null, public readonly bool $isOptional = false)
     {
         $this->extender = Extender::forExtension($extender, $this);
         $this->span = $span;

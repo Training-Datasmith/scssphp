@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -95,11 +97,14 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      * Whether we're emitting an unambiguous representation of the source
      * structure, as opposed to valid CSS.
      */
-    private readonly bool $inspect = false, /**
+        private readonly bool $inspect = false, /**
      * Whether quoted strings should be emitted with quotes.
      */
-    private readonly bool $quote = true, OutputStyle $style = OutputStyle::EXPANDED, bool $sourceMap = false, private readonly ?LoggerInterface $logger = new QuietLogger())
-    {
+        private readonly bool $quote = true,
+        OutputStyle $style = OutputStyle::EXPANDED,
+        bool $sourceMap = false,
+        private readonly ?LoggerInterface $logger = new QuietLogger()
+    ) {
         $this->buffer = $sourceMap ? new TrackingSourceMapBuffer() : new SimpleStringBuffer();
         $this->compressed = $style === OutputStyle::COMPRESSED;
     }
@@ -1056,7 +1061,6 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
             $this->buffer->write((string) $int);
             return;
         }
-
 
         $text = $this->removeExponent((string) $number);
 

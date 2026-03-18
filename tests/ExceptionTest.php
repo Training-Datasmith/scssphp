@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -50,14 +52,14 @@ class ExceptionTest extends TestCase
   foo : bar;
 END_OF_SCSS
                 ,
-                'expected "}".'
+                'expected "}".',
             ],
             [<<<'END_OF_SCSS'
 .test {
 }}
 END_OF_SCSS
                 ,
-                'unmatched "}".'
+                'unmatched "}".',
             ],
             [<<<'END_OF_SCSS'
 .test {
@@ -65,7 +67,7 @@ END_OF_SCSS
 }
 END_OF_SCSS
                 ,
-                'Undefined mixin.'
+                'Undefined mixin.',
             ],
             [<<<'END_OF_SCSS'
 @mixin do-nothing() {
@@ -76,24 +78,24 @@ END_OF_SCSS
 }
 END_OF_SCSS
                 ,
-                'No argument named $a.'
+                'No argument named $a.',
             ],
-            array(<<<'END_OF_SCSS'
+            [<<<'END_OF_SCSS'
 div {
   color: darken(cobaltgreen, 10%);
 }
 END_OF_SCSS
                 ,
-                '$color: cobaltgreen is not a color.'
-            ),
-            array(<<<'END_OF_SCSS'
+                '$color: cobaltgreen is not a color.',
+            ],
+            [<<<'END_OF_SCSS'
 div {
   color: fade-out(#FFF, 100%);
 }
 END_OF_SCSS
                 ,
-                '$amount: Expected 100% to be within 0 and 1.'
-            ),
+                '$amount: Expected 100% to be within 0 and 1.',
+            ],
             [<<<'END_OF_SCSS'
 BODY {
     DIV {
@@ -104,7 +106,7 @@ BODY {
 }
 END_OF_SCSS
                 ,
-                'Undefined variable.'
+                'Undefined variable.',
             ],
             [<<<'END_OF_SCSS'
 @mixin example {
@@ -118,7 +120,7 @@ P {
 }
 END_OF_SCSS
                 ,
-                'Undefined variable.'
+                'Undefined variable.',
             ],
             [<<<'END_OF_SCSS'
 a.important {
@@ -126,13 +128,13 @@ a.important {
 }
 END_OF_SCSS
                 ,
-                'was not found'
+                'was not found',
             ],
             [<<<'END_OF_SCSS'
 @import "missing";
 END_OF_SCSS
                 ,
-                'Can\'t find stylesheet to import.'
+                'Can\'t find stylesheet to import.',
             ],
             [<<<'END_OF_SCSS'
 .test {
@@ -141,7 +143,7 @@ END_OF_SCSS
 }
 END_OF_SCSS
                 ,
-                '1.5 is not an int.'
+                '1.5 is not an int.',
             ],
             [<<<'END_OF_SCSS'
 .test {
@@ -150,12 +152,12 @@ END_OF_SCSS
 }
 END_OF_SCSS
                 ,
-                '1.5 is not an int.'
+                '1.5 is not an int.',
             ],
             [
                 ".foo { } .bar { } /* comment with \xd6-character */",
                 'expected utf-8 char.',
-            ]
+            ],
         ];
     }
 

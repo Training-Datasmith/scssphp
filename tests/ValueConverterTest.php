@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ScssPhp\ScssPhp\Tests;
 
+use PHPUnit\Framework\TestCase;
 use ScssPhp\ScssPhp\Exception\SassException;
 use ScssPhp\ScssPhp\Value\SassList;
 use ScssPhp\ScssPhp\Value\SassNumber;
 use ScssPhp\ScssPhp\ValueConverter;
-use PHPUnit\Framework\TestCase;
 
 class ValueConverterTest extends TestCase
 {
@@ -55,7 +57,7 @@ class ValueConverterTest extends TestCase
         yield ['()', []];
         yield ['(25,)', [25]];
         yield ['("foo": 25)', ['foo' => 25]];
-        yield ['("1": "hello")', [1 => "hello"]];
+        yield ['("1": "hello")', [1 => 'hello']];
     }
 
     public function testUnsupportedPhpValue(): void

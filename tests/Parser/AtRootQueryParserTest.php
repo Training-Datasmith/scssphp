@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -12,8 +14,8 @@
 
 namespace ScssPhp\ScssPhp\Tests\Parser;
 
-use ScssPhp\ScssPhp\Ast\Sass\AtRootQuery;
 use PHPUnit\Framework\TestCase;
+use ScssPhp\ScssPhp\Ast\Sass\AtRootQuery;
 use ScssPhp\ScssPhp\Exception\SassFormatException;
 
 class AtRootQueryParserTest extends TestCase

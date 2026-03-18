@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -12,9 +14,9 @@
 
 namespace ScssPhp\ScssPhp\Tests\Value;
 
+use PHPUnit\Framework\TestCase;
 use ScssPhp\ScssPhp\Exception\SassScriptException;
 use ScssPhp\ScssPhp\Value\SassBoolean;
-use PHPUnit\Framework\TestCase;
 use ScssPhp\ScssPhp\Value\Value;
 
 class SassBooleanTest extends TestCase

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ScssPhp\ScssPhp\Tests\Parser;
 
-use ScssPhp\ScssPhp\Parser\KeyframeSelectorParser;
 use PHPUnit\Framework\TestCase;
+use ScssPhp\ScssPhp\Parser\KeyframeSelectorParser;
 
 class KeyframeSelectorParserTest extends TestCase
 {

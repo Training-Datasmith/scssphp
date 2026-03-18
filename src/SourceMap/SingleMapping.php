@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -52,8 +54,7 @@ final class SingleMapping
          * Entries indicating the beginning of each span.
          */
         public readonly array $lines
-    )
-    {
+    ) {
     }
 
     /**

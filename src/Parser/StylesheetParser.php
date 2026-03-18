@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -12,7 +14,6 @@
 
 namespace ScssPhp\ScssPhp\Parser;
 
-use League\Uri\Contracts\UriInterface;
 use League\Uri\Exceptions\SyntaxError;
 use League\Uri\Uri;
 use ScssPhp\ScssPhp\Ast\Sass\Argument;
@@ -78,7 +79,6 @@ use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsOperation;
 use ScssPhp\ScssPhp\Colors;
 use ScssPhp\ScssPhp\Deprecation;
 use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
 use ScssPhp\ScssPhp\Util;
 use ScssPhp\ScssPhp\Util\Character;
 use ScssPhp\ScssPhp\Util\LoggerUtil;
@@ -249,6 +249,7 @@ abstract class StylesheetParser extends Parser
             case '}':
                 $this->scanner->error('unmatched "}".');
 
+                // no break
             default:
                 if ($this->inStyleRule || $this->inUnknownAtRule || $this->inMixin || $this->inContentBlock) {
                     return $this->declarationOrStyleRule();
@@ -284,7 +285,7 @@ abstract class StylesheetParser extends Parser
         $name = $this->variableName();
 
         if ($namespace !== null) {
-            $this->assertPublic($name, fn(): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
+            $this->assertPublic($name, fn (): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
         }
 
         if ($this->isPlainCss()) {
@@ -683,7 +684,7 @@ abstract class StylesheetParser extends Parser
             $this->scanner->error("Nested declarations aren't allowed in plain CSS.");
         }
 
-        return $this->withChildren($this->declarationChild(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\Declaration => Declaration::nested($name, $children, $span, $value));
+        return $this->withChildren($this->declarationChild(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\Declaration => Declaration::nested($name, $children, $span, $value));
     }
 
     /**
@@ -733,6 +734,7 @@ abstract class StylesheetParser extends Parser
                 return $this->eachRule($start, $child);
             case 'else':
                 $this->disallowedAtRule($start);
+                // no break
             case 'error':
                 return $this->errorRule($start);
             case 'extend':
@@ -748,6 +750,7 @@ abstract class StylesheetParser extends Parser
 
                 // TODO remove this when implementing modules
                 $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
+                // no break
             case 'function':
                 return $this->functionRule($start);
             case 'if':
@@ -764,6 +767,7 @@ abstract class StylesheetParser extends Parser
                 return $this->mozDocumentRule($start, $name);
             case 'return':
                 $this->disallowedAtRule($start);
+                // no break
             case 'supports':
                 return $this->supportsRule($start);
             case 'use':
@@ -775,6 +779,7 @@ abstract class StylesheetParser extends Parser
 
                 // TODO remove this when implementing modules
                 $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
+                // no break
             case 'warn':
                 return $this->warnRule($start);
             case 'while':
@@ -801,6 +806,7 @@ abstract class StylesheetParser extends Parser
                 return $this->eachRule($start, $this->declarationChild(...));
             case 'else':
                 $this->disallowedAtRule($start);
+                // no break
             case 'error':
                 return $this->errorRule($start);
             case 'for':
@@ -858,6 +864,7 @@ abstract class StylesheetParser extends Parser
                 return $this->eachRule($start, $this->functionChild(...));
             case 'else':
                 $this->disallowedAtRule($start);
+                // no break
             case 'error':
                 return $this->errorRule($start);
             case 'for':
@@ -899,11 +906,11 @@ abstract class StylesheetParser extends Parser
             $query = $this->atRootQuery();
             $this->whitespace();
 
-            return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule => new AtRootRule($children, $span, $query));
+            return $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule => new AtRootRule($children, $span, $query));
         }
 
         if ($this->lookingAtChildren() || ($this->isIndented() && $this->atEndOfStatement())) {
-            return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule => new AtRootRule($children, $span));
+            return $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule => new AtRootRule($children, $span));
         }
 
         $child = $this->styleRule();
@@ -1099,7 +1106,7 @@ abstract class StylesheetParser extends Parser
         return $this->withChildren(
             $this->functionChild(...),
             $start,
-            fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\FunctionRule => new FunctionRule($name, $arguments, $span, $children, $precedingComment)
+            fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\FunctionRule => new FunctionRule($name, $arguments, $span, $children, $precedingComment)
         );
     }
 
@@ -1462,7 +1469,7 @@ abstract class StylesheetParser extends Parser
             $wasInContentBlock = $this->inContentBlock;
             $this->inContentBlock = true;
 
-            $content = $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\ContentBlock => new ContentBlock($contentArguments, $children, $span));
+            $content = $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\ContentBlock => new ContentBlock($contentArguments, $children, $span));
 
             $this->inContentBlock = $wasInContentBlock;
         } else {
@@ -1488,7 +1495,7 @@ abstract class StylesheetParser extends Parser
     {
         $query = $this->mediaQueryList();
 
-        return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\MediaRule => new MediaRule($query, $children, $span));
+        return $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\MediaRule => new MediaRule($query, $children, $span));
     }
 
     /**
@@ -1644,7 +1651,7 @@ abstract class StylesheetParser extends Parser
         $condition = $this->supportsCondition();
         $this->whitespace();
 
-        return $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\SupportsRule => new SupportsRule($condition, $children, $span));
+        return $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\SupportsRule => new SupportsRule($condition, $children, $span));
     }
 
     /**
@@ -1701,7 +1708,7 @@ abstract class StylesheetParser extends Parser
         }
 
         if ($this->lookingAtChildren()) {
-            $rule = $this->withChildren($this->statement(...), $start, fn(array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule => new AtRule($name, $span, $value, $children));
+            $rule = $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule => new AtRule($name, $span, $value, $children));
         } else {
             $this->expectStatementSeparator();
             $rule = new AtRule($name, $this->scanner->spanFrom($start), $value);
@@ -2365,7 +2372,7 @@ WARNING;
      */
     protected function expressionUntilComma(bool $singleEquals = false): Expression
     {
-        return $this->expression(fn(): bool => $this->scanner->peekChar() === ',', $singleEquals);
+        return $this->expression(fn (): bool => $this->scanner->peekChar() === ',', $singleEquals);
     }
 
     /**
@@ -3103,6 +3110,7 @@ WARNING;
 
                 $this->error("Interpolation isn't allowed in namespaces.", $identifier->getSpan());
 
+                // no break
             case '(':
                 if ($plain === null) {
                     return new InterpolatedFunctionExpression($identifier, $this->argumentInvocation(), $this->scanner->spanFrom($start));
@@ -3125,7 +3133,7 @@ WARNING;
     {
         if ($this->scanner->peekChar() === '$') {
             $name = $this->variableName();
-            $this->assertPublic($name, fn(): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
+            $this->assertPublic($name, fn (): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
 
             // TODO remove this when implementing modules
             $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
@@ -3154,6 +3162,7 @@ WARNING;
                 }
 
                 // fall through
+                // no break
             case 'element':
             case 'expression':
                 if (!$this->scanner->scanChar('(')) {
@@ -3498,6 +3507,7 @@ WARNING;
                     }
 
                     // Fallthrough
+                    // no break
                 case '(':
                 case '[':
                     $bracket = $this->scanner->readChar();
@@ -4247,7 +4257,7 @@ WARNING;
     {
         $start = $this->scanner->getPosition();
         $result = $this->identifier();
-        $this->assertPublic($result, fn(): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
+        $this->assertPublic($result, fn (): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
 
         return $result;
     }

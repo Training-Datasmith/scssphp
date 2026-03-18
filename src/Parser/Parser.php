@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -60,7 +62,7 @@ class Parser
      * original locations in the source file, if this isn't being parsed directly
      * from source.
      */
-    private readonly ?InterpolationMap $interpolationMap = null)
+        private readonly ?InterpolationMap $interpolationMap = null)
     {
         $this->scanner = new StringScanner($contents, $sourceUrl);
     }
@@ -201,7 +203,6 @@ class Parser
 
         if ($this->scanner->scanChar('-')) {
             $text .= '-';
-
 
             if ($this->scanner->scanChar('-')) {
                 $text .= '-';
@@ -889,7 +890,7 @@ class Parser
 
         $interpolationMap = $this->interpolationMap;
 
-        return new LazyFileSpan(static fn(): \SourceSpan\FileSpan => $interpolationMap->mapSpan($span));
+        return new LazyFileSpan(static fn (): \SourceSpan\FileSpan => $interpolationMap->mapSpan($span));
     }
 
     /**

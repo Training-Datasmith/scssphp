@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -30,8 +32,9 @@ final class PlaceholderSelector extends SimpleSelector
     public function __construct(/**
      * The name of the placeholder.
      */
-    private readonly string $name, FileSpan $span)
-    {
+        private readonly string $name,
+        FileSpan $span
+    ) {
         parent::__construct($span);
     }
 

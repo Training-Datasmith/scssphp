@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -36,8 +38,7 @@ final class CalculationOperation implements Equatable, \Stringable
          * {@see SassString}, or a {@see CalculationOperation}.
          */
         private readonly object $right
-    )
-    {
+    ) {
     }
 
     public function getOperator(): CalculationOperator

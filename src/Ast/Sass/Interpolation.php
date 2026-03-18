@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -12,7 +14,6 @@
 
 namespace ScssPhp\ScssPhp\Ast\Sass;
 
-use ScssPhp\ScssPhp\Parser\InterpolationBuffer;
 use SourceSpan\FileSpan;
 
 /**
@@ -107,6 +108,6 @@ final class Interpolation implements SassNode
 
     public function __toString(): string
     {
-        return implode('', array_map(fn(\ScssPhp\ScssPhp\Ast\Sass\Expression|string $value): string => \is_string($value) ? $value : '#{' . $value . '}', $this->contents));
+        return implode('', array_map(fn (\ScssPhp\ScssPhp\Ast\Sass\Expression|string $value): string => \is_string($value) ? $value : '#{' . $value . '}', $this->contents));
     }
 }

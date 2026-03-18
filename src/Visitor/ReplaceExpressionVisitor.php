@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -98,7 +100,7 @@ abstract class ReplaceExpressionVisitor implements ExpressionVisitor
     public function visitListExpression(ListExpression $node): Expression
     {
         return new ListExpression(
-            array_map(fn(Expression $item) => $item->accept($this), $node->getContents()),
+            array_map(fn (Expression $item) => $item->accept($this), $node->getContents()),
             $node->getSeparator(),
             $node->getSpan(),
             $node->hasBrackets()
@@ -108,7 +110,7 @@ abstract class ReplaceExpressionVisitor implements ExpressionVisitor
     public function visitMapExpression(MapExpression $node): Expression
     {
         return new MapExpression(
-            array_map(fn(array $pair): array => [$pair[0]->accept($this), $pair[1]->accept($this)], $node->getPairs()),
+            array_map(fn (array $pair): array => [$pair[0]->accept($this), $pair[1]->accept($this)], $node->getPairs()),
             $node->getSpan()
         );
     }
@@ -167,8 +169,8 @@ abstract class ReplaceExpressionVisitor implements ExpressionVisitor
     protected function visitArgumentInvocation(ArgumentInvocation $invocation): ArgumentInvocation
     {
         return new ArgumentInvocation(
-            array_map(fn(Expression $expression) => $expression->accept($this), $invocation->getPositional()),
-            array_map(fn(Expression $expression) => $expression->accept($this), $invocation->getNamed()),
+            array_map(fn (Expression $expression) => $expression->accept($this), $invocation->getPositional()),
+            array_map(fn (Expression $expression) => $expression->accept($this), $invocation->getNamed()),
             $invocation->getSpan(),
             $invocation->getRest()?->accept($this),
             $invocation->getKeywordRest()?->accept($this)
@@ -209,6 +211,6 @@ abstract class ReplaceExpressionVisitor implements ExpressionVisitor
 
     protected function visitInterpolation(Interpolation $interpolation): Interpolation
     {
-        return new Interpolation(array_map(fn(\ScssPhp\ScssPhp\Ast\Sass\Expression|string $node) => $node instanceof Expression ? $node->accept($this) : $node, $interpolation->getContents()), $interpolation->getSpan());
+        return new Interpolation(array_map(fn (\ScssPhp\ScssPhp\Ast\Sass\Expression|string $node) => $node instanceof Expression ? $node->accept($this) : $node, $interpolation->getContents()), $interpolation->getSpan());
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ScssPhp\ScssPhp\Tests\Util;
 
-use League\Uri\Uri;
-use ScssPhp\ScssPhp\Util\Path;
 use PHPUnit\Framework\TestCase;
+use ScssPhp\ScssPhp\Util\Path;
 
 class PathTest extends TestCase
 {

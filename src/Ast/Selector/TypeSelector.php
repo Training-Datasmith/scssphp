@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -28,8 +30,9 @@ final class TypeSelector extends SimpleSelector
     public function __construct(/**
      * The element name being selected.
      */
-    private readonly QualifiedName $name, FileSpan $span)
-    {
+        private readonly QualifiedName $name,
+        FileSpan $span
+    ) {
         parent::__construct($span);
     }
 

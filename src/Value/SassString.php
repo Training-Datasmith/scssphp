@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -43,8 +45,7 @@ final class SassString extends Value
          * Whether this string has quotes.
          */
         private readonly bool $quotes = true
-    )
-    {
+    ) {
     }
 
     public function getText(): string

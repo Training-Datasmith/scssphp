@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -15,7 +17,6 @@ namespace ScssPhp\ScssPhp\Extend;
 use ScssPhp\ScssPhp\Ast\Sass\Statement\ExtendRule;
 use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
 use ScssPhp\ScssPhp\Ast\Selector\SimpleSelector;
-use ScssPhp\ScssPhp\Extend\ExtensionStore;
 use ScssPhp\ScssPhp\Util\Box;
 
 /**

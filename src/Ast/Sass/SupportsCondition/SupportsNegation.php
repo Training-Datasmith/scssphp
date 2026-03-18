@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -27,8 +29,9 @@ final class SupportsNegation implements SupportsCondition
     public function __construct(/**
      * The condition that's been negated.
      */
-    private readonly SupportsCondition $condition, FileSpan $span)
-    {
+        private readonly SupportsCondition $condition,
+        FileSpan $span
+    ) {
         $this->span = $span;
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * SCSSPHP
  *
@@ -30,12 +32,13 @@ final class VariableExpression implements Expression, SassReference
     public function __construct(/**
      * The name of this variable, with underscores converted to hyphens.
      */
-    private readonly string $name, FileSpan $span, /**
+        private readonly string $name,
+        FileSpan $span, /**
      * The namespace of the variable being referenced, or `null` if it's
      * referenced without a namespace.
      */
-    private readonly ?string $namespace = null)
-    {
+        private readonly ?string $namespace = null
+    ) {
         $this->span = $span;
     }
 
