@@ -1855,7 +1855,17 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
     public function visitWhileRule(WhileRule $node): ?Value
     {
         return $this->environment->scope(function () use ($node): ?\ScssPhp\ScssPhp\Value\Value {
+            $iterationCount = 0;
+            $maxIterations = 10000;
+
             while ($node->getCondition()->accept($this)->isTruthy()) {
+                if (++$iterationCount > $maxIterations) {
+                    throw new SimpleSassException(
+                        '@while loop exceeded maximum iteration limit of ' . $maxIterations,
+                        $node->getSpan()
+                    );
+                }
+
                 $result = $this->handleReturn($node->getChildren(), fn (Statement $child) => $child->accept($this));
 
                 if ($result !== null) {
