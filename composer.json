@@ -2,7 +2,13 @@
     "name": "scssphp/scssphp",
     "type": "library",
     "description": "scssphp is a compiler for SCSS written in PHP.",
-    "keywords": ["css", "stylesheet", "scss", "sass", "less"],
+    "keywords": [
+        "css",
+        "stylesheet",
+        "scss",
+        "sass",
+        "less"
+    ],
     "homepage": "https://scssphp.github.io/scssphp/",
     "license": [
         "MIT"
@@ -20,10 +26,14 @@
         }
     ],
     "autoload": {
-        "psr-4": { "ScssPhp\\ScssPhp\\": "src/" }
+        "psr-4": {
+            "Scss_Php\\Scss_Php\\": "src/"
+        }
     },
     "autoload-dev": {
-        "psr-4": { "ScssPhp\\ScssPhp\\Tests\\": "tests/" }
+        "psr-4": {
+            "Scss_Php\\Scss_Php\\Tests\\": "tests/"
+        }
     },
     "require": {
         "php": ">=8.1",
