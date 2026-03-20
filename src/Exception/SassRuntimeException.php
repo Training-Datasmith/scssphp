@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,13 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Exception;
 
-namespace ScssPhp\ScssPhp\Exception;
-
-use SourceSpan\FileSpan;
-
+use Source_Span\File_Span;
 /**
  * @internal
  */
-interface SassRuntimeException extends SassException
+interface Sass_Runtime_Exception extends Sass_Exception
 {
-    public function withAdditionalSpan(FileSpan $span, string $label, ?\Throwable $previous = null): MultiSpanSassRuntimeException;
+    public function with_additional_span(File_Span $span, string $label, ?\Throwable $previous = null): Multi_Span_Sass_Runtime_Exception;
 }

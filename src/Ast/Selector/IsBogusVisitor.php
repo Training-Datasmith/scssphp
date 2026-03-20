@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,54 +10,46 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Visitor\AnySelectorVisitor;
-
+use Scss_Php\Scss_Php\Visitor\Any_Selector_Visitor;
 /**
  * The visitor used to implement {@see Selector::isBogus}.
  *
  * @internal
  */
-final class IsBogusVisitor extends AnySelectorVisitor
+final class Is_Bogus_Visitor extends Any_Selector_Visitor
 {
     public function __construct(
         /**
          * Whether to consider selectors with leading combinators as bogus.
          */
-        private readonly bool $includeLeadingCombinator
-    ) {
-    }
-
-    public function visitComplexSelector(ComplexSelector $complex): bool
+        private readonly bool $include_leading_combinator
+    )
     {
-        if (\count($complex->getComponents()) === 0) {
-            return \count($complex->getLeadingCombinators()) > 0;
+    }
+    public function visit_complex_selector(Complex_Selector $complex): bool
+    {
+        if (\count($complex->get_components()) === 0) {
+            return \count($complex->get_leading_combinators()) > 0;
         }
-
-        if (\count($complex->getLeadingCombinators()) > ($this->includeLeadingCombinator ? 0 : 1) || count($complex->getLastComponent()->getCombinators()) !== 0) {
+        if (\count($complex->get_leading_combinators()) > ($this->include_leading_combinator ? 0 : 1) || count($complex->get_last_component()->get_combinators()) !== 0) {
             return true;
         }
-
-        foreach ($complex->getComponents() as $component) {
-            if (\count($component->getCombinators()) > 1 || $component->getSelector()->accept($this)) {
+        foreach ($complex->get_components() as $component) {
+            if (\count($component->get_combinators()) > 1 || $component->get_selector()->accept($this)) {
                 return true;
             }
         }
-
         return false;
     }
-
-    public function visitPseudoSelector(PseudoSelector $pseudo): bool
+    public function visit_pseudo_selector(Pseudo_Selector $pseudo): bool
     {
-        $selector = $pseudo->getSelector();
-
+        $selector = $pseudo->get_selector();
         if ($selector === null) {
             return false;
         }
-
         // The CSS spec specifically allows leading combinators in `:has()`.
-        return $pseudo->getName() === 'has' ? $selector->isBogusOtherThanLeadingCombinator() : $selector->isBogus();
+        return $pseudo->get_name() === 'has' ? $selector->is_bogus_other_than_leading_combinator() : $selector->is_bogus();
     }
 }

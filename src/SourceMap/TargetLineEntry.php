@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,20 +10,17 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\SourceMap;
+namespace Scss_Php\Scss_Php\Source_Map;
 
 /**
  * @internal
  */
-final class TargetLineEntry
+final class Target_Line_Entry
 {
     /**
      * @param \ArrayObject<int, TargetEntry> $entries
      */
-    public function __construct(
-        public readonly int $line,
-        public readonly \ArrayObject $entries,
-    ) {
+    public function __construct(public readonly int $line, public readonly \ArrayObject $entries)
+    {
     }
 }

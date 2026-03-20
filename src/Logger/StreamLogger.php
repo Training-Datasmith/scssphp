@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,66 +10,57 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Logger;
 
-namespace ScssPhp\ScssPhp\Logger;
-
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use ScssPhp\ScssPhp\Util;
-use ScssPhp\ScssPhp\Util\Path;
-use SourceSpan\FileSpan;
-use SourceSpan\SourceSpan;
-
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Scss_Php\Scss_Php\Util;
+use Scss_Php\Scss_Php\Util\Path;
+use Source_Span\File_Span;
+use Source_Span\Source_Span;
 /**
  * A logger that prints to a PHP stream (for instance stderr)
  */
-final class StreamLogger implements LoggerInterface
+final class Stream_Logger implements Logger_Interface
 {
     /**
      * @param resource $stream          A stream resource
      * @param bool     $closeOnDestruct If true, takes ownership of the stream and close it on destruct to avoid leaks.
      */
-    public function __construct(private $stream, private readonly bool $closeOnDestruct = false)
+    public function __construct(private $stream, private readonly bool $close_on_destruct = false)
     {
     }
-
     /**
      * @internal
      */
     public function __destruct()
     {
-        if ($this->closeOnDestruct) {
+        if ($this->close_on_destruct) {
             fclose($this->stream);
         }
     }
-
-    public function warn(string $message, ?Deprecation $deprecation = null, ?FileSpan $span = null, ?Trace $trace = null): void
+    public function warn(string $message, ?Deprecation $deprecation = null, ?File_Span $span = null, ?Trace $trace = null): void
     {
         $prefix = ($deprecation !== null ? 'DEPRECATION ' : '') . 'WARNING';
-
         if ($span === null) {
-            $formattedMessage = ': ' . $message;
+            $formatted_message = ': ' . $message;
         } elseif ($trace !== null) {
             // If there's a span and a trace, the span's location information is
             // probably duplicated in the trace, so we just use it for highlighting.
-            $formattedMessage = ': ' . $message . "\n\n" . $span->highlight();
+            $formatted_message = ': ' . $message . "\n\n" . $span->highlight();
         } else {
-            $formattedMessage = ' on ' . $span->message("\n" . $message);
+            $formatted_message = ' on ' . $span->message("\n" . $message);
         }
-
         if ($trace !== null) {
-            $formattedMessage .= "\n" . Util::indent(rtrim($trace->getFormattedTrace()), 4);
+            $formatted_message .= "\n" . Util::indent(rtrim($trace->get_formatted_trace()), 4);
         }
-
-        fwrite($this->stream, $prefix . $formattedMessage . "\n\n");
+        fwrite($this->stream, $prefix . $formatted_message . "\n\n");
     }
-
-    public function debug(string $message, SourceSpan $span): void
+    public function debug(string $message, Source_Span $span): void
     {
-        $url = $span->getStart()->getSourceUrl() === null ? '-' : Path::prettyUri($span->getStart()->getSourceUrl());
-        $line = $span->getStart()->getLine() + 1;
-        $location = "$url:$line ";
-
+        $url = $span->get_start()->get_source_url() === null ? '-' : Path::pretty_uri($span->get_start()->get_source_url());
+        $line = $span->get_start()->get_line() + 1;
+        $location = "{$url}:{$line} ";
         fwrite($this->stream, \sprintf('%sDEBUG: %s', $location, $message) . "\n");
     }
 }

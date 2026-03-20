@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,184 +10,149 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Function;
 
-namespace ScssPhp\ScssPhp\Function;
-
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Value\SassBoolean;
-use ScssPhp\ScssPhp\Value\SassNull;
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Value\Value;
-use ScssPhp\ScssPhp\Warn;
-
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Value\Sass_Boolean;
+use Scss_Php\Scss_Php\Value\Sass_Null;
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Value\Value;
+use Scss_Php\Scss_Php\Warn;
 /**
  * @internal
  */
-final class MathFunctions
+final class Math_Functions
 {
     /**
      * @param list<Value> $arguments
      */
-    public static function abs(array $arguments): \ScssPhp\ScssPhp\Value\SassNumber
+    public static function abs(array $arguments): \Scss_Php\Scss_Php\Value\Sass_Number
     {
-        $number = $arguments[0]->assertNumber('number');
+        $number = $arguments[0]->assert_number('number');
         // TODO implement the deprecation for the % unit once modules are implemented to provided the replacement
-
-        return SassNumber::withUnits(abs($number->getValue()), $number->getNumeratorUnits(), $number->getDenominatorUnits());
+        return Sass_Number::with_units(abs($number->get_value()), $number->get_numerator_units(), $number->get_denominator_units());
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function ceil(array $arguments): Value
     {
-        return self::numberFunction($arguments, ceil(...));
+        return self::number_function($arguments, ceil(...));
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function floor(array $arguments): Value
     {
-        return self::numberFunction($arguments, floor(...));
+        return self::number_function($arguments, floor(...));
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function max(array $arguments): Value
     {
         $max = null;
-
-        foreach ($arguments[0]->asList() as $value) {
-            $number = $value->assertNumber();
-
-            if ($max === null || $max->lessThan($number)->isTruthy()) {
+        foreach ($arguments[0]->as_list() as $value) {
+            $number = $value->assert_number();
+            if ($max === null || $max->less_than($number)->is_truthy()) {
                 $max = $number;
             }
         }
-
         if ($max !== null) {
             return $max;
         }
-
-        throw new SassScriptException('At least one argument must be passed.');
+        throw new Sass_Script_Exception('At least one argument must be passed.');
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function min(array $arguments): Value
     {
         $min = null;
-
-        foreach ($arguments[0]->asList() as $value) {
-            $number = $value->assertNumber();
-
-            if ($min === null || $min->greaterThan($number)->isTruthy()) {
+        foreach ($arguments[0]->as_list() as $value) {
+            $number = $value->assert_number();
+            if ($min === null || $min->greater_than($number)->is_truthy()) {
                 $min = $number;
             }
         }
-
         if ($min !== null) {
             return $min;
         }
-
-        throw new SassScriptException('At least one argument must be passed.');
+        throw new Sass_Script_Exception('At least one argument must be passed.');
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function round(array $arguments): Value
     {
-        return self::numberFunction($arguments, round(...));
+        return self::number_function($arguments, round(...));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function compatible(array $arguments): \ScssPhp\ScssPhp\Value\SassBoolean
+    public static function compatible(array $arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean
     {
-        $number1 = $arguments[0]->assertNumber('number1');
-        $number2 = $arguments[1]->assertNumber('number2');
-
-        return SassBoolean::create($number1->isComparableTo($number2));
+        $number1 = $arguments[0]->assert_number('number1');
+        $number2 = $arguments[1]->assert_number('number2');
+        return Sass_Boolean::create($number1->is_comparable_to($number2));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function isUnitless(array $arguments): \ScssPhp\ScssPhp\Value\SassBoolean
+    public static function is_unitless(array $arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean
     {
-        $number = $arguments[0]->assertNumber('number');
-
-        return SassBoolean::create(!$number->hasUnits());
+        $number = $arguments[0]->assert_number('number');
+        return Sass_Boolean::create(!$number->has_units());
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function unit(array $arguments): \ScssPhp\ScssPhp\Value\SassString
+    public static function unit(array $arguments): \Scss_Php\Scss_Php\Value\Sass_String
     {
-        $number = $arguments[0]->assertNumber('number');
-
-        return new SassString($number->getUnitString(), true);
+        $number = $arguments[0]->assert_number('number');
+        return new Sass_String($number->get_unit_string(), true);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function percentage(array $arguments): \ScssPhp\ScssPhp\Value\SassNumber
+    public static function percentage(array $arguments): \Scss_Php\Scss_Php\Value\Sass_Number
     {
-        $number = $arguments[0]->assertNumber('number');
-        $number->assertNoUnits('number');
-
-        return SassNumber::create($number->getValue() * 100, '%');
+        $number = $arguments[0]->assert_number('number');
+        $number->assert_no_units('number');
+        return Sass_Number::create($number->get_value() * 100, '%');
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function random(array $arguments): \ScssPhp\ScssPhp\Value\SassNumber
+    public static function random(array $arguments): \Scss_Php\Scss_Php\Value\Sass_Number
     {
-        if ($arguments[0] instanceof SassNull) {
+        if ($arguments[0] instanceof Sass_Null) {
             // TODO use a better algorithm to generate a random float.
             $max = mt_getrandmax();
-
-            return SassNumber::create(mt_rand(0, $max - 1) / $max);
+            return Sass_Number::create(mt_rand(0, $max - 1) / $max);
         }
-
-        $limit = $arguments[0]->assertNumber('limit');
-
-        if ($limit->hasUnits()) {
-            $unitString = $limit->getUnitString();
-
+        $limit = $arguments[0]->assert_number('limit');
+        if ($limit->has_units()) {
+            $unit_string = $limit->get_unit_string();
             // TODO update the message when implementing modules and deprecating division.
-            Warn::forDeprecation(
-                <<<TXT
-                random() will no longer ignore \$limit units ($limit) in a future release.
-
-                Recommendation: random(\$limit / 1$unitString) * 1$unitString
-
-                To preserve current behavior: random(\$limit / 1$unitString)
-
-                More info: https://sass-lang.com/d/function-units
-                TXT,
-                Deprecation::functionUnits
-            );
+            Warn::for_deprecation(<<<TXT
+            random() will no longer ignore \$limit units ({$limit}) in a future release.
+            
+            Recommendation: random(\$limit / 1{$unit_string}) * 1{$unit_string}
+            
+            To preserve current behavior: random(\$limit / 1{$unit_string})
+            
+            More info: https://sass-lang.com/d/function-units
+            TXT, Deprecation::functionUnits);
         }
-
-        $limitScalar = $limit->assertInt('limit');
-        if ($limitScalar < 1) {
-            throw new SassScriptException("\$limit: Must be greater than 0, was $limit.");
+        $limit_scalar = $limit->assert_int('limit');
+        if ($limit_scalar < 1) {
+            throw new Sass_Script_Exception("\$limit: Must be greater than 0, was {$limit}.");
         }
-
-        return SassNumber::create(mt_rand(1, $limitScalar));
+        return Sass_Number::create(mt_rand(1, $limit_scalar));
     }
-
     /**
      * Implements a callable that transforms a number's value
      * using $transform and preserves its units.
@@ -198,10 +162,9 @@ final class MathFunctions
      *
      * @param-immediately-invoked-callable $transform
      */
-    private static function numberFunction(array $arguments, callable $transform): \ScssPhp\ScssPhp\Value\SassNumber
+    private static function number_function(array $arguments, callable $transform): \Scss_Php\Scss_Php\Value\Sass_Number
     {
-        $number = $arguments[0]->assertNumber('number');
-
-        return SassNumber::withUnits($transform($number->getValue()), $number->getNumeratorUnits(), $number->getDenominatorUnits());
+        $number = $arguments[0]->assert_number('number');
+        return Sass_Number::with_units($transform($number->get_value()), $number->get_numerator_units(), $number->get_denominator_units());
     }
 }

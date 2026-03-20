@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,14 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Logger;
 
-namespace ScssPhp\ScssPhp\Logger;
-
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use SourceSpan\FileSpan;
-use SourceSpan\SourceSpan;
-
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Source_Span\File_Span;
+use Source_Span\Source_Span;
 /**
  * Interface implemented by loggers for warnings and debug messages.
  *
@@ -28,7 +25,7 @@ use SourceSpan\SourceSpan;
  * compilation does not end (error or infinite loop after the warning
  * for instance).
  */
-interface LoggerInterface
+interface Logger_Interface
 {
     /**
      * Emits a warning with the given message.
@@ -40,10 +37,9 @@ interface LoggerInterface
      * warning. Implementations should surface all this information to
      * the end user.
      */
-    public function warn(string $message, ?Deprecation $deprecation = null, ?FileSpan $span = null, ?Trace $trace = null): void;
-
+    public function warn(string $message, ?Deprecation $deprecation = null, ?File_Span $span = null, ?Trace $trace = null): void;
     /**
      * Emits a debugging message associated with the given span.
      */
-    public function debug(string $message, SourceSpan $span): void;
+    public function debug(string $message, Source_Span $span): void;
 }

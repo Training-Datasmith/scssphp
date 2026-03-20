@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,11 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Util\Character;
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Util\Character;
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Source_Span\File_Span;
 /**
  * A placeholder selector.
  *
@@ -27,43 +24,40 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class PlaceholderSelector extends SimpleSelector
+final class Placeholder_Selector extends Simple_Selector
 {
-    public function __construct(/**
-     * The name of the placeholder.
-     */
+    public function __construct(
+        /**
+         * The name of the placeholder.
+         */
         private readonly string $name,
-        FileSpan $span
-    ) {
+        File_Span $span
+    )
+    {
         parent::__construct($span);
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
     /**
      * Returns whether this is a private selector (that is, whether it begins
      * with `-` or `_`).
      */
-    public function isPrivate(): bool
+    public function is_private(): bool
     {
-        return Character::isPrivate($this->name);
+        return Character::is_private($this->name);
     }
-
-    public function accept(SelectorVisitor $visitor)
+    public function accept(Selector_Visitor $visitor)
     {
-        return $visitor->visitPlaceholderSelector($this);
+        return $visitor->visit_placeholder_selector($this);
     }
-
-    public function addSuffix(string $suffix): \ScssPhp\ScssPhp\Ast\Selector\PlaceholderSelector
+    public function add_suffix(string $suffix): \Scss_Php\Scss_Php\Ast\Selector\Placeholder_Selector
     {
-        return new PlaceholderSelector($this->name . $suffix, $this->getSpan());
+        return new Placeholder_Selector($this->name . $suffix, $this->get_span());
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof PlaceholderSelector && $other->name === $this->name;
+        return $other instanceof Placeholder_Selector && $other->name === $this->name;
     }
 }

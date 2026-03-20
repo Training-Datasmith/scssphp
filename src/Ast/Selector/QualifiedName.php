@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,11 +10,9 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Util\Equatable;
-
+use Scss_Php\Scss_Php\Util\Equatable;
 /**
  * A [qualified name][].
  *
@@ -23,7 +20,7 @@ use ScssPhp\ScssPhp\Util\Equatable;
  *
  * @internal
  */
-final class QualifiedName implements Equatable, \Stringable
+final class Qualified_Name implements Equatable, \Stringable
 {
     public function __construct(
         /**
@@ -38,26 +35,23 @@ final class QualifiedName implements Equatable, \Stringable
          * to any namespace. Otherwise, {@see name} belongs to the given namespace.
          */
         private readonly ?string $namespace = null
-    ) {
+    )
+    {
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
-    public function getNamespace(): ?string
+    public function get_namespace(): ?string
     {
         return $this->namespace;
     }
-
     public function __toString(): string
     {
         return $this->namespace === null ? $this->name : $this->namespace . '|' . $this->name;
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof QualifiedName && $other->name === $this->name && $other->namespace === $this->namespace;
+        return $other instanceof Qualified_Name && $other->name === $this->name && $other->namespace === $this->namespace;
     }
 }

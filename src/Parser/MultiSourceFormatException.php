@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,26 +10,30 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use SourceSpan\FileSpan;
-
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class MultiSourceFormatException extends FormatException
+final class Multi_Source_Format_Exception extends Format_Exception
 {
     /**
      * @param array<string, FileSpan> $secondarySpans
      */
-    public function __construct(string $message, FileSpan $span, /**
-     * {@see MultiSpanSassException::$primaryLabel}
-     */
-        public readonly string $primaryLabel, /**
-     * {@see MultiSpanSassException::$secondarySpans}
-     */
-        public readonly array $secondarySpans, ?\Throwable $previous = null)
+    public function __construct(
+        string $message,
+        File_Span $span,
+        /**
+         * {@see MultiSpanSassException::$primaryLabel}
+         */
+        public readonly string $primary_label,
+        /**
+         * {@see MultiSpanSassException::$secondarySpans}
+         */
+        public readonly array $secondary_spans,
+        ?\Throwable $previous = null
+    )
     {
         parent::__construct($message, $span, $previous);
     }

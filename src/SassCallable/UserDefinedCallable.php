@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,40 +10,34 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Sass_Callable;
 
-namespace ScssPhp\ScssPhp\SassCallable;
-
-use ScssPhp\ScssPhp\Ast\Sass\Statement\CallableDeclaration;
-use ScssPhp\ScssPhp\Evaluation\Environment;
-
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Callable_Declaration;
+use Scss_Php\Scss_Php\Evaluation\Environment;
 /**
  * A callback defined in the user's Sass stylesheet.
  *
  * @internal
  */
-final class UserDefinedCallable implements SassCallable
+final class User_Defined_Callable implements Sass_Callable
 {
-    public function __construct(private readonly CallableDeclaration $declaration, private readonly Environment $environment, private readonly bool $inDependency)
+    public function __construct(private readonly Callable_Declaration $declaration, private readonly Environment $environment, private readonly bool $in_dependency)
     {
     }
-
-    public function getDeclaration(): CallableDeclaration
+    public function get_declaration(): Callable_Declaration
     {
         return $this->declaration;
     }
-
-    public function getEnvironment(): Environment
+    public function get_environment(): Environment
     {
         return $this->environment;
     }
-
-    public function isInDependency(): bool
+    public function is_in_dependency(): bool
     {
-        return $this->inDependency;
+        return $this->in_dependency;
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
-        return $this->declaration->getName();
+        return $this->declaration->get_name();
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp;
+namespace Scss_Php\Scss_Php;
 
 /**
  * Base node
@@ -27,19 +25,16 @@ abstract class Node
      * @var string
      */
     public $type;
-
     /**
      * @var int
      */
-    public $sourceIndex;
-
+    public $source_index;
     /**
      * @var int|null
      */
-    public $sourceLine;
-
+    public $source_line;
     /**
      * @var int|null
      */
-    public $sourceColumn;
+    public $source_column;
 }

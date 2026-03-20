@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,13 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Evaluation;
 
-namespace ScssPhp\ScssPhp\Evaluation;
-
-use ScssPhp\ScssPhp\Ast\AstNode;
-use ScssPhp\ScssPhp\SassCallable\SassCallable;
-use ScssPhp\ScssPhp\SassCallable\UserDefinedCallable;
-use ScssPhp\ScssPhp\Value\Value;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
+use Scss_Php\Scss_Php\Sass_Callable\Sass_Callable;
+use Scss_Php\Scss_Php\Sass_Callable\User_Defined_Callable;
+use Scss_Php\Scss_Php\Value\Value;
+use Source_Span\File_Span;
 /**
  * The lexical environment in which Sass is executed.
  *
@@ -37,8 +34,7 @@ final class Environment
      *
      * @var array<string, int>
      */
-    private array $variableIndices = [];
-
+    private array $variable_indices = [];
     /**
      * A map of function names to their indices in {@see functions}.
      *
@@ -46,8 +42,7 @@ final class Environment
      *
      * @var array<string, int>
      */
-    private array $functionIndices = [];
-
+    private array $function_indices = [];
     /**
      * A map of mixin names to their indices in {@see mixins}.
      *
@@ -55,39 +50,33 @@ final class Environment
      *
      * @var array<string, int>
      */
-    private array $mixinIndices = [];
-
+    private array $mixin_indices = [];
     /**
      * Whether the environment is lexically within a mixin.
      */
-    private bool $inMixin = false;
-
+    private bool $in_mixin = false;
     /**
      * Whether the environment is currently in a global or semi-global scope.
      *
      * A semi-global scope can assign to global variables, but it doesn't declare
      * them by default.
      */
-    private bool $inSemiGlobalScope = true;
-
+    private bool $in_semi_global_scope = true;
     /**
      * The name of the last variable that was accessed.
      *
      * This is cached to speed up repeated references to the same variable, as
      * well as references to the last variable's {@see FileSpan}.
      */
-    private ?string $lastVariableName = null;
-
+    private ?string $last_variable_name = null;
     /**
      * The index in {@see variables} of the last variable that was accessed.
      */
-    private ?int $lastVariableIndex = null;
-
+    private ?int $last_variable_index = null;
     public static function create(): Environment
     {
         return new Environment([new \ArrayObject()], [new \ArrayObject()], [new \ArrayObject()], [new \ArrayObject()]);
     }
-
     /**
      * @param array<int, \ArrayObject<string, Value>>        $variables
      * @param array<int, \ArrayObject<string, AstNode>>      $variableNodes
@@ -111,7 +100,7 @@ final class Environment
          * {@see AstNode::getSspan} if the span isn't required, since some nodes need to do
          * real work to manufacture a source span.
          */
-        private array $variableNodes,
+        private array $variable_nodes,
         /**
          * A list of functions defined at each lexical scope level.
          *
@@ -134,28 +123,25 @@ final class Environment
          * The content block passed to the lexically-enclosing mixin, or `null` if
          * this is not in a mixin, or if no content block was passed.
          */
-        private ?UserDefinedCallable $content = null
-    ) {
+        private ?User_Defined_Callable $content = null
+    )
+    {
     }
-
-    public function getContent(): ?UserDefinedCallable
+    public function get_content(): ?User_Defined_Callable
     {
         return $this->content;
     }
-
     /**
      * Whether the environment is lexically at the root of the document.
      */
-    public function atRoot(): bool
+    public function at_root(): bool
     {
         return \count($this->variables) === 1;
     }
-
-    public function isInMixin(): bool
+    public function is_in_mixin(): bool
     {
-        return $this->inMixin;
+        return $this->in_mixin;
     }
-
     /**
      * Creates a closure based on this environment.
      *
@@ -165,9 +151,8 @@ final class Environment
      */
     public function closure(): Environment
     {
-        return new Environment($this->variables, $this->variableNodes, $this->functions, $this->mixins, $this->content);
+        return new Environment($this->variables, $this->variable_nodes, $this->functions, $this->mixins, $this->content);
     }
-
     /**
      * Returns a new environment to use for an imported file.
      *
@@ -175,102 +160,79 @@ final class Environment
      * and mixins, but excludes most modules (except for global modules that
      * result from importing a file with forwards).
      */
-    public function forImport(): Environment
+    public function for_import(): Environment
     {
-        return new Environment($this->variables, $this->variableNodes, $this->functions, $this->mixins, $this->content);
+        return new Environment($this->variables, $this->variable_nodes, $this->functions, $this->mixins, $this->content);
     }
-
-    public function getVariable(string $name): ?Value
+    public function get_variable(string $name): ?Value
     {
-        if ($this->lastVariableName === $name) {
-            assert($this->lastVariableIndex !== null);
-
-            return $this->variables[$this->lastVariableIndex][$name] ?? null;
+        if ($this->last_variable_name === $name) {
+            assert($this->last_variable_index !== null);
+            return $this->variables[$this->last_variable_index][$name] ?? null;
         }
-
-        $index = $this->variableIndices[$name] ?? null;
-
+        $index = $this->variable_indices[$name] ?? null;
         if ($index !== null) {
-            $this->lastVariableName = $name;
-            $this->lastVariableIndex = $index;
-
+            $this->last_variable_name = $name;
+            $this->last_variable_index = $index;
             return $this->variables[$index][$name] ?? null;
         }
-
-        $index = $this->variableIndex($name);
-
+        $index = $this->variable_index($name);
         if ($index === null) {
             return null;
         }
-
-        $this->lastVariableName = $name;
-        $this->lastVariableIndex = $index;
-        $this->variableIndices[$name] = $index;
-
+        $this->last_variable_name = $name;
+        $this->last_variable_index = $index;
+        $this->variable_indices[$name] = $index;
         return $this->variables[$index][$name] ?? null;
     }
-
-    public function getVariableNode(string $name): ?AstNode
+    public function get_variable_node(string $name): ?Ast_Node
     {
-        if ($this->lastVariableName === $name) {
-            assert($this->lastVariableIndex !== null);
-
-            return $this->variableNodes[$this->lastVariableIndex][$name] ?? null;
+        if ($this->last_variable_name === $name) {
+            assert($this->last_variable_index !== null);
+            return $this->variable_nodes[$this->last_variable_index][$name] ?? null;
         }
-
-        $index = $this->variableIndices[$name] ?? null;
-
+        $index = $this->variable_indices[$name] ?? null;
         if ($index !== null) {
-            $this->lastVariableName = $name;
-            $this->lastVariableIndex = $index;
-
-            return $this->variableNodes[$index][$name] ?? null;
+            $this->last_variable_name = $name;
+            $this->last_variable_index = $index;
+            return $this->variable_nodes[$index][$name] ?? null;
         }
-
-        $index = $this->variableIndex($name);
-
+        $index = $this->variable_index($name);
         if ($index === null) {
             return null;
         }
-
-        $this->lastVariableName = $name;
-        $this->lastVariableIndex = $index;
-        $this->variableIndices[$name] = $index;
-
-        return $this->variableNodes[$index][$name] ?? null;
+        $this->last_variable_name = $name;
+        $this->last_variable_index = $index;
+        $this->variable_indices[$name] = $index;
+        return $this->variable_nodes[$index][$name] ?? null;
     }
-
     /**
      * Returns whether a variable named $name exists.
      */
-    public function variableExists(string $name): bool
+    public function variable_exists(string $name): bool
     {
-        return $this->getVariable($name) !== null;
+        return $this->get_variable($name) !== null;
     }
-
     /**
      * Returns whether a global variable named $name exists.
      */
-    public function globalVariableExists(string $name): bool
+    public function global_variable_exists(string $name): bool
     {
         return isset($this->variables[0][$name]);
     }
-
     /**
      * Returns the index of the last map in {@see variables} that has a $name key,
      * or `null` if none exists.
      */
-    private function variableIndex(string $name): ?int
+    private function variable_index(string $name): ?int
     {
         for ($i = \count($this->variables) - 1; $i >= 0; $i--) {
             if (isset($this->variables[$i][$name])) {
                 return $i;
             }
         }
-
         return null;
     }
-
     /**
      * Sets the variable named $name to $value.
      *
@@ -278,157 +240,133 @@ final class Environment
      * Otherwise, if the variable was already defined, it'll set it in the
      * previous scope. If it's undefined, it'll set it in the current scope.
      */
-    public function setVariable(string $name, Value $value, AstNode $nodeWithSpan, bool $global = false): void
+    public function set_variable(string $name, Value $value, Ast_Node $node_with_span, bool $global = false): void
     {
-        if ($global || $this->atRoot()) {
+        if ($global || $this->at_root()) {
             // Don't set the index if there's already a variable with the given name,
             // since local accesses should still return the local variable.
-            if (!isset($this->variableIndices[$name])) {
-                $this->lastVariableName = $name;
-                $this->lastVariableIndex = 0;
-                $this->variableIndices[$name] = 0;
+            if (!isset($this->variable_indices[$name])) {
+                $this->last_variable_name = $name;
+                $this->last_variable_index = 0;
+                $this->variable_indices[$name] = 0;
             }
-
             $this->variables[0][$name] = $value;
-            $this->variableNodes[0][$name] = $nodeWithSpan;
+            $this->variable_nodes[0][$name] = $node_with_span;
             return;
         }
-
-        if ($this->lastVariableName === $name) {
-            assert($this->lastVariableIndex !== null);
-            $index = $this->lastVariableIndex;
+        if ($this->last_variable_name === $name) {
+            assert($this->last_variable_index !== null);
+            $index = $this->last_variable_index;
         } else {
-            if (!isset($this->variableIndices[$name])) {
-                $this->variableIndices[$name] = $this->variableIndex($name) ?? \count($this->variables) - 1;
+            if (!isset($this->variable_indices[$name])) {
+                $this->variable_indices[$name] = $this->variable_index($name) ?? \count($this->variables) - 1;
             }
-            $index = $this->variableIndices[$name];
+            $index = $this->variable_indices[$name];
         }
-
-        if (!$this->inSemiGlobalScope && $index === 0) {
+        if (!$this->in_semi_global_scope && $index === 0) {
             $index = \count($this->variables) - 1;
-            $this->variableIndices[$name] = $index;
+            $this->variable_indices[$name] = $index;
         }
-
-        $this->lastVariableName = $name;
-        $this->lastVariableIndex = $index;
+        $this->last_variable_name = $name;
+        $this->last_variable_index = $index;
         $this->variables[$index][$name] = $value;
-        $this->variableNodes[$index][$name] = $nodeWithSpan;
+        $this->variable_nodes[$index][$name] = $node_with_span;
     }
-
     /**
      * Sets the variable named $name to $value.
      *
      * Unlike {@see setVariable}, this will declare the variable in the current scope
      * even if a declaration already exists in an outer scope.
      */
-    public function setLocalVariable(string $name, Value $value, AstNode $nodeWithSpan): void
+    public function set_local_variable(string $name, Value $value, Ast_Node $node_with_span): void
     {
         $index = \count($this->variables) - 1;
-        $this->lastVariableName = $name;
-        $this->lastVariableIndex = $index;
-        $this->variableIndices[$name] = $index;
+        $this->last_variable_name = $name;
+        $this->last_variable_index = $index;
+        $this->variable_indices[$name] = $index;
         $this->variables[$index][$name] = $value;
-        $this->variableNodes[$index][$name] = $nodeWithSpan;
+        $this->variable_nodes[$index][$name] = $node_with_span;
     }
-
-    public function getFunction(string $name): ?SassCallable
+    public function get_function(string $name): ?Sass_Callable
     {
-        $index = $this->functionIndices[$name] ?? null;
-
+        $index = $this->function_indices[$name] ?? null;
         if ($index !== null) {
             return $this->functions[$index][$name] ?? null;
         }
-
-        $index = $this->functionIndex($name);
+        $index = $this->function_index($name);
         if ($index === null) {
             return null;
         }
-
-        $this->functionIndices[$name] = $index;
-
+        $this->function_indices[$name] = $index;
         return $this->functions[$index][$name] ?? null;
     }
-
     /**
      * Returns the index of the last map in {@see functions} that has a $name key,
      * or `null` if none exists.
      */
-    private function functionIndex(string $name): ?int
+    private function function_index(string $name): ?int
     {
         for ($i = \count($this->functions) - 1; $i >= 0; $i--) {
             if (isset($this->functions[$i][$name])) {
                 return $i;
             }
         }
-
         return null;
     }
-
     /**
      * Returns whether a function named $name exists.
      */
-    public function functionExists(string $name): bool
+    public function function_exists(string $name): bool
     {
-        return $this->getFunction($name) !== null;
+        return $this->get_function($name) !== null;
     }
-
-    public function setFunction(SassCallable $callable): void
+    public function set_function(Sass_Callable $callable): void
     {
         $index = \count($this->functions) - 1;
-        $name = $callable->getName();
-        $this->functionIndices[$name] = $index;
+        $name = $callable->get_name();
+        $this->function_indices[$name] = $index;
         $this->functions[$index][$name] = $callable;
     }
-
-    public function getMixin(string $name): ?SassCallable
+    public function get_mixin(string $name): ?Sass_Callable
     {
-        $index = $this->mixinIndices[$name] ?? null;
-
+        $index = $this->mixin_indices[$name] ?? null;
         if ($index !== null) {
             return $this->mixins[$index][$name] ?? null;
         }
-
-        $index = $this->mixinIndex($name);
+        $index = $this->mixin_index($name);
         if ($index === null) {
             return null;
         }
-
-        $this->mixinIndices[$name] = $index;
-
+        $this->mixin_indices[$name] = $index;
         return $this->mixins[$index][$name] ?? null;
     }
-
     /**
      * Returns the index of the last map in {@see mixins} that has a $name key,
      * or `null` if none exists.
      */
-    private function mixinIndex(string $name): ?int
+    private function mixin_index(string $name): ?int
     {
         for ($i = \count($this->mixins) - 1; $i >= 0; $i--) {
             if (isset($this->mixins[$i][$name])) {
                 return $i;
             }
         }
-
         return null;
     }
-
     /**
      * Returns whether a mixin named $name exists.
      */
-    public function mixinExists(string $name): bool
+    public function mixin_exists(string $name): bool
     {
-        return $this->getMixin($name) !== null;
+        return $this->get_mixin($name) !== null;
     }
-
-    public function setMixin(SassCallable $callable): void
+    public function set_mixin(Sass_Callable $callable): void
     {
         $index = \count($this->mixins) - 1;
-        $name = $callable->getName();
-        $this->mixinIndices[$name] = $index;
+        $name = $callable->get_name();
+        $this->mixin_indices[$name] = $index;
         $this->mixins[$index][$name] = $callable;
     }
-
     /**
      * Sets $content as {@see content} for the duration of $callback.
      *
@@ -436,14 +374,13 @@ final class Environment
      *
      * @param-immediately-invoked-callable $callback
      */
-    public function withContent(?UserDefinedCallable $content, callable $callback): void
+    public function with_content(?User_Defined_Callable $content, callable $callback): void
     {
-        $oldContent = $this->content;
+        $old_content = $this->content;
         $this->content = $content;
         $callback();
-        $this->content = $oldContent;
+        $this->content = $old_content;
     }
-
     /**
      * Sets {@see inMixin} to `true` for the duration of $callback.
      *
@@ -451,14 +388,13 @@ final class Environment
      *
      * @param-immediately-invoked-callable $callback
      */
-    public function asMixin(callable $callback): void
+    public function as_mixin(callable $callback): void
     {
-        $oldInMixin = $this->inMixin;
-        $this->inMixin = true;
+        $old_in_mixin = $this->in_mixin;
+        $this->in_mixin = true;
         $callback();
-        $this->inMixin = $oldInMixin;
+        $this->in_mixin = $old_in_mixin;
     }
-
     /**
      * Runs $callback in a new scope.
      *
@@ -477,7 +413,7 @@ final class Environment
      *
      * @param-immediately-invoked-callable $callback
      */
-    public function scope(callable $callback, bool $when = true, bool $semiGlobal = false)
+    public function scope(callable $callback, bool $when = true, bool $semi_global = false)
     {
         // We have to track semi-globalness even if `!$when` so that
         //
@@ -488,47 +424,41 @@ final class Environment
         //     }
         //
         // doesn't assign to the global scope.
-        $semiGlobal = $semiGlobal && $this->inSemiGlobalScope;
-        $wasInSemiGlobalScope = $this->inSemiGlobalScope;
-        $this->inSemiGlobalScope = $semiGlobal;
-
+        $semi_global = $semi_global && $this->in_semi_global_scope;
+        $was_in_semi_global_scope = $this->in_semi_global_scope;
+        $this->in_semi_global_scope = $semi_global;
         if (!$when) {
             try {
                 return $callback();
             } finally {
-                $this->inSemiGlobalScope = $wasInSemiGlobalScope;
+                $this->in_semi_global_scope = $was_in_semi_global_scope;
             }
         }
-
         $this->variables[] = new \ArrayObject();
-        $this->variableNodes[] = new \ArrayObject();
+        $this->variable_nodes[] = new \ArrayObject();
         $this->functions[] = new \ArrayObject();
         $this->mixins[] = new \ArrayObject();
-
         try {
             return $callback();
         } finally {
-            $this->inSemiGlobalScope = $wasInSemiGlobalScope;
-            $this->lastVariableName = null;
-            $this->lastVariableIndex = null;
-
-            $removedVariables = array_pop($this->variables);
-            assert($removedVariables !== null);
-            foreach ($removedVariables as $name => $_) {
-                unset($this->variableIndices[$name]);
+            $this->in_semi_global_scope = $was_in_semi_global_scope;
+            $this->last_variable_name = null;
+            $this->last_variable_index = null;
+            $removed_variables = array_pop($this->variables);
+            assert($removed_variables !== null);
+            foreach ($removed_variables as $name => $_) {
+                unset($this->variable_indices[$name]);
             }
-            array_pop($this->variableNodes);
-
-            $removedFunctions = array_pop($this->functions);
-            assert($removedFunctions !== null);
-            foreach ($removedFunctions as $name => $_) {
-                unset($this->functionIndices[$name]);
+            array_pop($this->variable_nodes);
+            $removed_functions = array_pop($this->functions);
+            assert($removed_functions !== null);
+            foreach ($removed_functions as $name => $_) {
+                unset($this->function_indices[$name]);
             }
-
-            $removedMixins = array_pop($this->mixins);
-            assert($removedMixins !== null);
-            foreach ($removedMixins as $name => $_) {
-                unset($this->mixinIndices[$name]);
+            $removed_mixins = array_pop($this->mixins);
+            assert($removed_mixins !== null);
+            foreach ($removed_mixins as $name => $_) {
+                unset($this->mixin_indices[$name]);
             }
         }
     }

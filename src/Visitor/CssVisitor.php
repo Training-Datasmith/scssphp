@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,19 +10,17 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Visitor;
 
-namespace ScssPhp\ScssPhp\Visitor;
-
-use ScssPhp\ScssPhp\Ast\Css\CssAtRule;
-use ScssPhp\ScssPhp\Ast\Css\CssComment;
-use ScssPhp\ScssPhp\Ast\Css\CssDeclaration;
-use ScssPhp\ScssPhp\Ast\Css\CssImport;
-use ScssPhp\ScssPhp\Ast\Css\CssKeyframeBlock;
-use ScssPhp\ScssPhp\Ast\Css\CssMediaRule;
-use ScssPhp\ScssPhp\Ast\Css\CssStyleRule;
-use ScssPhp\ScssPhp\Ast\Css\CssStylesheet;
-use ScssPhp\ScssPhp\Ast\Css\CssSupportsRule;
-
+use Scss_Php\Scss_Php\Ast\Css\Css_At_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Comment;
+use Scss_Php\Scss_Php\Ast\Css\Css_Declaration;
+use Scss_Php\Scss_Php\Ast\Css\Css_Import;
+use Scss_Php\Scss_Php\Ast\Css\Css_Keyframe_Block;
+use Scss_Php\Scss_Php\Ast\Css\Css_Media_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Style_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Stylesheet;
+use Scss_Php\Scss_Php\Ast\Css\Css_Supports_Rule;
 /**
  * An interface for visitors that traverse CSS statements.
  *
@@ -32,50 +29,42 @@ use ScssPhp\ScssPhp\Ast\Css\CssSupportsRule;
  * @template T
  * @template-extends ModifiableCssVisitor<T>
  */
-interface CssVisitor extends ModifiableCssVisitor
+interface Css_Visitor extends Modifiable_Css_Visitor
 {
     /**
      * @return T
      */
-    public function visitCssAtRule(CssAtRule $node);
-
+    public function visit_css_at_rule(Css_At_Rule $node);
     /**
      * @return T
      */
-    public function visitCssComment(CssComment $node);
-
+    public function visit_css_comment(Css_Comment $node);
     /**
      * @return T
      */
-    public function visitCssDeclaration(CssDeclaration $node);
-
+    public function visit_css_declaration(Css_Declaration $node);
     /**
      * @return T
      */
-    public function visitCssImport(CssImport $node);
-
+    public function visit_css_import(Css_Import $node);
     /**
      * @return T
      */
-    public function visitCssKeyframeBlock(CssKeyframeBlock $node);
-
+    public function visit_css_keyframe_block(Css_Keyframe_Block $node);
     /**
      * @return T
      */
-    public function visitCssMediaRule(CssMediaRule $node);
-
+    public function visit_css_media_rule(Css_Media_Rule $node);
     /**
      * @return T
      */
-    public function visitCssStyleRule(CssStyleRule $node);
-
+    public function visit_css_style_rule(Css_Style_Rule $node);
     /**
      * @return T
      */
-    public function visitCssStylesheet(CssStylesheet $node);
-
+    public function visit_css_stylesheet(Css_Stylesheet $node);
     /**
      * @return T
      */
-    public function visitCssSupportsRule(CssSupportsRule $node);
+    public function visit_css_supports_rule(Css_Supports_Rule $node);
 }

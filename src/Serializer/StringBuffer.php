@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,23 +10,20 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Serializer;
+namespace Scss_Php\Scss_Php\Serializer;
 
 /**
  * @internal
  */
-interface StringBuffer extends \Stringable
+interface String_Buffer extends \Stringable
 {
     /**
      * Returns the length of the content that has been accumulated so far.
      */
-    public function getLength(): int;
-
+    public function get_length(): int;
     public function write(string $string): void;
-
     /**
      * Writes a single char to the buffer.
      */
-    public function writeChar(string $char): void;
+    public function write_char(string $char): void;
 }

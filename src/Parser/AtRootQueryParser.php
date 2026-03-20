@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,46 +10,40 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use ScssPhp\ScssPhp\Ast\Sass\AtRootQuery;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-
+use Scss_Php\Scss_Php\Ast\Sass\At_Root_Query;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
 /**
  * A parser for `@at-root` queries.
  *
  * @internal
  */
-final class AtRootQueryParser extends Parser
+final class At_Root_Query_Parser extends Parser
 {
     /**
      * @throws SassFormatException
      */
-    public function parse(): AtRootQuery
+    public function parse(): At_Root_Query
     {
-        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Sass\AtRootQuery {
-            $this->scanner->expectChar('(');
+        return $this->wrap_span_format_exception(function (): \Scss_Php\Scss_Php\Ast\Sass\At_Root_Query {
+            $this->scanner->expect_char('(');
             $this->whitespace();
-            $include = $this->scanIdentifier('with');
+            $include = $this->scan_identifier('with');
             if (!$include) {
-                $this->expectIdentifier('without', '"with" or "without"');
+                $this->expect_identifier('without', '"with" or "without"');
             }
             $this->whitespace();
-            $this->scanner->expectChar(':');
+            $this->scanner->expect_char(':');
             $this->whitespace();
-
-            $atRules = [];
-
+            $at_rules = [];
             do {
-                $atRules[] = strtolower($this->identifier());
+                $at_rules[] = strtolower($this->identifier());
                 $this->whitespace();
-            } while ($this->lookingAtIdentifier());
-
-            $this->scanner->expectChar(')');
-            $this->scanner->expectDone();
-
-            return AtRootQuery::create($atRules, $include);
+            } while ($this->looking_at_identifier());
+            $this->scanner->expect_char(')');
+            $this->scanner->expect_done();
+            return At_Root_Query::create($at_rules, $include);
         });
     }
 }

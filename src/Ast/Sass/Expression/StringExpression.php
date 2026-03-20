@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,48 +10,42 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Parser\InterpolationBuffer;
-use ScssPhp\ScssPhp\Util\Character;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Parser\Interpolation_Buffer;
+use Scss_Php\Scss_Php\Util\Character;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * A string literal.
  *
  * @internal
  */
-final class StringExpression implements Expression
+final class String_Expression implements Expression
 {
     public function __construct(private readonly Interpolation $text, private readonly bool $quotes = false)
     {
     }
-
     /**
      * Returns a string expression with no interpolation.
      */
-    public static function plain(string $text, FileSpan $span, bool $quotes = false): self
+    public static function plain(string $text, File_Span $span, bool $quotes = false): self
     {
         return new self(new Interpolation([$text], $span), $quotes);
     }
-
     /**
      * Returns Sass source for a quoted string that, when evaluated, will have
      * $text as its contents.
      */
-    public static function quoteText(string $text): string
+    public static function quote_text(string $text): string
     {
-        $quote = self::bestQuote([$text]);
+        $quote = self::best_quote([$text]);
         $buffer = $quote;
-        $buffer .= self::quoteInnerText($text, $quote, true);
-
+        $buffer .= self::quote_inner_text($text, $quote, true);
         return $buffer . $quote;
     }
-
     /**
      * Interpolation that, when evaluated, produces the contents of this string.
      *
@@ -62,115 +55,93 @@ final class StringExpression implements Expression
      * included in this text (unlike {@see asInterpolation}). If it's an unquoted
      * string, escapes are *not* resolved.
      */
-    public function getText(): Interpolation
+    public function get_text(): Interpolation
     {
         return $this->text;
     }
-
-    public function hasQuotes(): bool
+    public function has_quotes(): bool
     {
         return $this->quotes;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
-        return $this->text->getSpan();
+        return $this->text->get_span();
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitStringExpression($this);
+        return $visitor->visit_string_expression($this);
     }
-
-    public function asInterpolation(bool $static = false, ?string $quote = null): Interpolation
+    public function as_interpolation(bool $static = false, ?string $quote = null): Interpolation
     {
         if (!$this->quotes) {
             return $this->text;
         }
-
-        $quote ??= self::bestQuote($this->text->getContents());
-        $buffer = new InterpolationBuffer();
-
+        $quote ??= self::best_quote($this->text->get_contents());
+        $buffer = new Interpolation_Buffer();
         $buffer->write($quote);
-
-        foreach ($this->text->getContents() as $value) {
+        foreach ($this->text->get_contents() as $value) {
             if ($value instanceof Expression) {
                 $buffer->add($value);
             } else {
-                $buffer->write(self::quoteInnerText($value, $quote, $static));
+                $buffer->write(self::quote_inner_text($value, $quote, $static));
             }
         }
-
         $buffer->write($quote);
-
-        return $buffer->buildInterpolation($this->text->getSpan());
+        return $buffer->build_interpolation($this->text->get_span());
     }
-
-    private static function quoteInnerText(string $value, string $quote, bool $static = false): string
+    private static function quote_inner_text(string $value, string $quote, bool $static = false): string
     {
         $buffer = '';
         $length = \strlen($value);
-
         for ($i = 0; $i < $length; $i++) {
             $char = $value[$i];
-
-            if (Character::isNewline($char)) {
-                $buffer .= '\\a';
-
+            if (Character::is_newline($char)) {
+                $buffer .= '\a';
                 if ($i !== $length - 1) {
                     $next = $value[$i + 1];
-
-                    if (Character::isWhitespace($next) || Character::isHex($next)) {
+                    if (Character::is_whitespace($next) || Character::is_hex($next)) {
                         $buffer .= ' ';
                     }
                 }
             } else {
-                if ($char === $quote || $char === '\\' || ($static && $char === '#' && $i < $length - 1 && $value[$i + 1] === '{')) {
+                if ($char === $quote || $char === '\\' || $static && $char === '#' && $i < $length - 1 && $value[$i + 1] === '{') {
                     $buffer .= '\\';
                 }
-
                 if (\ord($char) < 0x80) {
                     $buffer .= $char;
                 } else {
                     if (!preg_match('/./usA', $value, $m, 0, $i)) {
                         throw new \UnexpectedValueException('Invalid UTF-8 char');
                     }
-
                     $buffer .= $m[0];
-                    $i += \strlen($m[0]) - 1; // skip over the extra bytes that have been processed.
+                    $i += \strlen($m[0]) - 1;
+                    // skip over the extra bytes that have been processed.
                 }
             }
         }
-
         return $buffer;
     }
-
     /**
      * @param array<string|Expression> $parts
      */
-    private static function bestQuote(array $parts): string
+    private static function best_quote(array $parts): string
     {
-        $containsDoubleQuote = false;
-
+        $contains_double_quote = false;
         foreach ($parts as $part) {
             if (!\is_string($part)) {
                 continue;
             }
-
             if (str_contains($part, "'")) {
                 return '"';
             }
-
             if (str_contains($part, '"')) {
-                $containsDoubleQuote = true;
+                $contains_double_quote = true;
             }
         }
-
-        return $containsDoubleQuote ? "'" : '"';
+        return $contains_double_quote ? "'" : '"';
     }
-
     public function __toString(): string
     {
-        return (string) $this->asInterpolation();
+        return (string) $this->as_interpolation();
     }
 }

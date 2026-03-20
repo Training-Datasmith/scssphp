@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,47 +10,40 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Visitor\ModifiableCssVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Visitor\Modifiable_Css_Visitor;
+use Source_Span\File_Span;
 /**
  * A modifiable version of {@see CssStylesheet} for use in the evaluation step.
  *
  * @internal
  */
-final class ModifiableCssStylesheet extends ModifiableCssParentNode implements CssStylesheet
+final class Modifiable_Css_Stylesheet extends Modifiable_Css_Parent_Node implements Css_Stylesheet
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param list<ModifiableCssNode> $children
      */
-    public function __construct(FileSpan $span, array $children = [])
+    public function __construct(File_Span $span, array $children = [])
     {
         parent::__construct($children);
         $this->span = $span;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ModifiableCssVisitor $visitor)
+    public function accept(Modifiable_Css_Visitor $visitor)
     {
-        return $visitor->visitCssStylesheet($this);
+        return $visitor->visit_css_stylesheet($this);
     }
-
-    public function equalsIgnoringChildren(ModifiableCssNode $other): bool
+    public function equals_ignoring_children(Modifiable_Css_Node $other): bool
     {
-        return $other instanceof ModifiableCssStylesheet;
+        return $other instanceof Modifiable_Css_Stylesheet;
     }
-
-    public function copyWithoutChildren(): ModifiableCssStylesheet
+    public function copy_without_children(): Modifiable_Css_Stylesheet
     {
-        return new ModifiableCssStylesheet($this->span);
+        return new Modifiable_Css_Stylesheet($this->span);
     }
 }

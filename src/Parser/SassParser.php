@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,45 +10,40 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use League\Uri\Exceptions\SyntaxError;
-use ScssPhp\ScssPhp\Ast\Sass\Import;
-use ScssPhp\ScssPhp\Ast\Sass\Import\DynamicImport;
-use ScssPhp\ScssPhp\Ast\Sass\Import\StaticImport;
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\LoudComment;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\SilentComment;
-use ScssPhp\ScssPhp\Util\Character;
-use ScssPhp\ScssPhp\Value\SassString;
-
+use League\Uri\Exceptions\Syntax_Error;
+use Scss_Php\Scss_Php\Ast\Sass\Import;
+use Scss_Php\Scss_Php\Ast\Sass\Import\Dynamic_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Import\Static_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Loud_Comment;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Silent_Comment;
+use Scss_Php\Scss_Php\Util\Character;
+use Scss_Php\Scss_Php\Value\Sass_String;
 /**
  * A parser for the indented syntax.
  *
  * @internal
  */
-final class SassParser extends StylesheetParser
+final class Sass_Parser extends Stylesheet_Parser
 {
-    private int $currentIndentation = 0;
-
+    private int $current_indentation = 0;
     /**
      * The indentation level of the next source line after the scanner's
      * position, or `null` if that hasn't been computed yet.
      *
      * A source line is any line that's not entirely whitespace.
      */
-    private ?int $nextIndentation = null;
-
+    private ?int $next_indentation = null;
     /**
      * The beginning of the next source line after the scanner's position, or
      * `null` if the next indentation hasn't been computed yet.
      *
      * A source line is any line that's not entirely whitespace.
      */
-    private ?int $nextIndentationEnd = null;
-
+    private ?int $next_indentation_end = null;
     /**
      * Whether the document is indented using spaces or tabs.
      *
@@ -58,165 +52,128 @@ final class SassParser extends StylesheetParser
      * the indentation character used by the document.
      */
     private ?bool $spaces = null;
-
-    public function getCurrentIndentation(): int
+    public function get_current_indentation(): int
     {
-        return $this->currentIndentation;
+        return $this->current_indentation;
     }
-
-    protected function isIndented(): bool
+    protected function is_indented(): bool
     {
         return true;
     }
-
-    protected function styleRuleSelector(): Interpolation
+    protected function style_rule_selector(): Interpolation
     {
-        $start = $this->scanner->getPosition();
-
-        $buffer = new InterpolationBuffer();
-
+        $start = $this->scanner->get_position();
+        $buffer = new Interpolation_Buffer();
         do {
-            $buffer->addInterpolation($this->almostAnyValue(omitComments: true));
+            $buffer->add_interpolation($this->almost_any_value(omitComments: true));
             $buffer->write("\n");
-        } while (str_ends_with(rtrim($buffer->getTrailingString()), ',') && $this->scanCharIf(fn (?string $char): bool => Character::isNewline($char)));
-
-        return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+        } while (str_ends_with(rtrim($buffer->get_trailing_string()), ',') && $this->scan_char_if(fn(?string $char): bool => Character::is_newline($char)));
+        return $buffer->build_interpolation($this->scanner->span_from($start));
     }
-
-    protected function expectStatementSeparator(?string $name = null): void
+    protected function expect_statement_separator(?string $name = null): void
     {
-        if (!$this->atEndOfStatement()) {
-            $this->expectNewline();
+        if (!$this->at_end_of_statement()) {
+            $this->expect_newline();
         }
-
-        if ($this->peekIndentation() <= $this->currentIndentation) {
+        if ($this->peek_indentation() <= $this->current_indentation) {
             return;
         }
-
-        \assert($this->nextIndentationEnd !== null);
-
-        $this->scanner->error(\sprintf('Nothing may be indented %s.', $name === null ? 'here' : "beneath a $name"), $this->nextIndentationEnd);
+        \assert($this->next_indentation_end !== null);
+        $this->scanner->error(\sprintf('Nothing may be indented %s.', $name === null ? 'here' : "beneath a {$name}"), $this->next_indentation_end);
     }
-
-    protected function atEndOfStatement(): bool
+    protected function at_end_of_statement(): bool
     {
-        $nextChar = $this->scanner->peekChar();
-
-        return $nextChar === null || Character::isNewline($nextChar);
+        $next_char = $this->scanner->peek_char();
+        return $next_char === null || Character::is_newline($next_char);
     }
-
-    protected function lookingAtChildren(): bool
+    protected function looking_at_children(): bool
     {
-        return $this->atEndOfStatement() && $this->peekIndentation() > $this->currentIndentation;
+        return $this->at_end_of_statement() && $this->peek_indentation() > $this->current_indentation;
     }
-
-    protected function importArgument(): Import
+    protected function import_argument(): Import
     {
-        switch ($this->scanner->peekChar()) {
+        switch ($this->scanner->peek_char()) {
             case 'u':
             case 'U':
-                $start = $this->scanner->getPosition();
-                if ($this->scanIdentifier('url')) {
-                    if ($this->scanner->scanChar('(')) {
-                        $this->scanner->setPosition($start);
-
-                        return parent::importArgument();
+                $start = $this->scanner->get_position();
+                if ($this->scan_identifier('url')) {
+                    if ($this->scanner->scan_char('(')) {
+                        $this->scanner->set_position($start);
+                        return parent::import_argument();
                     }
-                    $this->scanner->setPosition($start);
+                    $this->scanner->set_position($start);
                 }
                 break;
-
             case "'":
             case '"':
-                return parent::importArgument();
+                return parent::import_argument();
         }
-
-        $start = $this->scanner->getPosition();
-        $next = $this->scanner->peekChar();
-
-        while ($next !== null && $next !== ',' && $next !== ';' && !Character::isNewline($next)) {
-            $this->scanner->readUtf8Char();
-            $next = $this->scanner->peekChar();
+        $start = $this->scanner->get_position();
+        $next = $this->scanner->peek_char();
+        while ($next !== null && $next !== ',' && $next !== ';' && !Character::is_newline($next)) {
+            $this->scanner->read_utf8char();
+            $next = $this->scanner->peek_char();
         }
-
         $url = $this->scanner->substring($start);
-        $span = $this->scanner->spanFrom($start);
-
-        if ($this->isPlainImportUrl($url)) {
+        $span = $this->scanner->span_from($start);
+        if ($this->is_plain_import_url($url)) {
             // Serialize $url as a Sass string because StaticImport expects it to
             // include quotes.
-            return new StaticImport(new Interpolation([(string) new SassString($url)], $span), $span);
+            return new Static_Import(new Interpolation([(string) new Sass_String($url)], $span), $span);
         }
-
         try {
-            return new DynamicImport($this->parseImportUrl($url), $span);
-        } catch (SyntaxError $e) {
-            $this->error('Invalid URL: ' . $e->getMessage(), $span, $e);
+            return new Dynamic_Import($this->parse_import_url($url), $span);
+        } catch (Syntax_Error $e) {
+            $this->error('Invalid URL: ' . $e->get_message(), $span, $e);
         }
     }
-
-    protected function scanElse(int $ifIndentation): bool
+    protected function scan_else(int $if_indentation): bool
     {
-        if ($this->peekIndentation() !== $ifIndentation) {
+        if ($this->peek_indentation() !== $if_indentation) {
             return false;
         }
-
-        $start = $this->scanner->getPosition();
-        $startIndentation = $this->currentIndentation;
-        $startNextIndentation = $this->nextIndentation;
-        $startNextIndentationEnd = $this->nextIndentationEnd;
-        $this->readIndentation();
-
-        if ($this->scanner->scanChar('@') && $this->scanIdentifier('else')) {
+        $start = $this->scanner->get_position();
+        $start_indentation = $this->current_indentation;
+        $start_next_indentation = $this->next_indentation;
+        $start_next_indentation_end = $this->next_indentation_end;
+        $this->read_indentation();
+        if ($this->scanner->scan_char('@') && $this->scan_identifier('else')) {
             return true;
         }
-
-        $this->scanner->setPosition($start);
-        $this->currentIndentation = $startIndentation;
-        $this->nextIndentation = $startNextIndentation;
-        $this->nextIndentationEnd = $startNextIndentationEnd;
-
+        $this->scanner->set_position($start);
+        $this->current_indentation = $start_indentation;
+        $this->next_indentation = $start_next_indentation;
+        $this->next_indentation_end = $start_next_indentation_end;
         return false;
     }
-
     protected function children(callable $child): array
     {
         $children = [];
-
-        $this->whileIndentedLower(function () use ($child, &$children): void {
-            $parsedChild = $this->child($child);
-
-            if ($parsedChild !== null) {
-                $children[] = $parsedChild;
+        $this->while_indented_lower(function () use ($child, &$children): void {
+            $parsed_child = $this->child($child);
+            if ($parsed_child !== null) {
+                $children[] = $parsed_child;
             }
         });
-
         return $children;
     }
-
     protected function statements(callable $statement): array
     {
-        $next = $this->scanner->peekChar();
+        $next = $this->scanner->peek_char();
         if ($next === "\t" || $next === ' ') {
-            $this->scanner->error('Indenting at the beginning of the document is illegal.', 0, $this->scanner->getPosition());
+            $this->scanner->error('Indenting at the beginning of the document is illegal.', 0, $this->scanner->get_position());
         }
-
         $statements = [];
-
-        while (!$this->scanner->isDone()) {
+        while (!$this->scanner->is_done()) {
             $child = $this->child($statement);
-
             if ($child !== null) {
                 $statements[] = $child;
             }
-
-            $indentation = $this->readIndentation();
+            $indentation = $this->read_indentation();
             \assert($indentation === 0);
         }
-
         return $statements;
     }
-
     /**
      * Consumes a child of the current statement.
      *
@@ -228,343 +185,283 @@ final class SassParser extends StylesheetParser
      */
     private function child(callable $child): ?Statement
     {
-        return match ($this->scanner->peekChar()) {
+        return match ($this->scanner->peek_char()) {
             // Ignore empty lines.
             "\r", "\n", "\f" => null,
-            '$' => $this->variableDeclarationWithoutNamespace(),
-            '/' => match ($this->scanner->peekChar(1)) {
-                '/' => $this->silentCommentStatement(),
-                '*' => $this->loudCommentStatement(),
+            '$' => $this->variable_declaration_without_namespace(),
+            '/' => match ($this->scanner->peek_char(1)) {
+                '/' => $this->silent_comment_statement(),
+                '*' => $this->loud_comment_statement(),
                 default => $child(),
             },
             default => $child(),
         };
     }
-
     /**
      * Consumes an indented-style silent comment.
      */
-    private function silentCommentStatement(): SilentComment
+    private function silent_comment_statement(): Silent_Comment
     {
-        $start = $this->scanner->getPosition();
+        $start = $this->scanner->get_position();
         $this->scanner->expect('//');
-
         $buffer = '';
-        $parentIndentation = $this->currentIndentation;
-
+        $parent_indentation = $this->current_indentation;
         do {
-            $commentPrefix = $this->scanner->scanChar('/') ? '///' : '//';
-
+            $comment_prefix = $this->scanner->scan_char('/') ? '///' : '//';
             while (true) {
-                $buffer .= $commentPrefix;
-
+                $buffer .= $comment_prefix;
                 // Skip the initial characters because we're already writing the
                 // slashes.
-                for ($i = \strlen($commentPrefix); $i < $this->currentIndentation - $parentIndentation; $i++) {
+                for ($i = \strlen($comment_prefix); $i < $this->current_indentation - $parent_indentation; $i++) {
                     $buffer .= ' ';
                 }
-
-                while (!$this->scanner->isDone() && !Character::isNewline($this->scanner->peekChar())) {
-                    $buffer .= $this->scanner->readUtf8Char();
+                while (!$this->scanner->is_done() && !Character::is_newline($this->scanner->peek_char())) {
+                    $buffer .= $this->scanner->read_utf8char();
                 }
-
                 $buffer .= "\n";
-
-                if ($this->peekIndentation() < $parentIndentation) {
+                if ($this->peek_indentation() < $parent_indentation) {
                     break 2;
                 }
-
-                if ($this->peekIndentation() === $parentIndentation) {
+                if ($this->peek_indentation() === $parent_indentation) {
                     // Look ahead to the next line to see if it starts another comment.
-                    if ($this->scanner->peekChar(1 + $parentIndentation) === '/' && $this->scanner->peekChar(2 + $parentIndentation) === '/') {
-                        $this->readIndentation();
+                    if ($this->scanner->peek_char(1 + $parent_indentation) === '/' && $this->scanner->peek_char(2 + $parent_indentation) === '/') {
+                        $this->read_indentation();
                     }
                     break;
                 }
-
-                $this->readIndentation();
+                $this->read_indentation();
             }
         } while ($this->scanner->scan('//'));
-
-        return $this->lastSilentComment = new SilentComment($buffer, $this->scanner->spanFrom($start));
+        return $this->last_silent_comment = new Silent_Comment($buffer, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes an indented-style loud context.
      */
-    private function loudCommentStatement(): LoudComment
+    private function loud_comment_statement(): Loud_Comment
     {
-        $start = $this->scanner->getPosition();
+        $start = $this->scanner->get_position();
         $this->scanner->expect('/*');
-
         $first = true;
-        $buffer = new InterpolationBuffer();
+        $buffer = new Interpolation_Buffer();
         $buffer->write('/*');
-        $parentIndentation = $this->currentIndentation;
-
+        $parent_indentation = $this->current_indentation;
         while (true) {
             if ($first) {
                 // If the first line is empty, ignore it.
-                $beginningOfComment = $this->scanner->getPosition();
+                $beginning_of_comment = $this->scanner->get_position();
                 $this->spaces();
-                if (Character::isNewline($this->scanner->peekChar())) {
-                    $this->readIndentation();
+                if (Character::is_newline($this->scanner->peek_char())) {
+                    $this->read_indentation();
                     $buffer->write(' ');
                 } else {
-                    $buffer->write($this->scanner->substring($beginningOfComment));
+                    $buffer->write($this->scanner->substring($beginning_of_comment));
                 }
             } else {
                 $buffer->write("\n * ");
             }
-
             $first = false;
-
-            for ($i = 3; $i < $this->currentIndentation - $parentIndentation; $i++) {
+            for ($i = 3; $i < $this->current_indentation - $parent_indentation; $i++) {
                 $buffer->write(' ');
             }
-
-            while (!$this->scanner->isDone()) {
-                switch ($this->scanner->peekChar()) {
+            while (!$this->scanner->is_done()) {
+                switch ($this->scanner->peek_char()) {
                     case "\n":
                     case "\r":
                     case "\f":
                         break 2;
-
                     case '#':
-                        if ($this->scanner->peekChar(1) === '{') {
-                            $buffer->add($this->singleInterpolation());
+                        if ($this->scanner->peek_char(1) === '{') {
+                            $buffer->add($this->single_interpolation());
                         } else {
-                            $buffer->write($this->scanner->readChar());
+                            $buffer->write($this->scanner->read_char());
                         }
                         break;
-
                     default:
-                        $buffer->write($this->scanner->readUtf8Char());
+                        $buffer->write($this->scanner->read_utf8char());
                 }
             }
-
-            if ($this->peekIndentation() <= $parentIndentation) {
+            if ($this->peek_indentation() <= $parent_indentation) {
                 break;
             }
-
             // Preserve empty lines.
-            while ($this->lookingAtDoubleNewline()) {
-                $this->expectNewline();
+            while ($this->looking_at_double_newline()) {
+                $this->expect_newline();
                 $buffer->write("\n *");
             }
-
-            $this->readIndentation();
+            $this->read_indentation();
         }
-
-        return new LoudComment($buffer->buildInterpolation($this->scanner->spanFrom($start)));
+        return new Loud_Comment($buffer->build_interpolation($this->scanner->span_from($start)));
     }
-
-    protected function whitespaceWithoutComments(): void
+    protected function whitespace_without_comments(): void
     {
         // This overrides whitespace consumption so that it doesn't consume
         // newlines.
-        while (!$this->scanner->isDone()) {
-            $next = $this->scanner->peekChar();
+        while (!$this->scanner->is_done()) {
+            $next = $this->scanner->peek_char();
             if ($next !== "\t" && $next !== ' ') {
                 break;
             }
-            $this->scanner->readChar();
+            $this->scanner->read_char();
         }
     }
-
-    protected function loudComment(): void
+    protected function loud_comment(): void
     {
         // This overrides loud comment consumption so that it doesn't consume
         // multi-line comments.
         $this->scanner->expect('/*');
         while (true) {
-            $next = $this->scanner->readUtf8Char();
-
-            if (Character::isNewline($next)) {
+            $next = $this->scanner->read_utf8char();
+            if (Character::is_newline($next)) {
                 $this->scanner->error('expected */.');
             }
-
             if ($next !== '*') {
                 continue;
             }
-
             do {
-                $next = $this->scanner->readUtf8Char();
+                $next = $this->scanner->read_utf8char();
             } while ($next === '*');
-
             if ($next === '/') {
                 break;
             }
         }
     }
-
     /**
      * Expect and consume a single newline character.
      */
-    private function expectNewline(): void
+    private function expect_newline(): void
     {
-        switch ($this->scanner->peekChar()) {
+        switch ($this->scanner->peek_char()) {
             case ';':
                 $this->scanner->error("semicolons aren't allowed in the indented syntax.");
-
-                // no break
+            // no break
             case "\r":
-                $this->scanner->readChar();
-                if ($this->scanner->peekChar() === "\n") {
-                    $this->scanner->readChar();
+                $this->scanner->read_char();
+                if ($this->scanner->peek_char() === "\n") {
+                    $this->scanner->read_char();
                 }
                 break;
-
             case "\n":
             case "\f":
-                $this->scanner->readChar();
+                $this->scanner->read_char();
                 break;
-
             default:
                 $this->scanner->error('expected newline.');
         }
     }
-
     /**
      * Returns whether the scanner is immediately before *two* newlines.
      */
-    private function lookingAtDoubleNewline(): bool
+    private function looking_at_double_newline(): bool
     {
-        return match ($this->scanner->peekChar()) {
-            "\r" => match ($this->scanner->peekChar(1)) {
-                "\n" => Character::isNewline($this->scanner->peekChar(2)),
+        return match ($this->scanner->peek_char()) {
+            "\r" => match ($this->scanner->peek_char(1)) {
+                "\n" => Character::is_newline($this->scanner->peek_char(2)),
                 "\r", "\f" => true,
                 default => false,
             },
-            "\n", "\f" => Character::isNewline($this->scanner->peekChar(1)),
+            "\n", "\f" => Character::is_newline($this->scanner->peek_char(1)),
             default => false,
         };
     }
-
     /**
      * As long as the scanner's position is indented beneath the starting line,
      * runs $body to consume the next statement.
      *
      * @param callable(): void $body
      */
-    private function whileIndentedLower(callable $body): void
+    private function while_indented_lower(callable $body): void
     {
-        $parentIndentation = $this->currentIndentation;
-        $childIndentation = null;
-
-        while ($this->peekIndentation() > $parentIndentation) {
-            $indentation = $this->readIndentation();
-            $childIndentation ??= $indentation;
-
-            if ($childIndentation !== $indentation) {
-                $this->scanner->error(
-                    "Inconsistent indentation, expected $childIndentation spaces.",
-                    $this->scanner->getPosition() - $this->scanner->getColumn(),
-                    $this->scanner->getColumn()
-                );
+        $parent_indentation = $this->current_indentation;
+        $child_indentation = null;
+        while ($this->peek_indentation() > $parent_indentation) {
+            $indentation = $this->read_indentation();
+            $child_indentation ??= $indentation;
+            if ($child_indentation !== $indentation) {
+                $this->scanner->error("Inconsistent indentation, expected {$child_indentation} spaces.", $this->scanner->get_position() - $this->scanner->get_column(), $this->scanner->get_column());
             }
-
             $body();
         }
     }
-
     /**
      * Consumes indentation whitespace and returns the indentation level of the
      * next line.
      *
      * @phpstan-impure
      */
-    private function readIndentation(): int
+    private function read_indentation(): int
     {
-        $currentIndentation = $this->currentIndentation = $this->nextIndentation ??= $this->peekIndentation();
-        \assert($this->nextIndentationEnd !== null);
-        $this->scanner->setPosition($this->nextIndentationEnd);
-        $this->nextIndentation = null;
-        $this->nextIndentationEnd = null;
-
-        return $currentIndentation;
+        $current_indentation = $this->current_indentation = $this->next_indentation ??= $this->peek_indentation();
+        \assert($this->next_indentation_end !== null);
+        $this->scanner->set_position($this->next_indentation_end);
+        $this->next_indentation = null;
+        $this->next_indentation_end = null;
+        return $current_indentation;
     }
-
     /**
      * Returns the indentation level of the next line.
      */
-    private function peekIndentation(): int
+    private function peek_indentation(): int
     {
-        if ($this->nextIndentation !== null) {
-            return $this->nextIndentation;
+        if ($this->next_indentation !== null) {
+            return $this->next_indentation;
         }
-
-        if ($this->scanner->isDone()) {
-            $this->nextIndentation = 0;
-            $this->nextIndentationEnd = $this->scanner->getPosition();
-
+        if ($this->scanner->is_done()) {
+            $this->next_indentation = 0;
+            $this->next_indentation_end = $this->scanner->get_position();
             return 0;
         }
-
-        $start = $this->scanner->getPosition();
-
+        $start = $this->scanner->get_position();
         do {
-            $containsTab = false;
-            $containsSpace = false;
-            $nextIndentation = 0;
-
+            $contains_tab = false;
+            $contains_space = false;
+            $next_indentation = 0;
             while (true) {
-                switch ($this->scanner->peekChar()) {
+                switch ($this->scanner->peek_char()) {
                     case ' ':
-                        $containsSpace = true;
+                        $contains_space = true;
                         break;
-
                     case "\t":
-                        $containsTab = true;
+                        $contains_tab = true;
                         break;
-
                     default:
                         break 2;
                 }
-
-                $nextIndentation++;
-                $this->scanner->readChar();
+                $next_indentation++;
+                $this->scanner->read_char();
             }
-
-            if ($this->scanner->isDone()) {
-                $this->nextIndentation = 0;
-                $this->nextIndentationEnd = $this->scanner->getPosition();
-                $this->scanner->setPosition($start);
-
+            if ($this->scanner->is_done()) {
+                $this->next_indentation = 0;
+                $this->next_indentation_end = $this->scanner->get_position();
+                $this->scanner->set_position($start);
                 return 0;
             }
-        } while ($this->scanCharIf(fn (?string $char): bool => Character::isNewline($char)));
-
-        $this->checkIndentationConsistency($containsTab, $containsSpace);
-
-        $this->nextIndentation = $nextIndentation;
-        if ($nextIndentation > 0) {
-            $this->spaces ??= $containsSpace;
+        } while ($this->scan_char_if(fn(?string $char): bool => Character::is_newline($char)));
+        $this->check_indentation_consistency($contains_tab, $contains_space);
+        $this->next_indentation = $next_indentation;
+        if ($next_indentation > 0) {
+            $this->spaces ??= $contains_space;
         }
-        $this->nextIndentationEnd = $this->scanner->getPosition();
-        $this->scanner->setPosition($start);
-
-        return $nextIndentation;
+        $this->next_indentation_end = $this->scanner->get_position();
+        $this->scanner->set_position($start);
+        return $next_indentation;
     }
-
     /**
      * Ensures that the document uses consistent characters for indentation.
      *
      * The $containsTab and $containsSpace parameters refer to a single line of
      * indentation that has just been parsed.
      */
-    private function checkIndentationConsistency(bool $containsTab, bool $containsSpace): void
+    private function check_indentation_consistency(bool $contains_tab, bool $contains_space): void
     {
-        if ($containsTab) {
-            if ($containsSpace) {
-                $this->scanner->error('Tabs and spaces may not be mixed.', $this->scanner->getPosition() - $this->scanner->getColumn(), $this->scanner->getColumn());
+        if ($contains_tab) {
+            if ($contains_space) {
+                $this->scanner->error('Tabs and spaces may not be mixed.', $this->scanner->get_position() - $this->scanner->get_column(), $this->scanner->get_column());
             }
-
             if ($this->spaces === true) {
-                $this->scanner->error('Expected spaces, was tabs.', $this->scanner->getPosition() - $this->scanner->getColumn(), $this->scanner->getColumn());
+                $this->scanner->error('Expected spaces, was tabs.', $this->scanner->get_position() - $this->scanner->get_column(), $this->scanner->get_column());
             }
-        } elseif ($containsSpace && $this->spaces === false) {
-            $this->scanner->error('Expected tabs, was spaces.', $this->scanner->getPosition() - $this->scanner->getColumn(), $this->scanner->getColumn());
+        } elseif ($contains_space && $this->spaces === false) {
+            $this->scanner->error('Expected tabs, was spaces.', $this->scanner->get_position() - $this->scanner->get_column(), $this->scanner->get_column());
         }
     }
 }

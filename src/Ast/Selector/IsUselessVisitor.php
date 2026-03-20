@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,35 +10,30 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Visitor\AnySelectorVisitor;
-
+use Scss_Php\Scss_Php\Visitor\Any_Selector_Visitor;
 /**
  * The visitor used to implement {@see Selector::isUseless}.
  *
  * @internal
  */
-final class IsUselessVisitor extends AnySelectorVisitor
+final class Is_Useless_Visitor extends Any_Selector_Visitor
 {
-    public function visitComplexSelector(ComplexSelector $complex): bool
+    public function visit_complex_selector(Complex_Selector $complex): bool
     {
-        if (\count($complex->getLeadingCombinators()) > 1) {
+        if (\count($complex->get_leading_combinators()) > 1) {
             return true;
         }
-
-        foreach ($complex->getComponents() as $component) {
-            if (\count($component->getCombinators()) > 1 || $component->getSelector()->accept($this)) {
+        foreach ($complex->get_components() as $component) {
+            if (\count($component->get_combinators()) > 1 || $component->get_selector()->accept($this)) {
                 return true;
             }
         }
-
         return false;
     }
-
-    public function visitPseudoSelector(PseudoSelector $pseudo): bool
+    public function visit_pseudo_selector(Pseudo_Selector $pseudo): bool
     {
-        return $pseudo->isBogus();
+        return $pseudo->is_bogus();
     }
 }

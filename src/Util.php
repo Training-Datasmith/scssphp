@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,13 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php;
 
-namespace ScssPhp\ScssPhp;
-
-use League\Uri\Contracts\UriInterface;
+use League\Uri\Contracts\Uri_Interface;
 use League\Uri\Uri;
-use ScssPhp\ScssPhp\StackTrace\Frame;
-use ScssPhp\ScssPhp\Util\StringUtil;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Stack_Trace\Frame;
+use Scss_Php\Scss_Php\Util\String_Util;
+use Source_Span\File_Span;
 /**
  * Utility functions
  *
@@ -34,29 +31,20 @@ final class Util
      */
     public static function indent(string $string, int $indentation): string
     {
-        return implode("\n", array_map(fn ($line) => str_repeat(' ', $indentation) . $line, explode("\n", $string)));
+        return implode("\n", array_map(fn($line) => str_repeat(' ', $indentation) . $line, explode("\n", $string)));
     }
-
     /**
      * Encode URI component
      */
-    public static function encodeURIComponent(string $string): string
+    public static function encode_uri_component(string $string): string
     {
         $revert = ['%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')'];
-
         return strtr(rawurlencode($string), $revert);
     }
-
-    public static function frameForSpan(FileSpan $span, string $member, ?UriInterface $url = null): Frame
+    public static function frame_for_span(File_Span $span, string $member, ?Uri_Interface $url = null): Frame
     {
-        return new Frame(
-            $url ?? $span->getSourceUrl() ?? Uri::new('-'),
-            $span->getStart()->getLine() + 1,
-            $span->getStart()->getColumn() + 1,
-            $member
-        );
+        return new Frame($url ?? $span->get_source_url() ?? Uri::new('-'), $span->get_start()->get_line() + 1, $span->get_start()->get_column() + 1, $member);
     }
-
     /**
      * Returns the variable name (including the leading `$`) from a $span that
      * covers a variable declaration, which includes the variable name as well as
@@ -65,14 +53,12 @@ final class Util
      * This isn't particularly efficient, and should only be used for error
      * messages.
      */
-    public static function declarationName(FileSpan $span): string
+    public static function declaration_name(File_Span $span): string
     {
-        $text = $span->getText();
+        $text = $span->get_text();
         $pos = strpos($text, ':');
-
-        return StringUtil::trimAsciiRight(substr($text, 0, $pos === false ? null : $pos));
+        return String_Util::trim_ascii_right(substr($text, 0, $pos === false ? null : $pos));
     }
-
     /**
      * Returns $name without a vendor prefix.
      *
@@ -81,28 +67,22 @@ final class Util
     public static function unvendor(string $name): string
     {
         $length = \strlen($name);
-
         if ($length < 2) {
             return $name;
         }
-
         if ($name[0] !== '-') {
             return $name;
         }
-
         if ($name[1] === '-') {
             return $name;
         }
-
         for ($i = 2; $i < $length; $i++) {
             if ($name[$i] === '-') {
                 return substr($name, $i + 1);
             }
         }
-
         return $name;
     }
-
     /**
      * Like {@see \SplObjectStorage::addAll()}, but for two-layer maps.
      *
@@ -116,15 +96,13 @@ final class Util
      * @param \SplObjectStorage<K1, Inner> $destination
      * @param \SplObjectStorage<K1, Inner> $source
      */
-    public static function mapAddAll2(\SplObjectStorage $destination, \SplObjectStorage $source): void
+    public static function map_add_all2(\Spl_Object_Storage $destination, \Spl_Object_Storage $source): void
     {
         foreach ($source as $key) {
-            $inner = $source->getInfo();
-
-            $innerDestination = $destination[$key] ?? null;
-
-            if ($innerDestination !== null) {
-                $innerDestination->addAll($inner);
+            $inner = $source->get_info();
+            $inner_destination = $destination[$key] ?? null;
+            if ($inner_destination !== null) {
+                $inner_destination->add_all($inner);
             } else {
                 $destination[$key] = $inner;
             }

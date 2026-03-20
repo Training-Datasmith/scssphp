@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,13 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use JiriPudil\SealedClasses\Sealed;
-
+use Jiri_Pudil\Sealed_Classes\Sealed;
 /**
  * @internal
  */
-#[Sealed(permits: [CssMediaQuery::class, MediaQuerySingletonMergeResult::class])]
-interface MediaQueryMergeResult
+#[Sealed(permits: [Css_Media_Query::class, Media_Query_Singleton_Merge_Result::class])]
+interface Media_Query_Merge_Result
 {
 }

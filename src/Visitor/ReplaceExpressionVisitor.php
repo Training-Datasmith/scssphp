@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,35 +10,33 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Visitor;
 
-namespace ScssPhp\ScssPhp\Visitor;
-
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\BinaryOperationExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\BooleanExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ColorExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\FunctionExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\IfExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\InterpolatedFunctionExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ListExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\MapExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\NullExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\NumberExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ParenthesizedExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\SelectorExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\StringExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\SupportsExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\UnaryOperationExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ValueExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\VariableExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsInterpolation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsNegation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsOperation;
-
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Binary_Operation_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Boolean_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Color_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Function_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\If_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Interpolated_Function_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\List_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Map_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Null_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Number_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Parenthesized_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Selector_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\String_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Supports_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Unary_Operation_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Value_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Variable_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Negation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Operation;
 /**
  * A visitor that recursively traverses each expression in a SassScript AST and
  * replaces its contents with the values returned by nested recursion.
@@ -56,161 +53,110 @@ use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsOperation;
  *
  * @internal
  */
-abstract class ReplaceExpressionVisitor implements ExpressionVisitor
+abstract class Replace_Expression_Visitor implements Expression_Visitor
 {
-    public function visitBinaryOperationExpression(BinaryOperationExpression $node): Expression
+    public function visit_binary_operation_expression(Binary_Operation_Expression $node): Expression
     {
-        return new BinaryOperationExpression($node->getOperator(), $node->getLeft()->accept($this), $node->getRight()->accept($this));
+        return new Binary_Operation_Expression($node->get_operator(), $node->get_left()->accept($this), $node->get_right()->accept($this));
     }
-
-    public function visitBooleanExpression(BooleanExpression $node): Expression
-    {
-        return $node;
-    }
-
-    public function visitColorExpression(ColorExpression $node): Expression
+    public function visit_boolean_expression(Boolean_Expression $node): Expression
     {
         return $node;
     }
-
-    public function visitFunctionExpression(FunctionExpression $node): Expression
-    {
-        return new FunctionExpression(
-            $node->getOriginalName(),
-            $this->visitArgumentInvocation($node->getArguments()),
-            $node->getSpan(),
-            $node->getNamespace()
-        );
-    }
-
-    public function visitInterpolatedFunctionExpression(InterpolatedFunctionExpression $node): Expression
-    {
-        return new InterpolatedFunctionExpression(
-            $this->visitInterpolation($node->getName()),
-            $this->visitArgumentInvocation($node->getArguments()),
-            $node->getSpan()
-        );
-    }
-
-    public function visitIfExpression(IfExpression $node): Expression
-    {
-        return new IfExpression($this->visitArgumentInvocation($node->getArguments()), $node->getSpan());
-    }
-
-    public function visitListExpression(ListExpression $node): Expression
-    {
-        return new ListExpression(
-            array_map(fn (Expression $item) => $item->accept($this), $node->getContents()),
-            $node->getSeparator(),
-            $node->getSpan(),
-            $node->hasBrackets()
-        );
-    }
-
-    public function visitMapExpression(MapExpression $node): Expression
-    {
-        return new MapExpression(
-            array_map(fn (array $pair): array => [$pair[0]->accept($this), $pair[1]->accept($this)], $node->getPairs()),
-            $node->getSpan()
-        );
-    }
-
-    public function visitNullExpression(NullExpression $node): Expression
+    public function visit_color_expression(Color_Expression $node): Expression
     {
         return $node;
     }
-
-    public function visitNumberExpression(NumberExpression $node): Expression
+    public function visit_function_expression(Function_Expression $node): Expression
+    {
+        return new Function_Expression($node->get_original_name(), $this->visit_argument_invocation($node->get_arguments()), $node->get_span(), $node->get_namespace());
+    }
+    public function visit_interpolated_function_expression(Interpolated_Function_Expression $node): Expression
+    {
+        return new Interpolated_Function_Expression($this->visit_interpolation($node->get_name()), $this->visit_argument_invocation($node->get_arguments()), $node->get_span());
+    }
+    public function visit_if_expression(If_Expression $node): Expression
+    {
+        return new If_Expression($this->visit_argument_invocation($node->get_arguments()), $node->get_span());
+    }
+    public function visit_list_expression(List_Expression $node): Expression
+    {
+        return new List_Expression(array_map(fn(Expression $item) => $item->accept($this), $node->get_contents()), $node->get_separator(), $node->get_span(), $node->has_brackets());
+    }
+    public function visit_map_expression(Map_Expression $node): Expression
+    {
+        return new Map_Expression(array_map(fn(array $pair): array => [$pair[0]->accept($this), $pair[1]->accept($this)], $node->get_pairs()), $node->get_span());
+    }
+    public function visit_null_expression(Null_Expression $node): Expression
     {
         return $node;
     }
-
-    public function visitParenthesizedExpression(ParenthesizedExpression $node): Expression
-    {
-        return new ParenthesizedExpression($node->getExpression()->accept($this), $node->getSpan());
-    }
-
-    public function visitSelectorExpression(SelectorExpression $node): Expression
+    public function visit_number_expression(Number_Expression $node): Expression
     {
         return $node;
     }
-
-    public function visitStringExpression(StringExpression $node): Expression
+    public function visit_parenthesized_expression(Parenthesized_Expression $node): Expression
     {
-        return new StringExpression($this->visitInterpolation($node->getText()), $node->hasQuotes());
+        return new Parenthesized_Expression($node->get_expression()->accept($this), $node->get_span());
     }
-
-    public function visitSupportsExpression(SupportsExpression $node): Expression
-    {
-        return new SupportsExpression($this->visitSupportsCondition($node->getCondition()));
-    }
-
-    public function visitUnaryOperationExpression(UnaryOperationExpression $node): Expression
-    {
-        return new UnaryOperationExpression($node->getOperator(), $node->getOperand()->accept($this), $node->getSpan());
-    }
-
-    public function visitValueExpression(ValueExpression $node): Expression
+    public function visit_selector_expression(Selector_Expression $node): Expression
     {
         return $node;
     }
-
-    public function visitVariableExpression(VariableExpression $node): Expression
+    public function visit_string_expression(String_Expression $node): Expression
+    {
+        return new String_Expression($this->visit_interpolation($node->get_text()), $node->has_quotes());
+    }
+    public function visit_supports_expression(Supports_Expression $node): Expression
+    {
+        return new Supports_Expression($this->visit_supports_condition($node->get_condition()));
+    }
+    public function visit_unary_operation_expression(Unary_Operation_Expression $node): Expression
+    {
+        return new Unary_Operation_Expression($node->get_operator(), $node->get_operand()->accept($this), $node->get_span());
+    }
+    public function visit_value_expression(Value_Expression $node): Expression
     {
         return $node;
     }
-
+    public function visit_variable_expression(Variable_Expression $node): Expression
+    {
+        return $node;
+    }
     /**
      * Replaces each expression in an invocation.
      *
      * The default implementation of the visit methods calls this to replace any
      * argument invocation in an expression.
      */
-    protected function visitArgumentInvocation(ArgumentInvocation $invocation): ArgumentInvocation
+    protected function visit_argument_invocation(Argument_Invocation $invocation): Argument_Invocation
     {
-        return new ArgumentInvocation(
-            array_map(fn (Expression $expression) => $expression->accept($this), $invocation->getPositional()),
-            array_map(fn (Expression $expression) => $expression->accept($this), $invocation->getNamed()),
-            $invocation->getSpan(),
-            $invocation->getRest()?->accept($this),
-            $invocation->getKeywordRest()?->accept($this)
-        );
+        return new Argument_Invocation(array_map(fn(Expression $expression) => $expression->accept($this), $invocation->get_positional()), array_map(fn(Expression $expression) => $expression->accept($this), $invocation->get_named()), $invocation->get_span(), $invocation->get_rest()?->accept($this), $invocation->get_keyword_rest()?->accept($this));
     }
-
     /**
      * Replaces each expression in $condition.
      *
      * The default implementation of the visit methods call this to visit any
      * {@see SupportsCondition} they encounter.
      */
-    protected function visitSupportsCondition(SupportsCondition $condition): SupportsCondition
+    protected function visit_supports_condition(Supports_Condition $condition): Supports_Condition
     {
-        if ($condition instanceof SupportsOperation) {
-            return new SupportsOperation(
-                $this->visitSupportsCondition($condition->getLeft()),
-                $this->visitSupportsCondition($condition->getRight()),
-                $condition->getOperator(),
-                $condition->getSpan()
-            );
+        if ($condition instanceof Supports_Operation) {
+            return new Supports_Operation($this->visit_supports_condition($condition->get_left()), $this->visit_supports_condition($condition->get_right()), $condition->get_operator(), $condition->get_span());
         }
-
-        if ($condition instanceof SupportsNegation) {
-            return new SupportsNegation($this->visitSupportsCondition($condition->getCondition()), $condition->getSpan());
+        if ($condition instanceof Supports_Negation) {
+            return new Supports_Negation($this->visit_supports_condition($condition->get_condition()), $condition->get_span());
         }
-
-        if ($condition instanceof SupportsInterpolation) {
-            return new SupportsInterpolation($condition->getExpression()->accept($this), $condition->getSpan());
+        if ($condition instanceof Supports_Interpolation) {
+            return new Supports_Interpolation($condition->get_expression()->accept($this), $condition->get_span());
         }
-
-        if ($condition instanceof SupportsDeclaration) {
-            return new SupportsDeclaration($condition->getName()->accept($this), $condition->getValue()->accept($this), $condition->getSpan());
+        if ($condition instanceof Supports_Declaration) {
+            return new Supports_Declaration($condition->get_name()->accept($this), $condition->get_value()->accept($this), $condition->get_span());
         }
-
         throw new \UnexpectedValueException('BUG: Unknown SupportsCondition ' . $condition::class);
     }
-
-    protected function visitInterpolation(Interpolation $interpolation): Interpolation
+    protected function visit_interpolation(Interpolation $interpolation): Interpolation
     {
-        return new Interpolation(array_map(fn (\ScssPhp\ScssPhp\Ast\Sass\Expression|string $node) => $node instanceof Expression ? $node->accept($this) : $node, $interpolation->getContents()), $interpolation->getSpan());
+        return new Interpolation(array_map(fn(\Scss_Php\Scss_Php\Ast\Sass\Expression|string $node) => $node instanceof Expression ? $node->accept($this) : $node, $interpolation->get_contents()), $interpolation->get_span());
     }
 }

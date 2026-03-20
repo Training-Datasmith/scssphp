@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,153 +10,151 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Evaluation;
+namespace Scss_Php\Scss_Php\Evaluation;
 
 use League\Uri\Uri;
-use ScssPhp\ScssPhp\Ast\AstNode;
-use ScssPhp\ScssPhp\Ast\Css\CssAtRule;
-use ScssPhp\ScssPhp\Ast\Css\CssComment;
-use ScssPhp\ScssPhp\Ast\Css\CssKeyframeBlock;
-use ScssPhp\ScssPhp\Ast\Css\CssMediaQuery;
-use ScssPhp\ScssPhp\Ast\Css\CssMediaRule;
-use ScssPhp\ScssPhp\Ast\Css\CssNode;
-use ScssPhp\ScssPhp\Ast\Css\CssStyleRule;
-use ScssPhp\ScssPhp\Ast\Css\CssStylesheet;
-use ScssPhp\ScssPhp\Ast\Css\CssValue;
-use ScssPhp\ScssPhp\Ast\Css\MediaQuerySingletonMergeResult;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssAtRule;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssComment;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssDeclaration;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssImport;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssKeyframeBlock;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssMediaRule;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssNode;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssParentNode;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssStyleRule;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssStylesheet;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssSupportsRule;
-use ScssPhp\ScssPhp\Ast\FakeAstNode;
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\AtRootQuery;
-use ScssPhp\ScssPhp\Ast\Sass\CallableInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\BinaryOperationExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\BinaryOperator;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\BooleanExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ColorExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\FunctionExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\IfExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\InterpolatedFunctionExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\IsCalculationSafeVisitor;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ListExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\MapExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\NullExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\NumberExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ParenthesizedExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\SelectorExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\StringExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\SupportsExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\UnaryOperationExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\UnaryOperator;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ValueExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\VariableExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Import\DynamicImport;
-use ScssPhp\ScssPhp\Ast\Sass\Import\StaticImport;
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ContentBlock;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ContentRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\DebugRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\Declaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\EachRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ErrorRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ExtendRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ForRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\FunctionRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\IfRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ImportRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\IncludeRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\LoudComment;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\MediaRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\MixinRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ReturnRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\SilentComment;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\StyleRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\Stylesheet;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\SupportsRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\VariableDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\WarnRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\WhileRule;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsAnything;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsFunction;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsInterpolation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsNegation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsOperation;
-use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
-use ScssPhp\ScssPhp\Ast\Selector\SimpleSelector;
-use ScssPhp\ScssPhp\Collection\Map;
-use ScssPhp\ScssPhp\Colors;
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\MultiSpanSassRuntimeException;
-use ScssPhp\ScssPhp\Exception\SassException;
-use ScssPhp\ScssPhp\Exception\SassRuntimeException;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Exception\SimpleSassException;
-use ScssPhp\ScssPhp\Exception\SimpleSassFormatException;
-use ScssPhp\ScssPhp\Exception\SimpleSassRuntimeException;
-use ScssPhp\ScssPhp\Extend\ConcreteExtensionStore;
-use ScssPhp\ScssPhp\Extend\Extension;
-use ScssPhp\ScssPhp\Extend\ExtensionStore;
-use ScssPhp\ScssPhp\Function\FunctionRegistry;
-use ScssPhp\ScssPhp\Importer\ImportCache;
-use ScssPhp\ScssPhp\Importer\Importer;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
-use ScssPhp\ScssPhp\Parser\InterpolationMap;
-use ScssPhp\ScssPhp\Parser\KeyframeSelectorParser;
-use ScssPhp\ScssPhp\SassCallable\BuiltInCallable;
-use ScssPhp\ScssPhp\SassCallable\PlainCssCallable;
-use ScssPhp\ScssPhp\SassCallable\SassCallable;
-use ScssPhp\ScssPhp\SassCallable\UserDefinedCallable;
-use ScssPhp\ScssPhp\SourceSpan\MultiSpan;
-use ScssPhp\ScssPhp\StackTrace\Frame;
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use ScssPhp\ScssPhp\Util;
-use ScssPhp\ScssPhp\Util\AstUtil;
-use ScssPhp\ScssPhp\Util\Character;
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use ScssPhp\ScssPhp\Util\IterableUtil;
-use ScssPhp\ScssPhp\Util\ListUtil;
-use ScssPhp\ScssPhp\Util\LoggerUtil;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use ScssPhp\ScssPhp\Util\StringUtil;
-use ScssPhp\ScssPhp\Value\CalculationOperation;
-use ScssPhp\ScssPhp\Value\CalculationOperator;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Value\SassArgumentList;
-use ScssPhp\ScssPhp\Value\SassBoolean;
-use ScssPhp\ScssPhp\Value\SassCalculation;
-use ScssPhp\ScssPhp\Value\SassColor;
-use ScssPhp\ScssPhp\Value\SassFunction;
-use ScssPhp\ScssPhp\Value\SassList;
-use ScssPhp\ScssPhp\Value\SassMap;
-use ScssPhp\ScssPhp\Value\SassMixin;
-use ScssPhp\ScssPhp\Value\SassNull;
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Value\Value;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use ScssPhp\ScssPhp\Warn;
-use SourceSpan\FileSpan;
-use SourceSpan\SimpleSourceLocation;
-use SourceSpan\SourceFile;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
+use Scss_Php\Scss_Php\Ast\Css\Css_At_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Comment;
+use Scss_Php\Scss_Php\Ast\Css\Css_Keyframe_Block;
+use Scss_Php\Scss_Php\Ast\Css\Css_Media_Query;
+use Scss_Php\Scss_Php\Ast\Css\Css_Media_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Node;
+use Scss_Php\Scss_Php\Ast\Css\Css_Style_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Stylesheet;
+use Scss_Php\Scss_Php\Ast\Css\Css_Value;
+use Scss_Php\Scss_Php\Ast\Css\Media_Query_Singleton_Merge_Result;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_At_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Comment;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Declaration;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Import;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Keyframe_Block;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Media_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Node;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Parent_Node;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Style_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Stylesheet;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Supports_Rule;
+use Scss_Php\Scss_Php\Ast\Fake_Ast_Node;
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\At_Root_Query;
+use Scss_Php\Scss_Php\Ast\Sass\Callable_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Binary_Operation_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Binary_Operator;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Boolean_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Color_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Function_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\If_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Interpolated_Function_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Is_Calculation_Safe_Visitor;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\List_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Map_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Null_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Number_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Parenthesized_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Selector_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\String_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Supports_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Unary_Operation_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Unary_Operator;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Value_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Variable_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Import\Dynamic_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Import\Static_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\At_Root_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\At_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Content_Block;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Content_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Debug_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Each_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Error_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Extend_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\For_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Function_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\If_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Import_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Include_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Loud_Comment;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Media_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Mixin_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Return_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Silent_Comment;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Style_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Stylesheet;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Supports_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Variable_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Warn_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\While_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Anything;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Function;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Negation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Operation;
+use Scss_Php\Scss_Php\Ast\Selector\Selector_List;
+use Scss_Php\Scss_Php\Ast\Selector\Simple_Selector;
+use Scss_Php\Scss_Php\Collection\Map;
+use Scss_Php\Scss_Php\Colors;
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Multi_Span_Sass_Runtime_Exception;
+use Scss_Php\Scss_Php\Exception\Sass_Exception;
+use Scss_Php\Scss_Php\Exception\Sass_Runtime_Exception;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Exception;
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Format_Exception;
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Runtime_Exception;
+use Scss_Php\Scss_Php\Extend\Concrete_Extension_Store;
+use Scss_Php\Scss_Php\Extend\Extension;
+use Scss_Php\Scss_Php\Extend\Extension_Store;
+use Scss_Php\Scss_Php\Function\Function_Registry;
+use Scss_Php\Scss_Php\Importer\Import_Cache;
+use Scss_Php\Scss_Php\Importer\Importer;
+use Scss_Php\Scss_Php\Logger\Logger_Interface;
+use Scss_Php\Scss_Php\Parser\Interpolation_Map;
+use Scss_Php\Scss_Php\Parser\Keyframe_Selector_Parser;
+use Scss_Php\Scss_Php\Sass_Callable\Built_In_Callable;
+use Scss_Php\Scss_Php\Sass_Callable\Plain_Css_Callable;
+use Scss_Php\Scss_Php\Sass_Callable\Sass_Callable;
+use Scss_Php\Scss_Php\Sass_Callable\User_Defined_Callable;
+use Scss_Php\Scss_Php\Source_Span\Multi_Span;
+use Scss_Php\Scss_Php\Stack_Trace\Frame;
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Scss_Php\Scss_Php\Util;
+use Scss_Php\Scss_Php\Util\Ast_Util;
+use Scss_Php\Scss_Php\Util\Character;
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Scss_Php\Scss_Php\Util\Iterable_Util;
+use Scss_Php\Scss_Php\Util\List_Util;
+use Scss_Php\Scss_Php\Util\Logger_Util;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Scss_Php\Scss_Php\Util\String_Util;
+use Scss_Php\Scss_Php\Value\Calculation_Operation;
+use Scss_Php\Scss_Php\Value\Calculation_Operator;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Value\Sass_Argument_List;
+use Scss_Php\Scss_Php\Value\Sass_Boolean;
+use Scss_Php\Scss_Php\Value\Sass_Calculation;
+use Scss_Php\Scss_Php\Value\Sass_Color;
+use Scss_Php\Scss_Php\Value\Sass_Function;
+use Scss_Php\Scss_Php\Value\Sass_List;
+use Scss_Php\Scss_Php\Value\Sass_Map;
+use Scss_Php\Scss_Php\Value\Sass_Mixin;
+use Scss_Php\Scss_Php\Value\Sass_Null;
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Value\Value;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Scss_Php\Scss_Php\Warn;
+use Source_Span\File_Span;
+use Source_Span\Simple_Source_Location;
+use Source_Span\Source_File;
 /**
  * A visitor that executes Sass code to produce a CSS tree.
  *
@@ -166,13 +163,12 @@ use SourceSpan\SourceFile;
  *
  * @internal
  */
-class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
+class Evaluate_Visitor implements Statement_Visitor, Expression_Visitor
 {
     /**
      * @var array<string, SassCallable>
      */
-    private array $builtInFunctions = [];
-
+    private array $built_in_functions = [];
     /**
      * A set of message/location pairs for warnings that have been emitted via
      * {@see warn}.
@@ -182,28 +178,24 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      *
      * @var array<string, array<string, true>>
      */
-    private array $warningsEmitted = [];
-
+    private array $warnings_emitted = [];
     /**
      * The current lexical environment.
      */
     private Environment $environment;
-
     /**
      * The style rule that defines the current parent selector, if any.
      *
      * This doesn't take into consideration any intermediate `@at-root` rules. In
      * the common case where those rules are relevant, use {@see getStyleRule} instead.
      */
-    private ?ModifiableCssStyleRule $styleRuleIgnoringAtRoot = null;
-
+    private ?Modifiable_Css_Style_Rule $style_rule_ignoring_at_root = null;
     /**
      * The current media queries, if any.
      *
      * @var list<CssMediaQuery>|null
      */
-    private ?array $mediaQueries = null;
-
+    private ?array $media_queries = null;
     /**
      * The set of media queries that were merged together to create
      * {@see $mediaQueries}.
@@ -213,25 +205,20 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      *
      * @var CssMediaQuery[]|null
      */
-    private ?array $mediaQuerySources = null;
-
-    private ?ModifiableCssParentNode $parent = null;
-
+    private ?array $media_query_sources = null;
+    private ?Modifiable_Css_Parent_Node $parent = null;
     /**
      * The name of the current declaration parent.
      */
-    private ?string $declarationName = null;
-
+    private ?string $declaration_name = null;
     /**
      * The human-readable name of the current stack frame.
      */
     private string $member = 'root stylesheet';
-
     /**
      * The innermost user-defined callable that's being invoked.
      */
-    private ?UserDefinedCallable $currentCallable = null;
-
+    private ?User_Defined_Callable $current_callable = null;
     /**
      * The node for the innermost callable that's being invoked.
      *
@@ -240,49 +227,41 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      * if the span isn't required, since some nodes need to do real work to
      * manufacture a source span.
      */
-    private ?AstNode $callableNode = null;
-
+    private ?Ast_Node $callable_node = null;
     /**
      * The span for the current import that's being resolved.
      *
      * This is used to produce warnings for importers.
      */
-    private ?FileSpan $importSpan = null;
-
+    private ?File_Span $import_span = null;
     /**
      * Whether we're currently executing a function.
      */
-    private bool $inFunction = false;
-
+    private bool $in_function = false;
     /**
      * Whether we're currently building the output of an unknown at rule.
      */
-    private bool $inUnknownAtRule = false;
-
+    private bool $in_unknown_at_rule = false;
     /**
      * Whether we're directly within an `@at-root` rule that excludes style rules.
      */
-    private bool $atRootExcludingStyleRule = false;
-
+    private bool $at_root_excluding_style_rule = false;
     /**
      * Whether we're currently building the output of a `@keyframes` rule.
      */
-    private bool $inKeyFrames = false;
-
+    private bool $in_key_frames = false;
     /**
      * Whether we're currently evaluating a {@see SupportsDeclaration}.
      *
      * When this is true, calculations will not be simplified.
      */
-    private bool $inSupportsDeclaration = false;
-
+    private bool $in_supports_declaration = false;
     /**
      * The canonical URLs of all stylesheets loaded during compilation.
      *
      * @var array<string, true>
      */
-    private array $loadedUrls = [];
-
+    private array $loaded_urls = [];
     /**
      * A map from canonical URLs for modules (or imported files) that are
      * currently being evaluated to AST nodes whose spans indicate the original
@@ -296,8 +275,7 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      *
      * @var array<string, AstNode|null>
      */
-    private array $activeModules = [];
-
+    private array $active_modules = [];
     /**
      * The dynamic call stack representing function invocations, mixin
      * invocations, and imports surrounding the current context.
@@ -312,7 +290,6 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      * @var list<array{string, AstNode}>
      */
     private array $stack = [];
-
     /**
      * The importer that's currently being used to resolve relative imports.
      *
@@ -320,21 +297,16 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      * stylesheet.
      */
     private ?Importer $importer = null;
-
     /**
      * Whether we're in a dependency.
      *
      * A dependency is defined as a stylesheet imported by an importer other than
      * the original.
      */
-    private bool $inDependency = false;
-
+    private bool $in_dependency = false;
     private ?Stylesheet $stylesheet = null;
-
-    private ?ModifiableCssStylesheet $root = null;
-
-    private ?int $endOfImports = null;
-
+    private ?Modifiable_Css_Stylesheet $root = null;
+    private ?int $end_of_imports = null;
     /**
      * Plain-CSS imports that didn't appear in the initial block of CSS imports.
      *
@@ -346,457 +318,368 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      *
      * @var list<ModifiableCssImport>|null
      */
-    private ?array $outOfOrderImports = null;
-
-    private ?ExtensionStore $extensionStore = null;
-
+    private ?array $out_of_order_imports = null;
+    private ?Extension_Store $extension_store = null;
     /**
      * @param SassCallable[] $functions
      */
-    public function __construct(/**
-     * The import cache used to import other stylesheets.
-     */
-        private readonly ImportCache $importCache,
+    public function __construct(
+        /**
+         * The import cache used to import other stylesheets.
+         */
+        private readonly Import_Cache $import_cache,
         array $functions,
-        private readonly LoggerInterface $logger, /**
-     * Whether to avoid emitting warnings for files loaded from dependencies.
-     */
-        private readonly bool $quietDeps = false, /**
-     * Whether to track source map information.
-     */
-        private readonly bool $sourceMap = false
-    ) {
+        private readonly Logger_Interface $logger,
+        /**
+         * Whether to avoid emitting warnings for files loaded from dependencies.
+         */
+        private readonly bool $quiet_deps = false,
+        /**
+         * Whether to track source map information.
+         */
+        private readonly bool $source_map = false
+    )
+    {
         $this->environment = Environment::create();
-
-        $sassMetaUri = Uri::new('sass:meta');
+        $sass_meta_uri = Uri::new('sass:meta');
         // These functions are defined in the context of the evaluator because
         // they need access to the environment or other local state.
         // When adding a new function here, its name must also be added in {@see FunctionRegistry::SPECIAL_META_GLOBAL_FUNCTIONS}.
-        $metaFunctions = [
-            BuiltInCallable::function('global-variable-exists', '$name, $module: null', function ($arguments): \ScssPhp\ScssPhp\Value\SassBoolean {
-                $variable = $arguments[0]->assertString('name');
-                $module = $arguments[1]->realNull()?->assertString('module');
-
+        $meta_functions = [Built_In_Callable::function('global-variable-exists', '$name, $module: null', function ($arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean {
+            $variable = $arguments[0]->assert_string('name');
+            $module = $arguments[1]->real_null()?->assert_string('module');
+            if ($module !== null) {
+                // TODO remove this when implementing modules
+                throw new Sass_Script_Exception('Sass modules are not implemented yet.');
+            }
+            return Sass_Boolean::create($this->environment->global_variable_exists(str_replace('_', '-', $variable->get_text())));
+        }, $sass_meta_uri), Built_In_Callable::function('variable-exists', '$name', function ($arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean {
+            $variable = $arguments[0]->assert_string('name');
+            return Sass_Boolean::create($this->environment->variable_exists(str_replace('_', '-', $variable->get_text())));
+        }, $sass_meta_uri), Built_In_Callable::function('function-exists', '$name, $module: null', function ($arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean {
+            $variable = $arguments[0]->assert_string('name');
+            $module = $arguments[1]->real_null()?->assert_string('module');
+            if ($module !== null) {
+                // TODO remove this when implementing modules
+                throw new Sass_Script_Exception('Sass modules are not implemented yet.');
+            }
+            return Sass_Boolean::create($this->environment->function_exists(str_replace('_', '-', $variable->get_text())) || isset($this->built_in_functions[$variable->get_text()]) || Function_Registry::has($variable->get_text()));
+        }, $sass_meta_uri), Built_In_Callable::function('mixin-exists', '$name, $module: null', function ($arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean {
+            $variable = $arguments[0]->assert_string('name');
+            $module = $arguments[1]->real_null()?->assert_string('module');
+            if ($module !== null) {
+                // TODO remove this when implementing modules
+                throw new Sass_Script_Exception('Sass modules are not implemented yet.');
+            }
+            return Sass_Boolean::create($this->environment->mixin_exists(str_replace('_', '-', $variable->get_text())));
+        }, $sass_meta_uri), Built_In_Callable::function('content-exists', '', function ($arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean {
+            if (!$this->environment->is_in_mixin()) {
+                throw new Sass_Script_Exception('content-exists() may only be called within a mixin.');
+            }
+            return Sass_Boolean::create($this->environment->get_content() !== null);
+        }, $sass_meta_uri), Built_In_Callable::function('get-function', '$name, $css: false, $module: null', function ($arguments): \Scss_Php\Scss_Php\Value\Sass_Function {
+            $name = $arguments[0]->assert_string('name');
+            $css = $arguments[1]->is_truthy();
+            $module = $arguments[2]->real_null()?->assert_string('module');
+            if ($css) {
+                if ($module !== null) {
+                    throw new Sass_Script_Exception('$css and $module may not both be passed at once.');
+                }
+                return new Sass_Function(new Plain_Css_Callable($name->get_text()));
+            }
+            \assert($this->callable_node !== null);
+            $callable = $this->add_exception_span($this->callable_node, function () use ($name, $module): ?\Scss_Php\Scss_Php\Sass_Callable\Sass_Callable {
+                $normalized_name = str_replace('_', '-', $name->get_text());
+                $namespace = $module?->get_text();
+                if ($namespace !== null) {
+                    // TODO remove this when implementing modules
+                    throw new Sass_Script_Exception('Sass modules are not implemented yet.');
+                }
+                $local = $this->environment->get_function($normalized_name);
+                if ($local !== null) {
+                    return $local;
+                }
+                return $this->get_builtin_function($normalized_name);
+            });
+            if ($callable === null) {
+                throw new Sass_Script_Exception("Function not found: {$name}");
+            }
+            return new Sass_Function($callable);
+        }, $sass_meta_uri), Built_In_Callable::function('get-mixin', '$name, $module: null', function ($arguments): \Scss_Php\Scss_Php\Value\Sass_Mixin {
+            $name = $arguments[0]->assert_string('name');
+            $module = $arguments[1]->real_null()?->assert_string('module');
+            \assert($this->callable_node !== null);
+            $callable = $this->add_exception_span($this->callable_node, function () use ($name, $module): ?\Scss_Php\Scss_Php\Sass_Callable\Sass_Callable {
                 if ($module !== null) {
                     // TODO remove this when implementing modules
-                    throw new SassScriptException('Sass modules are not implemented yet.');
+                    throw new Sass_Script_Exception('Sass modules are not implemented yet.');
                 }
-
-                return SassBoolean::create($this->environment->globalVariableExists(str_replace('_', '-', $variable->getText())));
-            }, $sassMetaUri),
-            BuiltInCallable::function('variable-exists', '$name', function ($arguments): \ScssPhp\ScssPhp\Value\SassBoolean {
-                $variable = $arguments[0]->assertString('name');
-
-                return SassBoolean::create($this->environment->variableExists(str_replace('_', '-', $variable->getText())));
-            }, $sassMetaUri),
-            BuiltInCallable::function('function-exists', '$name, $module: null', function ($arguments): \ScssPhp\ScssPhp\Value\SassBoolean {
-                $variable = $arguments[0]->assertString('name');
-                $module = $arguments[1]->realNull()?->assertString('module');
-
-                if ($module !== null) {
-                    // TODO remove this when implementing modules
-                    throw new SassScriptException('Sass modules are not implemented yet.');
+                return $this->environment->get_mixin(str_replace('_', '-', $name->get_text()));
+            });
+            if ($callable === null) {
+                throw new Sass_Script_Exception("Mixin not found: {$name}");
+            }
+            return new Sass_Mixin($callable);
+        }, $sass_meta_uri), Built_In_Callable::function('call', '$function, $args...', function (array $arguments) {
+            $function = $arguments[0];
+            $args = $arguments[1];
+            \assert($args instanceof Sass_Argument_List);
+            $callable_node = $this->callable_node;
+            \assert($callable_node !== null);
+            if (\count($args->get_keywords()) === 0) {
+                $keyword_rest = null;
+            } else {
+                $keyword_args = new Map();
+                foreach ($args->get_keywords() as $name => $value) {
+                    $keyword_args->put(new Sass_String($name, false), $value);
                 }
-
-                return SassBoolean::create($this->environment->functionExists(str_replace('_', '-', $variable->getText())) || isset($this->builtInFunctions[$variable->getText()]) || FunctionRegistry::has($variable->getText()));
-            }, $sassMetaUri),
-            BuiltInCallable::function('mixin-exists', '$name, $module: null', function ($arguments): \ScssPhp\ScssPhp\Value\SassBoolean {
-                $variable = $arguments[0]->assertString('name');
-                $module = $arguments[1]->realNull()?->assertString('module');
-
-                if ($module !== null) {
-                    // TODO remove this when implementing modules
-                    throw new SassScriptException('Sass modules are not implemented yet.');
-                }
-
-                return SassBoolean::create($this->environment->mixinExists(str_replace('_', '-', $variable->getText())));
-            }, $sassMetaUri),
-            BuiltInCallable::function('content-exists', '', function ($arguments): \ScssPhp\ScssPhp\Value\SassBoolean {
-                if (! $this->environment->isInMixin()) {
-                    throw new SassScriptException('content-exists() may only be called within a mixin.');
-                }
-
-                return SassBoolean::create($this->environment->getContent() !== null);
-            }, $sassMetaUri),
-            BuiltInCallable::function('get-function', '$name, $css: false, $module: null', function ($arguments): \ScssPhp\ScssPhp\Value\SassFunction {
-                $name = $arguments[0]->assertString('name');
-                $css = $arguments[1]->isTruthy();
-                $module = $arguments[2]->realNull()?->assertString('module');
-
-                if ($css) {
-                    if ($module !== null) {
-                        throw new SassScriptException('$css and $module may not both be passed at once.');
-                    }
-
-                    return new SassFunction(new PlainCssCallable($name->getText()));
-                }
-
-                \assert($this->callableNode !== null);
-                $callable = $this->addExceptionSpan($this->callableNode, function () use ($name, $module): ?\ScssPhp\ScssPhp\SassCallable\SassCallable {
-                    $normalizedName = str_replace('_', '-', $name->getText());
-                    $namespace = $module?->getText();
-
-                    if ($namespace !== null) {
-                        // TODO remove this when implementing modules
-                        throw new SassScriptException('Sass modules are not implemented yet.');
-                    }
-
-                    $local = $this->environment->getFunction($normalizedName);
-
-                    if ($local !== null) {
-                        return $local;
-                    }
-
-                    return $this->getBuiltinFunction($normalizedName);
-                });
-
-                if ($callable === null) {
-                    throw new SassScriptException("Function not found: $name");
-                }
-
-                return new SassFunction($callable);
-            }, $sassMetaUri),
-            BuiltInCallable::function('get-mixin', '$name, $module: null', function ($arguments): \ScssPhp\ScssPhp\Value\SassMixin {
-                $name = $arguments[0]->assertString('name');
-                $module = $arguments[1]->realNull()?->assertString('module');
-
-                \assert($this->callableNode !== null);
-                $callable = $this->addExceptionSpan($this->callableNode, function () use ($name, $module): ?\ScssPhp\ScssPhp\SassCallable\SassCallable {
-                    if ($module !== null) {
-                        // TODO remove this when implementing modules
-                        throw new SassScriptException('Sass modules are not implemented yet.');
-                    }
-
-                    return $this->environment->getMixin(str_replace('_', '-', $name->getText()));
-                });
-
-                if ($callable === null) {
-                    throw new SassScriptException("Mixin not found: $name");
-                }
-
-                return new SassMixin($callable);
-            }, $sassMetaUri),
-            BuiltInCallable::function('call', '$function, $args...', function (array $arguments) {
-                $function = $arguments[0];
-                $args = $arguments[1];
-                \assert($args instanceof SassArgumentList);
-
-                $callableNode = $this->callableNode;
-                \assert($callableNode !== null);
-
-                if (\count($args->getKeywords()) === 0) {
-                    $keywordRest = null;
-                } else {
-                    $keywordArgs = new Map();
-                    foreach ($args->getKeywords() as $name => $value) {
-                        $keywordArgs->put(new SassString($name, false), $value);
-                    }
-
-                    $keywordRest = new ValueExpression(SassMap::create($keywordArgs), $callableNode->getSpan());
-                }
-
-                $invocation = new ArgumentInvocation([], [], $callableNode->getSpan(), new ValueExpression($args, $callableNode->getSpan()), $keywordRest);
-
-                if ($function instanceof SassString) {
-                    Warn::forDeprecation("Passing a string to call() is deprecated and will be illegal in Dart Sass 2.0.0.\n\nRecommendation: call(get-function($function))", Deprecation::callString);
-                    $expression = new FunctionExpression($function->getText(), $invocation, $callableNode->getSpan());
-
-                    return $expression->accept($this);
-                }
-
-                $callable = $function->assertFunction('function')->getCallable();
-
-                return $this->runFunctionCallable($invocation, $callable, $callableNode);
-            }, $sassMetaUri),
-        ];
-
+                $keyword_rest = new Value_Expression(Sass_Map::create($keyword_args), $callable_node->get_span());
+            }
+            $invocation = new Argument_Invocation([], [], $callable_node->get_span(), new Value_Expression($args, $callable_node->get_span()), $keyword_rest);
+            if ($function instanceof Sass_String) {
+                Warn::for_deprecation("Passing a string to call() is deprecated and will be illegal in Dart Sass 2.0.0.\n\nRecommendation: call(get-function({$function}))", Deprecation::callString);
+                $expression = new Function_Expression($function->get_text(), $invocation, $callable_node->get_span());
+                return $expression->accept($this);
+            }
+            $callable = $function->assert_function('function')->get_callable();
+            return $this->run_function_callable($invocation, $callable, $callable_node);
+        }, $sass_meta_uri)];
         foreach ($functions as $function) {
-            $this->builtInFunctions[str_replace('_', '-', $function->getName())] = $function;
+            $this->built_in_functions[str_replace('_', '-', $function->get_name())] = $function;
         }
-        foreach ($metaFunctions as $function) {
-            $this->builtInFunctions[$function->getName()] = $function;
+        foreach ($meta_functions as $function) {
+            $this->built_in_functions[$function->get_name()] = $function;
         }
     }
-
-    public function getCallableNode(): ?AstNode
+    public function get_callable_node(): ?Ast_Node
     {
-        return $this->callableNode;
+        return $this->callable_node;
     }
-
-    public function getImportSpan(): ?FileSpan
+    public function get_import_span(): ?File_Span
     {
-        return $this->importSpan;
+        return $this->import_span;
     }
-
     /**
      * The current parent node in the output CSS tree.
      */
-    private function getParent(): ModifiableCssParentNode
+    private function get_parent(): Modifiable_Css_Parent_Node
     {
         if ($this->parent === null) {
             throw new \LogicException('Cannot access "getParent" outside of a module.');
         }
-
         return $this->parent;
     }
-
-    private function getStyleRule(): ?ModifiableCssStyleRule
+    private function get_style_rule(): ?Modifiable_Css_Style_Rule
     {
-        return $this->atRootExcludingStyleRule ? null : $this->styleRuleIgnoringAtRoot;
+        return $this->at_root_excluding_style_rule ? null : $this->style_rule_ignoring_at_root;
     }
-
     /**
      * The stylesheet that's currently being evaluated.
      */
-    private function getStylesheet(): Stylesheet
+    private function get_stylesheet(): Stylesheet
     {
         if ($this->stylesheet === null) {
             throw new \LogicException('Cannot access "getStylesheet" outside of a module.');
         }
-
         return $this->stylesheet;
     }
-
     /**
      * The root stylesheet node.
      */
-    private function getRoot(): ModifiableCssStylesheet
+    private function get_root(): Modifiable_Css_Stylesheet
     {
         if ($this->root === null) {
             throw new \LogicException('Cannot access "getRoot" outside of a module.');
         }
-
         return $this->root;
     }
-
     /**
      * The first index in `$this->getRoot()->getChildren()` after the initial block of CSS imports.
      */
-    private function getEndOfImports(): int
+    private function get_end_of_imports(): int
     {
-        if ($this->endOfImports === null) {
+        if ($this->end_of_imports === null) {
             throw new \LogicException('Cannot access "getEndOfImports" outside of a module.');
         }
-
-        return $this->endOfImports;
+        return $this->end_of_imports;
     }
-
     /**
      * The extension store that tracks extensions and style rules for the current
      * module.
      */
-    private function getExtensionStore(): ExtensionStore
+    private function get_extension_store(): Extension_Store
     {
-        if ($this->extensionStore === null) {
+        if ($this->extension_store === null) {
             throw new \LogicException('Cannot access "getExtensionStore" outside of a module.');
         }
-
-        return $this->extensionStore;
+        return $this->extension_store;
     }
-
     /**
      * @param array<string, Value> $initialVariables
      */
-    public function run(?Importer $importer, Stylesheet $node, array $initialVariables = []): EvaluateResult
+    public function run(?Importer $importer, Stylesheet $node, array $initial_variables = []): Evaluate_Result
     {
-        return EvaluationContext::withEvaluationContext(new VisitorEvaluationContext($this, $node), function () use ($importer, $node, $initialVariables): \ScssPhp\ScssPhp\Evaluation\EvaluateResult {
-            $url = $node->getSpan()->getSourceUrl();
-
+        return Evaluation_Context::with_evaluation_context(new Visitor_Evaluation_Context($this, $node), function () use ($importer, $node, $initial_variables): \Scss_Php\Scss_Php\Evaluation\Evaluate_Result {
+            $url = $node->get_span()->get_source_url();
             if ($url !== null) {
-                $urlString = (string) $url;
-                $this->activeModules[$urlString] = null;
+                $url_string = (string) $url;
+                $this->active_modules[$url_string] = null;
                 // TODO check how to handle stdin
-                $this->loadedUrls[$urlString] = true;
+                $this->loaded_urls[$url_string] = true;
             }
-
             /** @var ExtensionStore $extensionStore */
-            [$css, $extensionStore] = $this->addExceptionTrace(fn (): array => $this->execute($importer, $node, $initialVariables));
-            $selectors = $extensionStore->getSimpleSelectors();
-            $unsatisfiedExtension = IterableUtil::firstOrNull($extensionStore->extensionsWhereTarget(fn (SimpleSelector $target): bool => !EquatableUtil::iterableContains($selectors, $target)));
-            if ($unsatisfiedExtension !== null) {
-                $this->throwForUnsatisfiedExtension($unsatisfiedExtension);
+            [$css, $extension_store] = $this->add_exception_trace(fn(): array => $this->execute($importer, $node, $initial_variables));
+            $selectors = $extension_store->get_simple_selectors();
+            $unsatisfied_extension = Iterable_Util::first_or_null($extension_store->extensions_where_target(fn(Simple_Selector $target): bool => !Equatable_Util::iterable_contains($selectors, $target)));
+            if ($unsatisfied_extension !== null) {
+                $this->throw_for_unsatisfied_extension($unsatisfied_extension);
             }
-
-            return new EvaluateResult($css, array_keys($this->loadedUrls));
+            return new Evaluate_Result($css, array_keys($this->loaded_urls));
         });
     }
-
     /**
      * @param array<string, Value> $initialVariables
      *
      * @return array{CssStylesheet, ExtensionStore}
      */
-    private function execute(?Importer $importer, Stylesheet $stylesheet, array $initialVariables = []): array
+    private function execute(?Importer $importer, Stylesheet $stylesheet, array $initial_variables = []): array
     {
         $environment = Environment::create();
-        foreach ($initialVariables as $variableName => $initialVariable) {
-            $environment->setVariable($variableName, $initialVariable, new FakeAstNode(fn () => SourceFile::fromString('')->span(0)));
+        foreach ($initial_variables as $variable_name => $initial_variable) {
+            $environment->set_variable($variable_name, $initial_variable, new Fake_Ast_Node(fn() => Source_File::from_string('')->span(0)));
         }
-
         $css = null;
-
-        $extensionStore = ConcreteExtensionStore::create();
-
-        $this->withEnvironment($environment, function () use ($importer, $stylesheet, $extensionStore, &$css): void {
-            $oldImporter = $this->importer;
-            $oldStylesheet = $this->stylesheet;
-            $oldRoot = $this->root;
-            $oldParent = $this->parent;
-            $oldEndOfImports = $this->endOfImports;
-            $oldOutOfOrderImports = $this->outOfOrderImports;
-            $oldExtensionStore = $this->extensionStore;
-            $oldStyleRule = $this->getStyleRule();
-            $oldMediaQueries = $this->mediaQueries;
-            $oldDeclarationName = $this->declarationName;
-            $oldInUnknownAtRule = $this->inUnknownAtRule;
-            $oldAtRootExcludingStyleRule = $this->atRootExcludingStyleRule;
-            $oldInKeyframes = $this->inKeyFrames;
-
+        $extension_store = Concrete_Extension_Store::create();
+        $this->with_environment($environment, function () use ($importer, $stylesheet, $extension_store, &$css): void {
+            $old_importer = $this->importer;
+            $old_stylesheet = $this->stylesheet;
+            $old_root = $this->root;
+            $old_parent = $this->parent;
+            $old_end_of_imports = $this->end_of_imports;
+            $old_out_of_order_imports = $this->out_of_order_imports;
+            $old_extension_store = $this->extension_store;
+            $old_style_rule = $this->get_style_rule();
+            $old_media_queries = $this->media_queries;
+            $old_declaration_name = $this->declaration_name;
+            $old_in_unknown_at_rule = $this->in_unknown_at_rule;
+            $old_at_root_excluding_style_rule = $this->at_root_excluding_style_rule;
+            $old_in_keyframes = $this->in_key_frames;
             $this->importer = $importer;
             $this->stylesheet = $stylesheet;
-            $this->root = $root = new ModifiableCssStylesheet($stylesheet->getSpan());
+            $this->root = $root = new Modifiable_Css_Stylesheet($stylesheet->get_span());
             $this->parent = $root;
-            $this->endOfImports = 0;
-            $this->outOfOrderImports = null;
-            $this->extensionStore = $extensionStore;
-            $this->styleRuleIgnoringAtRoot = null;
-            $this->mediaQueries = null;
-            $this->declarationName = null;
-            $this->inUnknownAtRule = false;
-            $this->atRootExcludingStyleRule = false;
-            $this->inKeyFrames = false;
-
-            $this->visitStylesheet($stylesheet);
-            $css = $this->outOfOrderImports === null ? $root : new ModifiableCssStylesheet($stylesheet->getSpan(), $this->addOutOfOrderImports());
-
-            $this->importer = $oldImporter;
-            $this->stylesheet = $oldStylesheet;
-            $this->root = $oldRoot;
-            $this->parent = $oldParent;
-            $this->endOfImports = $oldEndOfImports;
-            $this->outOfOrderImports = $oldOutOfOrderImports;
-            $this->extensionStore = $oldExtensionStore;
-            $this->styleRuleIgnoringAtRoot = $oldStyleRule;
-            $this->mediaQueries = $oldMediaQueries;
-            $this->declarationName = $oldDeclarationName;
-            $this->inUnknownAtRule = $oldInUnknownAtRule;
-            $this->atRootExcludingStyleRule = $oldAtRootExcludingStyleRule;
-            $this->inKeyFrames = $oldInKeyframes;
+            $this->end_of_imports = 0;
+            $this->out_of_order_imports = null;
+            $this->extension_store = $extension_store;
+            $this->style_rule_ignoring_at_root = null;
+            $this->media_queries = null;
+            $this->declaration_name = null;
+            $this->in_unknown_at_rule = false;
+            $this->at_root_excluding_style_rule = false;
+            $this->in_key_frames = false;
+            $this->visit_stylesheet($stylesheet);
+            $css = $this->out_of_order_imports === null ? $root : new Modifiable_Css_Stylesheet($stylesheet->get_span(), $this->add_out_of_order_imports());
+            $this->importer = $old_importer;
+            $this->stylesheet = $old_stylesheet;
+            $this->root = $old_root;
+            $this->parent = $old_parent;
+            $this->end_of_imports = $old_end_of_imports;
+            $this->out_of_order_imports = $old_out_of_order_imports;
+            $this->extension_store = $old_extension_store;
+            $this->style_rule_ignoring_at_root = $old_style_rule;
+            $this->media_queries = $old_media_queries;
+            $this->declaration_name = $old_declaration_name;
+            $this->in_unknown_at_rule = $old_in_unknown_at_rule;
+            $this->at_root_excluding_style_rule = $old_at_root_excluding_style_rule;
+            $this->in_key_frames = $old_in_keyframes;
         });
-
-        assert($css instanceof CssStylesheet);
-
-        return [$css, $extensionStore];
+        assert($css instanceof Css_Stylesheet);
+        return [$css, $extension_store];
     }
-
     /**
      * Returns a copy of `$this->getRoot()->getChildren` with {@see outOfOrderImports} inserted
      * after {@see endOfImports}, if necessary.
      *
      * @return list<ModifiableCssNode>
      */
-    private function addOutOfOrderImports(): array
+    private function add_out_of_order_imports(): array
     {
-        if ($this->outOfOrderImports === null) {
-            return $this->getRoot()->getChildren();
+        if ($this->out_of_order_imports === null) {
+            return $this->get_root()->get_children();
         }
-
-        $children = $this->getRoot()->getChildren();
-
-        array_splice($children, $this->getEndOfImports(), 0, $this->outOfOrderImports);
-
+        $children = $this->get_root()->get_children();
+        array_splice($children, $this->get_end_of_imports(), 0, $this->out_of_order_imports);
         return array_values($children);
     }
-
     /**
      * Throws an exception indicating that $extension is unsatisfied.
      */
-    private function throwForUnsatisfiedExtension(Extension $extension): never
+    private function throw_for_unsatisfied_extension(Extension $extension): never
     {
-        throw new SimpleSassException(
-            "The target selector was not found.\nUse \"@extend $extension->target !optional\" to avoid this error.",
-            $extension->span,
-        );
+        throw new Simple_Sass_Exception("The target selector was not found.\nUse \"@extend {$extension->target} !optional\" to avoid this error.", $extension->span);
     }
-
     /**
      * @phpstan-impure
      */
-    public function visitStylesheet(Stylesheet $node): ?Value
+    public function visit_stylesheet(Stylesheet $node): ?Value
     {
-        foreach ($node->getChildren() as $child) {
+        foreach ($node->get_children() as $child) {
             $child->accept($this);
         }
-
         return null;
     }
-
-    public function visitAtRootRule(AtRootRule $node): ?Value
+    public function visit_at_root_rule(At_Root_Rule $node): ?Value
     {
-        $unparsedQuery = $node->getQuery();
-
-        if ($unparsedQuery !== null) {
-            [$resolved, $map] = $this->performInterpolationWithMap($unparsedQuery, true);
-            $query = AtRootQuery::parse($resolved, $this->logger, null, $map);
+        $unparsed_query = $node->get_query();
+        if ($unparsed_query !== null) {
+            [$resolved, $map] = $this->perform_interpolation_with_map($unparsed_query, true);
+            $query = At_Root_Query::parse($resolved, $this->logger, null, $map);
         } else {
-            $query = AtRootQuery::getDefault();
+            $query = At_Root_Query::get_default();
         }
-
-        $parent = $this->getParent();
+        $parent = $this->get_parent();
         /** @var ModifiableCssParentNode[] $included */
         $included = [];
-
-        while (!$parent instanceof CssStylesheet) {
+        while (!$parent instanceof Css_Stylesheet) {
             if (!$query->excludes($parent)) {
                 $included[] = $parent;
             }
-
-            $grandParent = $parent->getParent();
-            if ($grandParent === null) {
+            $grand_parent = $parent->get_parent();
+            if ($grand_parent === null) {
                 throw new \LogicException('CssNodes must have a CssStylesheet transitive parent node.');
             }
-
-            $parent = $grandParent;
+            $parent = $grand_parent;
         }
-
-        $root = $this->trimIncluded($included);
-
+        $root = $this->trim_included($included);
         // If we didn't exclude any rules, we don't need to use the copies we might
         // have created.
-        if ($root === $this->getParent()) {
+        if ($root === $this->get_parent()) {
             $this->environment->scope(function () use ($node): void {
-                foreach ($node->getChildren() as $child) {
+                foreach ($node->get_children() as $child) {
                     $child->accept($this);
                 }
-            }, $node->hasDeclarations());
-
+            }, $node->has_declarations());
             return null;
         }
-
-        $innerCopy = $root;
+        $inner_copy = $root;
         if (!empty($included)) {
-            $innerCopy = $included[0]->copyWithoutChildren();
-            $outerCopy = $innerCopy;
-
-            foreach (array_slice($included, 1) as $includedNode) {
-                $copy = $includedNode->copyWithoutChildren();
-                $copy->addChild($outerCopy);
-                $outerCopy = $copy;
+            $inner_copy = $included[0]->copy_without_children();
+            $outer_copy = $inner_copy;
+            foreach (array_slice($included, 1) as $included_node) {
+                $copy = $included_node->copy_without_children();
+                $copy->add_child($outer_copy);
+                $outer_copy = $copy;
             }
-
-            $root->addChild($outerCopy);
+            $root->add_child($outer_copy);
         }
-
-        $scope = $this->scopeForAtRoot($node, $innerCopy, $query, $included);
+        $scope = $this->scope_for_at_root($node, $inner_copy, $query, $included);
         $scope(function () use ($node): void {
-            foreach ($node->getChildren() as $child) {
+            foreach ($node->get_children() as $child) {
                 $child->accept($this);
             }
         });
-
         return null;
     }
-
     /**
      * Returns a scope callback for $query.
      *
@@ -808,59 +691,53 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      *
      * @return callable((callable(): void)): void
      */
-    private function scopeForAtRoot(AtRootRule $node, ModifiableCssParentNode $newParent, AtRootQuery $query, array $included): callable
+    private function scope_for_at_root(At_Root_Rule $node, Modifiable_Css_Parent_Node $new_parent, At_Root_Query $query, array $included): callable
     {
-        $scope = function (callable $callback) use ($newParent, $node): void {
+        $scope = function (callable $callback) use ($new_parent, $node): void {
             // We can't use  *rent here because it'll add the node to the tree
             // in the wrong place.
-            $oldParent = $this->parent;
-            $this->parent = $newParent;
-            $this->environment->scope($callback, $node->hasDeclarations());
-            $this->parent = $oldParent;
+            $old_parent = $this->parent;
+            $this->parent = $new_parent;
+            $this->environment->scope($callback, $node->has_declarations());
+            $this->parent = $old_parent;
         };
-
-        if ($query->excludesStyleRules()) {
-            $innerScope = $scope;
-            $scope = function (callable $callback) use ($innerScope): void {
-                $oldAtRootExcludingStyleRule = $this->atRootExcludingStyleRule;
-                $this->atRootExcludingStyleRule = true;
-                $innerScope($callback);
-                $this->atRootExcludingStyleRule = $oldAtRootExcludingStyleRule;
+        if ($query->excludes_style_rules()) {
+            $inner_scope = $scope;
+            $scope = function (callable $callback) use ($inner_scope): void {
+                $old_at_root_excluding_style_rule = $this->at_root_excluding_style_rule;
+                $this->at_root_excluding_style_rule = true;
+                $inner_scope($callback);
+                $this->at_root_excluding_style_rule = $old_at_root_excluding_style_rule;
             };
         }
-
-        if ($this->mediaQueries !== null && $query->excludesName('media')) {
-            $innerScope = $scope;
-            $scope = function (callable $callback) use ($innerScope): void {
-                $this->withMediaQueries(null, null, function () use ($innerScope, $callback): void {
-                    $innerScope($callback);
+        if ($this->media_queries !== null && $query->excludes_name('media')) {
+            $inner_scope = $scope;
+            $scope = function (callable $callback) use ($inner_scope): void {
+                $this->with_media_queries(null, null, function () use ($inner_scope, $callback): void {
+                    $inner_scope($callback);
                 });
             };
         }
-
-        if ($this->inKeyFrames && $query->excludesName('keyframes')) {
-            $innerScope = $scope;
-            $scope = function (callable $callback) use ($innerScope): void {
-                $wasInKeyframes = $this->inKeyFrames;
-                $this->inKeyFrames = false;
-                $innerScope($callback);
-                $this->inKeyFrames = $wasInKeyframes;
+        if ($this->in_key_frames && $query->excludes_name('keyframes')) {
+            $inner_scope = $scope;
+            $scope = function (callable $callback) use ($inner_scope): void {
+                $was_in_keyframes = $this->in_key_frames;
+                $this->in_key_frames = false;
+                $inner_scope($callback);
+                $this->in_key_frames = $was_in_keyframes;
             };
         }
-
-        if ($this->inUnknownAtRule && !IterableUtil::any($included, fn ($parent): bool => $parent instanceof CssAtRule)) {
-            $innerScope = $scope;
-            $scope = function (callable $callback) use ($innerScope): void {
-                $wasInUnknownAtRule = $this->inUnknownAtRule;
-                $this->inUnknownAtRule = false;
-                $innerScope($callback);
-                $this->inUnknownAtRule = $wasInUnknownAtRule;
+        if ($this->in_unknown_at_rule && !Iterable_Util::any($included, fn($parent): bool => $parent instanceof Css_At_Rule)) {
+            $inner_scope = $scope;
+            $scope = function (callable $callback) use ($inner_scope): void {
+                $was_in_unknown_at_rule = $this->in_unknown_at_rule;
+                $this->in_unknown_at_rule = false;
+                $inner_scope($callback);
+                $this->in_unknown_at_rule = $was_in_unknown_at_rule;
             };
         }
-
         return $scope;
     }
-
     /**
      * Destructively trims a trailing sublist from $nodes that matches the
      * current list of parents.
@@ -875,687 +752,515 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      *
      * @param ModifiableCssParentNode[] $nodes
      */
-    private function trimIncluded(array &$nodes): ModifiableCssParentNode
+    private function trim_included(array &$nodes): Modifiable_Css_Parent_Node
     {
         if (empty($nodes)) {
-            return $this->getRoot();
+            return $this->get_root();
         }
-
-        $parent = $this->getParent();
-        $innermostContiguous = null;
-
+        $parent = $this->get_parent();
+        $innermost_contiguous = null;
         foreach ($nodes as $i => $node) {
             while ($parent !== $node) {
-                $innermostContiguous = null;
-
-                $grandParent = $parent->getParent();
-                if ($grandParent === null) {
+                $innermost_contiguous = null;
+                $grand_parent = $parent->get_parent();
+                if ($grand_parent === null) {
                     throw new \LogicException('Expected the node to be an ancestor.');
                 }
-
-                $parent = $grandParent;
+                $parent = $grand_parent;
             }
-
-            $innermostContiguous ??= $i;
-
-            $grandParent = $parent->getParent();
-            if ($grandParent === null) {
+            $innermost_contiguous ??= $i;
+            $grand_parent = $parent->get_parent();
+            if ($grand_parent === null) {
                 throw new \LogicException('Expected the node to be an ancestor.');
             }
-
-            $parent = $grandParent;
+            $parent = $grand_parent;
         }
-
-        if ($parent !== $this->getRoot()) {
-            return $this->getRoot();
+        if ($parent !== $this->get_root()) {
+            return $this->get_root();
         }
-
-        $root = $nodes[$innermostContiguous];
-        array_splice($nodes, $innermostContiguous);
-
+        $root = $nodes[$innermost_contiguous];
+        array_splice($nodes, $innermost_contiguous);
         return $root;
     }
-
-    public function visitContentBlock(ContentBlock $node): ?Value
+    public function visit_content_block(Content_Block $node): ?Value
     {
         throw new \BadMethodCallException('Evaluation handles @include and its content block together.');
     }
-
-    public function visitContentRule(ContentRule $node): ?Value
+    public function visit_content_rule(Content_Rule $node): ?Value
     {
-        $content = $this->environment->getContent();
-
+        $content = $this->environment->get_content();
         if ($content === null) {
             return null;
         }
-
-        $this->runUserDefinedCallable($node->getArguments(), $content, $node, function () use ($content) {
-            foreach ($content->getDeclaration()->getChildren() as $statement) {
+        $this->run_user_defined_callable($node->get_arguments(), $content, $node, function () use ($content) {
+            foreach ($content->get_declaration()->get_children() as $statement) {
                 $statement->accept($this);
             }
-
             return null;
         });
-
         return null;
     }
-
-    public function visitDebugRule(DebugRule $node): ?Value
+    public function visit_debug_rule(Debug_Rule $node): ?Value
     {
-        $value = $node->getExpression()->accept($this);
-        $this->logger->debug($value instanceof SassString ? $value->getText() : (string) $value, $node->getSpan());
-
+        $value = $node->get_expression()->accept($this);
+        $this->logger->debug($value instanceof Sass_String ? $value->get_text() : (string) $value, $node->get_span());
         return null;
     }
-
-    public function visitDeclaration(Declaration $node): ?Value
+    public function visit_declaration(Declaration $node): ?Value
     {
-        if ($this->getStyleRule() === null && !$this->inUnknownAtRule && !$this->inKeyFrames) {
-            throw $this->exception('Declarations may only be used within style rules.', $node->getSpan());
+        if ($this->get_style_rule() === null && !$this->in_unknown_at_rule && !$this->in_key_frames) {
+            throw $this->exception('Declarations may only be used within style rules.', $node->get_span());
         }
-
-        if ($this->declarationName !== null && $node->isCustomProperty()) {
-            throw $this->exception('Declarations whose names begin with "--" may not be nested.', $node->getSpan());
+        if ($this->declaration_name !== null && $node->is_custom_property()) {
+            throw $this->exception('Declarations whose names begin with "--" may not be nested.', $node->get_span());
         }
-
-        \assert($this->getParent()->getParent() !== null);
-        $siblings = $this->getParent()->getParent()->getChildren();
-        $interleavedRules = [];
-
-        if (
-            ListUtil::last($siblings) !== $this->getParent()
-            // Reproduce this condition from {@see warn} so that we don't add anything to
-            // $interleavedRules for declarations in dependencies.
-            && !($this->quietDeps && ($this->inDependency || ($this->currentCallable?->isInDependency() ?? false)))
-        ) {
-            $parentOffset = array_search($this->getParent(), $siblings, true);
-            if ($parentOffset === false) {
-                $parentOffset = -1;
+        \assert($this->get_parent()->get_parent() !== null);
+        $siblings = $this->get_parent()->get_parent()->get_children();
+        $interleaved_rules = [];
+        if (List_Util::last($siblings) !== $this->get_parent() && !($this->quiet_deps && ($this->in_dependency || ($this->current_callable?->is_in_dependency() ?? false)))) {
+            $parent_offset = array_search($this->get_parent(), $siblings, true);
+            if ($parent_offset === false) {
+                $parent_offset = -1;
             }
-            foreach (array_slice($siblings, $parentOffset + 1) as $sibling) {
-                if ($sibling instanceof CssComment) {
+            foreach (array_slice($siblings, $parent_offset + 1) as $sibling) {
+                if ($sibling instanceof Css_Comment) {
                     continue;
                 }
-
-                if ($sibling instanceof CssStyleRule) {
-                    $interleavedRules[] = $sibling;
+                if ($sibling instanceof Css_Style_Rule) {
+                    $interleaved_rules[] = $sibling;
                     continue;
                 }
-
                 // Always warn for siblings that aren't style rules, because they
                 // add no specificity and they're nested in the same parent as this
                 // declaration.
-                $this->warn(
-                    <<<'MESSAGE'
-                    Sass's behavior for declarations that appear after nested
-                    rules will be changing to match the behavior specified by CSS in an upcoming
-                    version. To keep the existing behavior, move the declaration above the nested
-                    rule. To opt into the new behavior, wrap the declaration in `& {}`.
-
-                    More info: https://sass-lang.com/d/mixed-decls
-                    MESSAGE,
-                    new MultiSpan($node->getSpan(), 'declaration', [
-                        'nested rule' => $sibling->getSpan(),
-                    ]),
-                    Deprecation::mixedDecls
-                );
-                $interleavedRules = [];
+                $this->warn(<<<'MESSAGE'
+                Sass's behavior for declarations that appear after nested
+                rules will be changing to match the behavior specified by CSS in an upcoming
+                version. To keep the existing behavior, move the declaration above the nested
+                rule. To opt into the new behavior, wrap the declaration in `& {}`.
+                
+                More info: https://sass-lang.com/d/mixed-decls
+                MESSAGE, new Multi_Span($node->get_span(), 'declaration', ['nested rule' => $sibling->get_span()]), Deprecation::mixedDecls);
+                $interleaved_rules = [];
             }
         }
-
-        $name = $this->interpolationToValue($node->getName(), true);
-
-        if ($this->declarationName !== null) {
-            $name = new CssValue($this->declarationName . '-' . $name->getValue(), $name->getSpan());
+        $name = $this->interpolation_to_value($node->get_name(), true);
+        if ($this->declaration_name !== null) {
+            $name = new Css_Value($this->declaration_name . '-' . $name->get_value(), $name->get_span());
         }
-
-        $expression = $node->getValue();
+        $expression = $node->get_value();
         if ($expression !== null) {
             $value = $expression->accept($this);
-
             // If the value is an empty list, preserve it, because converting it to CSS
             // will throw an error that we want the user to see.
-
-            if (!$value->isBlank() || empty($value->asList())) {
-                $valueSpanForMap = null;
-                if ($this->sourceMap && $node->getValue() !== null) {
-                    $valueSpanForMap = $this->expressionNode($node->getValue())->getSpan();
+            if (!$value->is_blank() || empty($value->as_list())) {
+                $value_span_for_map = null;
+                if ($this->source_map && $node->get_value() !== null) {
+                    $value_span_for_map = $this->expression_node($node->get_value())->get_span();
                 }
-
-                $this->getParent()->addChild(new ModifiableCssDeclaration(
-                    $name,
-                    new CssValue($value, $expression->getSpan()),
-                    $node->getSpan(),
-                    $node->isCustomProperty(),
-                    $interleavedRules,
-                    $interleavedRules === [] ? null : $this->stackTrace($node->getSpan()),
-                    $valueSpanForMap,
-                ));
-            } elseif (str_starts_with($name->getValue(), '--')) {
-                throw $this->exception('Custom property values may not be empty.', $expression->getSpan());
+                $this->get_parent()->add_child(new Modifiable_Css_Declaration($name, new Css_Value($value, $expression->get_span()), $node->get_span(), $node->is_custom_property(), $interleaved_rules, $interleaved_rules === [] ? null : $this->stack_trace($node->get_span()), $value_span_for_map));
+            } elseif (str_starts_with($name->get_value(), '--')) {
+                throw $this->exception('Custom property values may not be empty.', $expression->get_span());
             }
         }
-
-        $children = $node->getChildren();
+        $children = $node->get_children();
         if ($children !== null) {
-            $oldDeclarationName = $this->declarationName;
-            $this->declarationName = $name->getValue();
+            $old_declaration_name = $this->declaration_name;
+            $this->declaration_name = $name->get_value();
             $this->environment->scope(function () use ($children): void {
                 foreach ($children as $child) {
                     $child->accept($this);
                 }
-            }, $node->hasDeclarations());
-            $this->declarationName = $oldDeclarationName;
+            }, $node->has_declarations());
+            $this->declaration_name = $old_declaration_name;
         }
-
         return null;
     }
-
-    public function visitEachRule(EachRule $node): ?Value
+    public function visit_each_rule(Each_Rule $node): ?Value
     {
-        $list = $node->getList()->accept($this);
-        $nodeWithSpan = $this->expressionNode($node->getList());
-
-        if (\count($node->getVariables()) === 1) {
-            $variableName = $node->getVariables()[0];
-            $setVariables = function (Value $value) use ($variableName, $nodeWithSpan): void {
-                $this->environment->setLocalVariable($variableName, $this->withoutSlash($value, $nodeWithSpan), $nodeWithSpan);
+        $list = $node->get_list()->accept($this);
+        $node_with_span = $this->expression_node($node->get_list());
+        if (\count($node->get_variables()) === 1) {
+            $variable_name = $node->get_variables()[0];
+            $set_variables = function (Value $value) use ($variable_name, $node_with_span): void {
+                $this->environment->set_local_variable($variable_name, $this->without_slash($value, $node_with_span), $node_with_span);
             };
         } else {
-            $variables = $node->getVariables();
-            $setVariables = function (Value $value) use ($variables, $nodeWithSpan): void {
-                $this->setMultipleVariables($variables, $value, $nodeWithSpan);
+            $variables = $node->get_variables();
+            $set_variables = function (Value $value) use ($variables, $node_with_span): void {
+                $this->set_multiple_variables($variables, $value, $node_with_span);
             };
         }
-
-        return $this->environment->scope(fn () => $this->handleReturn($list->asList(), function ($element) use ($setVariables, $node): ?\ScssPhp\ScssPhp\Value\Value {
-            $setVariables($element);
-
-            return $this->handleReturn($node->getChildren(), fn (Statement $child) => $child->accept($this));
+        return $this->environment->scope(fn() => $this->handle_return($list->as_list(), function ($element) use ($set_variables, $node): ?\Scss_Php\Scss_Php\Value\Value {
+            $set_variables($element);
+            return $this->handle_return($node->get_children(), fn(Statement $child) => $child->accept($this));
         }), true, true);
     }
-
     /**
      * Destructures $value and assigns it to $variables, as in an `@each`
      * statement.
      *
      * @param list<string> $variables
      */
-    private function setMultipleVariables(array $variables, Value $value, AstNode $nodeWithSpan): void
+    private function set_multiple_variables(array $variables, Value $value, Ast_Node $node_with_span): void
     {
-        $list = $value->asList();
-        $minLength = min(\count($variables), \count($list));
-
-        for ($i = 0; $i < $minLength; $i++) {
-            $this->environment->setLocalVariable($variables[$i], $this->withoutSlash($list[$i], $nodeWithSpan), $nodeWithSpan);
+        $list = $value->as_list();
+        $min_length = min(\count($variables), \count($list));
+        for ($i = 0; $i < $min_length; $i++) {
+            $this->environment->set_local_variable($variables[$i], $this->without_slash($list[$i], $node_with_span), $node_with_span);
         }
-
-        for ($i = $minLength; $i < \count($variables); $i++) {
-            $this->environment->setLocalVariable($variables[$i], SassNull::create(), $nodeWithSpan);
+        for ($i = $min_length; $i < \count($variables); $i++) {
+            $this->environment->set_local_variable($variables[$i], Sass_Null::create(), $node_with_span);
         }
     }
-
-    public function visitErrorRule(ErrorRule $node): ?Value
+    public function visit_error_rule(Error_Rule $node): ?Value
     {
-        throw $this->exception((string) $node->getExpression()->accept($this), $node->getSpan());
+        throw $this->exception((string) $node->get_expression()->accept($this), $node->get_span());
     }
-
-    public function visitExtendRule(ExtendRule $node): ?Value
+    public function visit_extend_rule(Extend_Rule $node): ?Value
     {
-        $styleRule = $this->getStyleRule();
-        if ($styleRule === null || $this->declarationName !== null) {
-            throw $this->exception('@extend may only be used within style rules.', $node->getSpan());
+        $style_rule = $this->get_style_rule();
+        if ($style_rule === null || $this->declaration_name !== null) {
+            throw $this->exception('@extend may only be used within style rules.', $node->get_span());
         }
-
-        foreach ($styleRule->getOriginalSelector()->getComponents() as $complex) {
-            if (!$complex->isBogus()) {
+        foreach ($style_rule->get_original_selector()->get_components() as $complex) {
+            if (!$complex->is_bogus()) {
                 continue;
             }
-
-            $selectorString = trim($complex);
-            $verb = $complex->isUseless() ? "can't" : "shouldn't";
-
-            $this->warn(
-                "The selector \"$selectorString\" is invalid CSS and $verb be an extender.\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators",
-                new MultiSpan(SpanUtil::trimRight($complex->getSpan()), 'invalid selector', [
-                    '@extend rule' => $node->getSpan(),
-                ]),
-                Deprecation::bogusCombinators
-            );
+            $selector_string = trim($complex);
+            $verb = $complex->is_useless() ? "can't" : "shouldn't";
+            $this->warn("The selector \"{$selector_string}\" is invalid CSS and {$verb} be an extender.\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators", new Multi_Span(Span_Util::trim_right($complex->get_span()), 'invalid selector', ['@extend rule' => $node->get_span()]), Deprecation::bogusCombinators);
         }
-
-        [$targetText, $targetMap] = $this->performInterpolationWithMap($node->getSelector(), true);
-        $list = SelectorList::parse(StringUtil::trimAscii($targetText, true), $this->logger, $targetMap, null, false);
-
-        foreach ($list->getComponents() as $complex) {
-            $compound = $complex->getSingleCompound();
+        [$target_text, $target_map] = $this->perform_interpolation_with_map($node->get_selector(), true);
+        $list = Selector_List::parse(String_Util::trim_ascii($target_text, true), $this->logger, $target_map, null, false);
+        foreach ($list->get_components() as $complex) {
+            $compound = $complex->get_single_compound();
             if ($compound === null) {
                 // If the selector was a compound selector but not a simple
                 // selector, emit a more explicit error.
-                throw new SimpleSassFormatException('complex selectors may not be extended.', $complex->getSpan());
+                throw new Simple_Sass_Format_Exception('complex selectors may not be extended.', $complex->get_span());
             }
-
-            $simple = $compound->getSingleSimple();
+            $simple = $compound->get_single_simple();
             if ($simple === null) {
-                $alternativeString = implode(', ', $compound->getComponents());
-                throw new SimpleSassFormatException("compound selectors may no longer be extended.\nConsider `@extend $alternativeString` instead.\nSee https://sass-lang.com/d/extend-compound for details.\n", $compound->getSpan());
+                $alternative_string = implode(', ', $compound->get_components());
+                throw new Simple_Sass_Format_Exception("compound selectors may no longer be extended.\nConsider `@extend {$alternative_string}` instead.\nSee https://sass-lang.com/d/extend-compound for details.\n", $compound->get_span());
             }
-
-            $this->getExtensionStore()->addExtension($styleRule->getSelector(), $simple, $node, $this->mediaQueries);
+            $this->get_extension_store()->add_extension($style_rule->get_selector(), $simple, $node, $this->media_queries);
         }
-
         return null;
     }
-
-    public function visitAtRule(AtRule $node): ?Value
+    public function visit_at_rule(At_Rule $node): ?Value
     {
-        if ($this->declarationName !== null) {
-            throw $this->exception('At-rules may not be used within nested declarations.', $node->getSpan());
+        if ($this->declaration_name !== null) {
+            throw $this->exception('At-rules may not be used within nested declarations.', $node->get_span());
         }
-
-        $name = $this->interpolationToValue($node->getName());
-        $value = $node->getValue() !== null ? $this->interpolationToValue($node->getValue(), true, true) : null;
-        $children = $node->getChildren();
-
+        $name = $this->interpolation_to_value($node->get_name());
+        $value = $node->get_value() !== null ? $this->interpolation_to_value($node->get_value(), true, true) : null;
+        $children = $node->get_children();
         if ($children === null) {
-            $this->getParent()->addChild(new ModifiableCssAtRule($name, $node->getSpan(), true, $value));
-
+            $this->get_parent()->add_child(new Modifiable_Css_At_Rule($name, $node->get_span(), true, $value));
             return null;
         }
-
-        $wasInKeyframes = $this->inKeyFrames;
-        $wasInUnknownAtRule = $this->inUnknownAtRule;
-
-        if (Util::unvendor($name->getValue()) === 'keyframes') {
-            $this->inKeyFrames = true;
+        $was_in_keyframes = $this->in_key_frames;
+        $was_in_unknown_at_rule = $this->in_unknown_at_rule;
+        if (Util::unvendor($name->get_value()) === 'keyframes') {
+            $this->in_key_frames = true;
         } else {
-            $this->inUnknownAtRule = true;
+            $this->in_unknown_at_rule = true;
         }
-
-        $this->withParent(
-            new ModifiableCssAtRule($name, $node->getSpan(), false, $value),
-            function () use ($children, $name): void {
-                $styleRule = $this->getStyleRule();
-
-                if ($styleRule === null || $this->inKeyFrames || $name->getValue() === 'font-face') {
-                    // Special-cased at-rules within style blocks are pulled out to the
-                    // root. Equivalent to prepending "@at-root" on them.
+        $this->with_parent(new Modifiable_Css_At_Rule($name, $node->get_span(), false, $value), function () use ($children, $name): void {
+            $style_rule = $this->get_style_rule();
+            if ($style_rule === null || $this->in_key_frames || $name->get_value() === 'font-face') {
+                // Special-cased at-rules within style blocks are pulled out to the
+                // root. Equivalent to prepending "@at-root" on them.
+                foreach ($children as $child) {
+                    $child->accept($this);
+                }
+            } else {
+                // If we're in a style rule, copy it into the at-rule so that
+                // declarations immediately inside it have somewhere to go.
+                //
+                // For example, "a {@foo {b: c}}" should produce "@foo {a {b: c}}".
+                $this->with_parent($style_rule->copy_without_children(), function () use ($children): void {
                     foreach ($children as $child) {
                         $child->accept($this);
                     }
-                } else {
-                    // If we're in a style rule, copy it into the at-rule so that
-                    // declarations immediately inside it have somewhere to go.
-                    //
-                    // For example, "a {@foo {b: c}}" should produce "@foo {a {b: c}}".
-                    $this->withParent($styleRule->copyWithoutChildren(), function () use ($children): void {
-                        foreach ($children as $child) {
-                            $child->accept($this);
-                        }
-                    }, null, false);
-                }
-            },
-            fn ($node) => $node instanceof CssStyleRule,
-            $node->hasDeclarations()
-        );
-
-        $this->inUnknownAtRule = $wasInUnknownAtRule;
-        $this->inKeyFrames = $wasInKeyframes;
-
+                }, null, false);
+            }
+        }, fn($node) => $node instanceof Css_Style_Rule, $node->has_declarations());
+        $this->in_unknown_at_rule = $was_in_unknown_at_rule;
+        $this->in_key_frames = $was_in_keyframes;
         return null;
     }
-
-    public function visitForRule(ForRule $node): ?Value
+    public function visit_for_rule(For_Rule $node): ?Value
     {
         /** @var SassNumber $fromNumber */
-        $fromNumber = $this->addExceptionSpan($node->getFrom(), fn () => $node->getFrom()->accept($this)->assertNumber());
+        $from_number = $this->add_exception_span($node->get_from(), fn() => $node->get_from()->accept($this)->assert_number());
         /** @var SassNumber $toNumber */
-        $toNumber = $this->addExceptionSpan($node->getTo(), fn () => $node->getTo()->accept($this)->assertNumber());
-
-        $from = $this->addExceptionSpan($node->getFrom(), fn () => $fromNumber->assertInt());
-        $to = $this->addExceptionSpan($node->getTo(), fn () => $toNumber->coerce($fromNumber->getNumeratorUnits(), $fromNumber->getDenominatorUnits())->assertInt());
-
+        $to_number = $this->add_exception_span($node->get_to(), fn() => $node->get_to()->accept($this)->assert_number());
+        $from = $this->add_exception_span($node->get_from(), fn() => $from_number->assert_int());
+        $to = $this->add_exception_span($node->get_to(), fn() => $to_number->coerce($from_number->get_numerator_units(), $from_number->get_denominator_units())->assert_int());
         $direction = $from > $to ? -1 : 1;
-        if (!$node->isExclusive()) {
+        if (!$node->is_exclusive()) {
             $to += $direction;
         }
-
         if ($from === $to) {
             return null;
         }
-
-        return $this->environment->scope(function () use ($node, $from, $to, $direction, $fromNumber): ?\ScssPhp\ScssPhp\Value\Value {
-            $nodeWithSpan = $this->expressionNode($node->getFrom());
-
+        return $this->environment->scope(function () use ($node, $from, $to, $direction, $from_number): ?\Scss_Php\Scss_Php\Value\Value {
+            $node_with_span = $this->expression_node($node->get_from());
             for ($i = $from; $i !== $to; $i += $direction) {
-                $this->environment->setLocalVariable($node->getVariable(), SassNumber::withUnits($i, $fromNumber->getNumeratorUnits(), $fromNumber->getDenominatorUnits()), $nodeWithSpan);
-                $result = $this->handleReturn($node->getChildren(), fn (Statement $child) => $child->accept($this));
-
+                $this->environment->set_local_variable($node->get_variable(), Sass_Number::with_units($i, $from_number->get_numerator_units(), $from_number->get_denominator_units()), $node_with_span);
+                $result = $this->handle_return($node->get_children(), fn(Statement $child) => $child->accept($this));
                 if ($result !== null) {
                     return $result;
                 }
             }
-
             return null;
         }, true, true);
     }
-
-    public function visitFunctionRule(FunctionRule $node): ?Value
+    public function visit_function_rule(Function_Rule $node): ?Value
     {
-        $this->environment->setFunction(new UserDefinedCallable($node, $this->environment->closure(), $this->inDependency));
-
+        $this->environment->set_function(new User_Defined_Callable($node, $this->environment->closure(), $this->in_dependency));
         return null;
     }
-
-    public function visitIfRule(IfRule $node): ?Value
+    public function visit_if_rule(If_Rule $node): ?Value
     {
-        $clause = $node->getLastClause();
-
-        foreach ($node->getClauses() as $clauseToCheck) {
-            if ($clauseToCheck->getExpression()->accept($this)->isTruthy()) {
-                $clause = $clauseToCheck;
+        $clause = $node->get_last_clause();
+        foreach ($node->get_clauses() as $clause_to_check) {
+            if ($clause_to_check->get_expression()->accept($this)->is_truthy()) {
+                $clause = $clause_to_check;
                 break;
             }
         }
-
         if ($clause === null) {
             return null;
         }
-
-        return $this->environment->scope(fn () => $this->handleReturn($clause->getChildren(), fn (Statement $child) => $child->accept($this)), $clause->hasDeclarations(), true);
+        return $this->environment->scope(fn() => $this->handle_return($clause->get_children(), fn(Statement $child) => $child->accept($this)), $clause->has_declarations(), true);
     }
-
-    public function visitImportRule(ImportRule $node): ?Value
+    public function visit_import_rule(Import_Rule $node): ?Value
     {
-        foreach ($node->getImports() as $import) {
-            if ($import instanceof DynamicImport) {
-                $this->visitDynamicImport($import);
+        foreach ($node->get_imports() as $import) {
+            if ($import instanceof Dynamic_Import) {
+                $this->visit_dynamic_import($import);
             } else {
-                assert($import instanceof StaticImport);
-                $this->visitStaticImport($import);
+                assert($import instanceof Static_Import);
+                $this->visit_static_import($import);
             }
         }
-
         return null;
     }
-
     /**
      * Adds the stylesheet imported by $import to the current document.
      */
-    private function visitDynamicImport(DynamicImport $import): void
+    private function visit_dynamic_import(Dynamic_Import $import): void
     {
-        $this->withStackFrame('@import', $import, function () use ($import): void {
-            $result = $this->loadStylesheet($import->getUrlString(), $import->getSpan(), true);
-            $stylesheet = $result->getStylesheet();
-
-            $url = $stylesheet->getSpan()->getSourceUrl();
-
+        $this->with_stack_frame('@import', $import, function () use ($import): void {
+            $result = $this->load_stylesheet($import->get_url_string(), $import->get_span(), true);
+            $stylesheet = $result->get_stylesheet();
+            $url = $stylesheet->get_span()->get_source_url();
             if ($url !== null) {
-                $urlString = (string) $url;
-                if (array_key_exists($urlString, $this->activeModules)) {
-                    $previousLoad = $this->activeModules[$urlString];
-                    if ($previousLoad !== null) {
-                        throw $this->multiSpanException('This file is already being loaded.', 'new load', ['original load' => $previousLoad->getSpan()]);
+                $url_string = (string) $url;
+                if (array_key_exists($url_string, $this->active_modules)) {
+                    $previous_load = $this->active_modules[$url_string];
+                    if ($previous_load !== null) {
+                        throw $this->multi_span_exception('This file is already being loaded.', 'new load', ['original load' => $previous_load->get_span()]);
                     }
-
                     throw $this->exception('This file is already being loaded.');
                 }
-
-                $this->activeModules[$urlString] = $import;
+                $this->active_modules[$url_string] = $import;
             }
-
-            $oldImporter = $this->importer;
-            $oldStylesheet = $this->stylesheet;
-            $oldInDependency = $this->inDependency;
-            $this->importer = $result->getImporter();
+            $old_importer = $this->importer;
+            $old_stylesheet = $this->stylesheet;
+            $old_in_dependency = $this->in_dependency;
+            $this->importer = $result->get_importer();
             $this->stylesheet = $stylesheet;
-            $this->inDependency = $result->isDependency();
-            $this->visitStylesheet($stylesheet);
-            $this->importer = $oldImporter;
-            $this->stylesheet = $oldStylesheet;
-            $this->inDependency = $oldInDependency;
-
+            $this->in_dependency = $result->is_dependency();
+            $this->visit_stylesheet($stylesheet);
+            $this->importer = $old_importer;
+            $this->stylesheet = $old_stylesheet;
+            $this->in_dependency = $old_in_dependency;
             if ($url !== null) {
-                unset($this->activeModules[(string) $url]);
+                unset($this->active_modules[(string) $url]);
             }
         });
     }
-
-    private function loadStylesheet(string $url, FileSpan $span, bool $forImport = false): LoadedStylesheet
+    private function load_stylesheet(string $url, File_Span $span, bool $for_import = false): Loaded_Stylesheet
     {
         try {
-            assert($this->importSpan === null);
-            $this->importSpan = $span;
-
-            $baseUrlString = $this->getStylesheet()->getSpan()->getSourceUrl();
-            $baseUrl = $baseUrlString === null ? null : Uri::new($baseUrlString);
-
-            $result = $this->importCache->canonicalize(Uri::new($url), $this->importer, $baseUrl, $forImport);
+            assert($this->import_span === null);
+            $this->import_span = $span;
+            $base_url_string = $this->get_stylesheet()->get_span()->get_source_url();
+            $base_url = $base_url_string === null ? null : Uri::new($base_url_string);
+            $result = $this->import_cache->canonicalize(Uri::new($url), $this->importer, $base_url, $for_import);
             if ($result !== null) {
-                $canonicalUrl = $result->canonicalUrl;
+                $canonical_url = $result->canonical_url;
                 $importer = $result->importer;
-                $originalUrl = $result->originalUrl;
-
+                $original_url = $result->original_url;
                 // Make sure we record the canonical URL as "loaded" even if the
                 // actual load fails, because watchers should watch it to see if it
                 // changes in a way that allows the load to succeed.
-                $this->loadedUrls[$canonicalUrl->toString()] = true;
-
-                $isDependency = $this->inDependency || $importer !== $this->importer;
-
-                $stylesheet = $this->importCache->importCanonical($importer, $canonicalUrl, $originalUrl, $this->quietDeps && $isDependency);
-
+                $this->loaded_urls[$canonical_url->to_string()] = true;
+                $is_dependency = $this->in_dependency || $importer !== $this->importer;
+                $stylesheet = $this->import_cache->import_canonical($importer, $canonical_url, $original_url, $this->quiet_deps && $is_dependency);
                 if ($stylesheet !== null) {
-                    return new LoadedStylesheet($stylesheet, $importer, $isDependency);
+                    return new Loaded_Stylesheet($stylesheet, $importer, $is_dependency);
                 }
             }
-
             throw new \Exception("Can't find stylesheet to import.");
-        } catch (SassException $e) {
+        } catch (Sass_Exception $e) {
             throw $e;
         } catch (\Throwable $e) {
-            throw $this->exception($e->getMessage(), null, $e);
+            throw $this->exception($e->get_message(), null, $e);
         } finally {
-            $this->importSpan = null;
+            $this->import_span = null;
         }
     }
-
     /**
      * Adds a CSS import for $import.
      */
-    private function visitStaticImport(StaticImport $import): void
+    private function visit_static_import(Static_Import $import): void
     {
-        $url = $this->interpolationToValue($import->getUrl());
-        $modifiers = $import->getModifiers() !== null ? $this->interpolationToValue($import->getModifiers()) : null;
-
-        $node = new ModifiableCssImport($url, $import->getSpan(), $modifiers);
-
-        if ($this->getParent() !== $this->getRoot()) {
-            $this->getParent()->addChild($node);
-        } elseif ($this->getEndOfImports() === \count($this->getRoot()->getChildren())) {
-            $this->getRoot()->addChild($node);
-            $this->endOfImports++;
+        $url = $this->interpolation_to_value($import->get_url());
+        $modifiers = $import->get_modifiers() !== null ? $this->interpolation_to_value($import->get_modifiers()) : null;
+        $node = new Modifiable_Css_Import($url, $import->get_span(), $modifiers);
+        if ($this->get_parent() !== $this->get_root()) {
+            $this->get_parent()->add_child($node);
+        } elseif ($this->get_end_of_imports() === \count($this->get_root()->get_children())) {
+            $this->get_root()->add_child($node);
+            $this->end_of_imports++;
         } else {
-            $this->outOfOrderImports[] = $node;
+            $this->out_of_order_imports[] = $node;
         }
     }
-
     /**
      * Evaluate a given $mixin with $arguments and $contentCallable
      */
-    private function applyMixin(?SassCallable $mixin, ?UserDefinedCallable $contentCallable, ArgumentInvocation $arguments, AstNode $nodeWithSpan, AstNode $nodeWithSpanWithoutContent): void
+    private function apply_mixin(?Sass_Callable $mixin, ?User_Defined_Callable $content_callable, Argument_Invocation $arguments, Ast_Node $node_with_span, Ast_Node $node_with_span_without_content): void
     {
         if ($mixin === null) {
-            throw $this->exception('Undefined mixin.', $nodeWithSpan->getSpan());
+            throw $this->exception('Undefined mixin.', $node_with_span->get_span());
         }
-
-        if ($mixin instanceof BuiltInCallable && !$mixin->acceptsContent() && $contentCallable !== null) {
-            $evaluated = $this->evaluateArguments($arguments);
+        if ($mixin instanceof Built_In_Callable && !$mixin->accepts_content() && $content_callable !== null) {
+            $evaluated = $this->evaluate_arguments($arguments);
             /** @var ArgumentDeclaration $overload */
-            [$overload,] = $mixin->callbackFor(\count($evaluated->getPositional()), $evaluated->getNamed());
-            throw new MultiSpanSassRuntimeException(
-                "Mixin doesn't accept a content block.",
-                $nodeWithSpanWithoutContent->getSpan(),
-                'invocation',
-                ['declaration' => $overload->getSpanWithName()],
-                $this->stackTrace($nodeWithSpanWithoutContent->getSpan())
-            );
+            [$overload] = $mixin->callback_for(\count($evaluated->get_positional()), $evaluated->get_named());
+            throw new Multi_Span_Sass_Runtime_Exception("Mixin doesn't accept a content block.", $node_with_span_without_content->get_span(), 'invocation', ['declaration' => $overload->get_span_with_name()], $this->stack_trace($node_with_span_without_content->get_span()));
         }
-
-        if ($mixin instanceof BuiltInCallable) {
-            $this->environment->withContent($contentCallable, fn () => $this->environment->asMixin(function () use ($arguments, $mixin, $nodeWithSpanWithoutContent): void {
-                $this->runBuiltInCallable($arguments, $mixin, $nodeWithSpanWithoutContent);
+        if ($mixin instanceof Built_In_Callable) {
+            $this->environment->with_content($content_callable, fn() => $this->environment->as_mixin(function () use ($arguments, $mixin, $node_with_span_without_content): void {
+                $this->run_built_in_callable($arguments, $mixin, $node_with_span_without_content);
             }));
-        } elseif ($mixin instanceof UserDefinedCallable) {
-            $declaration = $mixin->getDeclaration();
-            assert($declaration instanceof MixinRule);
-
-            if ($contentCallable !== null && !$declaration->hasContent()) {
-                throw new MultiSpanSassRuntimeException(
-                    "Mixin doesn't accept a content block.",
-                    $nodeWithSpanWithoutContent->getSpan(),
-                    'invocation',
-                    ['declaration' => $mixin->getDeclaration()->getArguments()->getSpanWithName()],
-                    $this->stackTrace($nodeWithSpanWithoutContent->getSpan())
-                );
+        } elseif ($mixin instanceof User_Defined_Callable) {
+            $declaration = $mixin->get_declaration();
+            assert($declaration instanceof Mixin_Rule);
+            if ($content_callable !== null && !$declaration->has_content()) {
+                throw new Multi_Span_Sass_Runtime_Exception("Mixin doesn't accept a content block.", $node_with_span_without_content->get_span(), 'invocation', ['declaration' => $mixin->get_declaration()->get_arguments()->get_span_with_name()], $this->stack_trace($node_with_span_without_content->get_span()));
             }
-
-            $this->runUserDefinedCallable($arguments, $mixin, $nodeWithSpanWithoutContent, function () use ($contentCallable, $declaration, $nodeWithSpanWithoutContent) {
-                $this->environment->withContent($contentCallable, fn () => $this->environment->asMixin(function () use ($declaration, $nodeWithSpanWithoutContent): void {
-                    foreach ($declaration->getChildren() as $statement) {
-                        $this->addErrorSpan($nodeWithSpanWithoutContent, fn () => $statement->accept($this));
+            $this->run_user_defined_callable($arguments, $mixin, $node_with_span_without_content, function () use ($content_callable, $declaration, $node_with_span_without_content) {
+                $this->environment->with_content($content_callable, fn() => $this->environment->as_mixin(function () use ($declaration, $node_with_span_without_content): void {
+                    foreach ($declaration->get_children() as $statement) {
+                        $this->add_error_span($node_with_span_without_content, fn() => $statement->accept($this));
                     }
                 }));
-
                 return null;
             });
         } else {
             throw new \LogicException('Unknown callable type ' . $mixin::class);
         }
     }
-
-    public function visitIncludeRule(IncludeRule $node): ?Value
+    public function visit_include_rule(Include_Rule $node): ?Value
     {
-        $mixin = $this->addExceptionSpan($node, fn () => $this->environment->getMixin($node->getName()));
-
-        if (str_starts_with($node->getOriginalName(), '--') && $mixin instanceof UserDefinedCallable && !str_starts_with($mixin->getDeclaration()->getOriginalName(), '--')) {
-            $this->warn("Sass @mixin names beginning with -- are deprecated for forward-compatibility with plain CSS mixins.\n\nFor details, see https://sass-lang.com/d/css-function-mixin", $node->getNameSpan(), Deprecation::cssFunctionMixin);
+        $mixin = $this->add_exception_span($node, fn() => $this->environment->get_mixin($node->get_name()));
+        if (str_starts_with($node->get_original_name(), '--') && $mixin instanceof User_Defined_Callable && !str_starts_with($mixin->get_declaration()->get_original_name(), '--')) {
+            $this->warn("Sass @mixin names beginning with -- are deprecated for forward-compatibility with plain CSS mixins.\n\nFor details, see https://sass-lang.com/d/css-function-mixin", $node->get_name_span(), Deprecation::cssFunctionMixin);
         }
-
-        $contentCallable = null;
-        if ($node->getContent() !== null) {
-            $contentCallable = new UserDefinedCallable($node->getContent(), $this->environment->closure(), $this->inDependency);
+        $content_callable = null;
+        if ($node->get_content() !== null) {
+            $content_callable = new User_Defined_Callable($node->get_content(), $this->environment->closure(), $this->in_dependency);
         }
-
-        $nodeWithSpanWithoutContent = new FakeAstNode(fn () => $node->getSpanWithoutContent());
-
-        $this->applyMixin($mixin, $contentCallable, $node->getArguments(), $node, $nodeWithSpanWithoutContent);
-
+        $node_with_span_without_content = new Fake_Ast_Node(fn() => $node->get_span_without_content());
+        $this->apply_mixin($mixin, $content_callable, $node->get_arguments(), $node, $node_with_span_without_content);
         return null;
     }
-
-    public function visitMixinRule(MixinRule $node): ?Value
+    public function visit_mixin_rule(Mixin_Rule $node): ?Value
     {
-        $this->environment->setMixin(new UserDefinedCallable($node, $this->environment->closure(), $this->inDependency));
-
+        $this->environment->set_mixin(new User_Defined_Callable($node, $this->environment->closure(), $this->in_dependency));
         return null;
     }
-
-    public function visitLoudComment(LoudComment $node): ?Value
+    public function visit_loud_comment(Loud_Comment $node): ?Value
     {
-        if ($this->inFunction) {
+        if ($this->in_function) {
             return null;
         }
-
         // Comments are allowed to appear between CSS imports.
-        if ($this->getParent() === $this->getRoot() && $this->getEndOfImports() === \count($this->getRoot()->getChildren())) {
-            $this->endOfImports++;
+        if ($this->get_parent() === $this->get_root() && $this->get_end_of_imports() === \count($this->get_root()->get_children())) {
+            $this->end_of_imports++;
         }
-
-        $text = $this->performInterpolation($node->getText());
+        $text = $this->perform_interpolation($node->get_text());
         // Indented syntax doesn't require */
         if (!str_ends_with($text, '*/')) {
             $text .= ' */';
         }
-
-        $this->getParent()->addChild(new ModifiableCssComment($text, $node->getSpan()));
-
+        $this->get_parent()->add_child(new Modifiable_Css_Comment($text, $node->get_span()));
         return null;
     }
-
-    public function visitMediaRule(MediaRule $node): ?Value
+    public function visit_media_rule(Media_Rule $node): ?Value
     {
-        if ($this->declarationName !== null) {
-            throw $this->exception('Media rules may not be used within nested declarations.', $node->getSpan());
+        if ($this->declaration_name !== null) {
+            throw $this->exception('Media rules may not be used within nested declarations.', $node->get_span());
         }
-
-        $queries = $this->visitMediaQueries($node->getQuery());
-        $mergedQueries = $this->mediaQueries !== null ? $this->mergeMediaQueries($this->mediaQueries, $queries) : null;
-
-        if ($mergedQueries === []) {
+        $queries = $this->visit_media_queries($node->get_query());
+        $merged_queries = $this->media_queries !== null ? $this->merge_media_queries($this->media_queries, $queries) : null;
+        if ($merged_queries === []) {
             return null;
         }
-
-        if ($mergedQueries === null) {
-            $mergedSources = [];
+        if ($merged_queries === null) {
+            $merged_sources = [];
         } else {
-            assert($this->mediaQuerySources !== null);
-            assert($this->mediaQueries !== null);
-
-            $mergedSources = array_merge($this->mediaQuerySources, $this->mediaQueries, $queries);
+            assert($this->media_query_sources !== null);
+            assert($this->media_queries !== null);
+            $merged_sources = array_merge($this->media_query_sources, $this->media_queries, $queries);
         }
-
-        $this->withParent(
-            new ModifiableCssMediaRule($mergedQueries ?? $queries, $node->getSpan()),
-            function () use ($mergedQueries, $mergedSources, $queries, $node): void {
-                $this->withMediaQueries($mergedQueries ?? $queries, $mergedSources, function () use ($node): void {
-                    $styleRule = $this->getStyleRule();
-
-                    if ($styleRule !== null) {
-                        // If we're in a style rule, copy it into the media query so that
-                        // declarations immediately inside @media have somewhere to go.
-                        //
-                        // For example, "a {@media screen {b: c}}" should produce
-                        // "@media screen {a {b: c}}".
-                        $this->withParent($styleRule->copyWithoutChildren(), function () use ($node): void {
-                            foreach ($node->getChildren() as $child) {
-                                $child->accept($this);
-                            }
-                        }, null, false);
-                    } else {
-                        foreach ($node->getChildren() as $child) {
+        $this->with_parent(new Modifiable_Css_Media_Rule($merged_queries ?? $queries, $node->get_span()), function () use ($merged_queries, $merged_sources, $queries, $node): void {
+            $this->with_media_queries($merged_queries ?? $queries, $merged_sources, function () use ($node): void {
+                $style_rule = $this->get_style_rule();
+                if ($style_rule !== null) {
+                    // If we're in a style rule, copy it into the media query so that
+                    // declarations immediately inside @media have somewhere to go.
+                    //
+                    // For example, "a {@media screen {b: c}}" should produce
+                    // "@media screen {a {b: c}}".
+                    $this->with_parent($style_rule->copy_without_children(), function () use ($node): void {
+                        foreach ($node->get_children() as $child) {
                             $child->accept($this);
                         }
+                    }, null, false);
+                } else {
+                    foreach ($node->get_children() as $child) {
+                        $child->accept($this);
                     }
-                });
-            },
-            function ($node) use ($mergedSources): bool {
-                if ($node instanceof CssStyleRule) {
-                    return true;
                 }
-
-                if ($mergedSources !== [] && $node instanceof CssMediaRule) {
-                    return IterableUtil::every($node->getQueries(), fn (CssMediaQuery $query) => \in_array($query, $mergedSources, true));
-                }
-
-                return false;
-            },
-            $node->hasDeclarations()
-        );
-
+            });
+        }, function ($node) use ($merged_sources): bool {
+            if ($node instanceof Css_Style_Rule) {
+                return true;
+            }
+            if ($merged_sources !== [] && $node instanceof Css_Media_Rule) {
+                return Iterable_Util::every($node->get_queries(), fn(Css_Media_Query $query) => \in_array($query, $merged_sources, true));
+            }
+            return false;
+        }, $node->has_declarations());
         return null;
     }
-
     /**
      * @return list<CssMediaQuery>
      */
-    private function visitMediaQueries(Interpolation $interpolation): array
+    private function visit_media_queries(Interpolation $interpolation): array
     {
-        [$resolved, $map] = $this->performInterpolationWithMap($interpolation, true);
-
-        return CssMediaQuery::parseList($resolved, $this->logger, null, $map);
+        [$resolved, $map] = $this->perform_interpolation_with_map($interpolation, true);
+        return Css_Media_Query::parse_list($resolved, $this->logger, null, $map);
     }
-
     /**
      * Returns a list of queries that selects for contexts that match both
      * $queries1 and $queries2.
@@ -1569,223 +1274,154 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      *
      * @return list<CssMediaQuery>|null
      */
-    private function mergeMediaQueries(array $queries1, array $queries2): ?array
+    private function merge_media_queries(array $queries1, array $queries2): ?array
     {
         $queries = [];
-
         foreach ($queries1 as $query1) {
             foreach ($queries2 as $query2) {
                 $result = $query1->merge($query2);
-
-                if ($result === MediaQuerySingletonMergeResult::empty) {
+                if ($result === Media_Query_Singleton_Merge_Result::empty) {
                     continue;
                 }
-
-                if ($result === MediaQuerySingletonMergeResult::unrepresentable) {
+                if ($result === Media_Query_Singleton_Merge_Result::unrepresentable) {
                     return null;
                 }
-
                 // Always true but not detected due to https://github.com/jiripudil/phpstan-sealed-classes/issues/2
-                \assert($result instanceof CssMediaQuery);
-
+                \assert($result instanceof Css_Media_Query);
                 $queries[] = $result;
             }
         }
-
         return $queries;
     }
-
-    public function visitReturnRule(ReturnRule $node): ?Value
+    public function visit_return_rule(Return_Rule $node): ?Value
     {
-        return $this->withoutSlash($node->getExpression()->accept($this), $node->getExpression());
+        return $this->without_slash($node->get_expression()->accept($this), $node->get_expression());
     }
-
-    public function visitSilentComment(SilentComment $node): ?Value
+    public function visit_silent_comment(Silent_Comment $node): ?Value
     {
         return null;
     }
-
-    public function visitStyleRule(StyleRule $node): ?Value
+    public function visit_style_rule(Style_Rule $node): ?Value
     {
-        if ($this->declarationName !== null) {
-            throw $this->exception('Style rules may not be used within nested declarations.', $node->getSpan());
+        if ($this->declaration_name !== null) {
+            throw $this->exception('Style rules may not be used within nested declarations.', $node->get_span());
         }
-
-        if ($this->inKeyFrames && $this->getParent() instanceof CssKeyframeBlock) {
-            throw $this->exception('Style rules may not be used within keyframe blocks.', $node->getSpan());
+        if ($this->in_key_frames && $this->get_parent() instanceof Css_Keyframe_Block) {
+            throw $this->exception('Style rules may not be used within keyframe blocks.', $node->get_span());
         }
-
-        [$selectorText, $selectorMap] = $this->performInterpolationWithMap($node->getSelector(), true);
-
-        if ($this->inKeyFrames) {
-            $parsedSelector = (new KeyframeSelectorParser($selectorText, $this->logger, null, $selectorMap))->parse();
-            $rule = new ModifiableCssKeyframeBlock(new CssValue($parsedSelector, $node->getSelector()->getSpan()), $node->getSpan());
-
-            $this->withParent(
-                $rule,
-                function () use ($node): void {
-                    foreach ($node->getChildren() as $child) {
-                        $child->accept($this);
-                    }
-                },
-                fn ($node) => $node instanceof CssStyleRule,
-                $node->hasDeclarations()
-            );
-
+        [$selector_text, $selector_map] = $this->perform_interpolation_with_map($node->get_selector(), true);
+        if ($this->in_key_frames) {
+            $parsed_selector = (new Keyframe_Selector_Parser($selector_text, $this->logger, null, $selector_map))->parse();
+            $rule = new Modifiable_Css_Keyframe_Block(new Css_Value($parsed_selector, $node->get_selector()->get_span()), $node->get_span());
+            $this->with_parent($rule, function () use ($node): void {
+                foreach ($node->get_children() as $child) {
+                    $child->accept($this);
+                }
+            }, fn($node) => $node instanceof Css_Style_Rule, $node->has_declarations());
             return null;
         }
-
-        $parsedSelector = SelectorList::parse($selectorText, $this->logger, $selectorMap, plainCss: $this->getStylesheet()->isPlainCss());
-        $nest = !($this->getStyleRule()?->isFromPlainCss() ?? false);
+        $parsed_selector = Selector_List::parse($selector_text, $this->logger, $selector_map, plainCss: $this->get_stylesheet()->is_plain_css());
+        $nest = !($this->get_style_rule()?->is_from_plain_css() ?? false);
         if ($nest) {
-            if ($this->getStylesheet()->isPlainCss()) {
-                foreach ($parsedSelector->getComponents() as $complex) {
-                    if (\count($complex->getLeadingCombinators()) > 0) {
-                        throw $this->exception("Top-level leading combinators aren't allowed in plain CSS.", $complex->getLeadingCombinators()[0]->getSpan());
+            if ($this->get_stylesheet()->is_plain_css()) {
+                foreach ($parsed_selector->get_components() as $complex) {
+                    if (\count($complex->get_leading_combinators()) > 0) {
+                        throw $this->exception("Top-level leading combinators aren't allowed in plain CSS.", $complex->get_leading_combinators()[0]->get_span());
                     }
                 }
             }
-
-            $parsedSelector = $parsedSelector->nestWithin(
-                $this->styleRuleIgnoringAtRoot?->getOriginalSelector(),
-                !$this->atRootExcludingStyleRule,
-                $this->getStylesheet()->isPlainCss()
-            );
+            $parsed_selector = $parsed_selector->nest_within($this->style_rule_ignoring_at_root?->get_original_selector(), !$this->at_root_excluding_style_rule, $this->get_stylesheet()->is_plain_css());
         }
-
-        $selector = $this->getExtensionStore()->addSelector($parsedSelector, $this->mediaQueries);
-        $rule = new ModifiableCssStyleRule($selector, $node->getSpan(), $parsedSelector, $this->getStylesheet()->isPlainCss());
-        $oldAtRootExcludingStyleRule = $this->atRootExcludingStyleRule;
-        $this->atRootExcludingStyleRule = false;
-        $this->withParent(
-            $rule,
-            function () use ($rule, $node): void {
-                $this->withStyleRule($rule, function () use ($node): void {
-                    foreach ($node->getChildren() as $child) {
+        $selector = $this->get_extension_store()->add_selector($parsed_selector, $this->media_queries);
+        $rule = new Modifiable_Css_Style_Rule($selector, $node->get_span(), $parsed_selector, $this->get_stylesheet()->is_plain_css());
+        $old_at_root_excluding_style_rule = $this->at_root_excluding_style_rule;
+        $this->at_root_excluding_style_rule = false;
+        $this->with_parent($rule, function () use ($rule, $node): void {
+            $this->with_style_rule($rule, function () use ($node): void {
+                foreach ($node->get_children() as $child) {
+                    $child->accept($this);
+                }
+            });
+        }, $nest ? fn($node): bool => $node instanceof Css_Style_Rule : null, $node->has_declarations());
+        $this->at_root_excluding_style_rule = $old_at_root_excluding_style_rule;
+        $this->warn_for_bogus_combinators($rule);
+        if ($this->get_style_rule() === null && \count($this->get_parent()->get_children()) > 0) {
+            $last_child = List_Util::last($this->get_parent()->get_children());
+            $last_child->set_group_end(true);
+        }
+        return null;
+    }
+    private function warn_for_bogus_combinators(Css_Style_Rule $rule): void
+    {
+        if (!$rule->is_invisible_other_than_bogus_combinators()) {
+            foreach ($rule->get_selector()->get_components() as $complex) {
+                if (!$complex->is_bogus()) {
+                    continue;
+                }
+                $selector_string = trim($complex);
+                if ($complex->is_useless()) {
+                    $this->warn("The selector \"{$selector_string}\" is invalid CSS. It will be omitted from the generated CSS.\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators", Span_Util::trim_right($complex->get_span()), Deprecation::bogusCombinators);
+                } elseif (\count($complex->get_leading_combinators()) > 0) {
+                    if (!$this->get_stylesheet()->is_plain_css()) {
+                        $this->warn("The selector \"{$selector_string}\" is invalid CSS.\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators", Span_Util::trim_right($complex->get_span()), Deprecation::bogusCombinators);
+                    }
+                } else {
+                    $omitted_message = $complex->is_bogus_other_than_leading_combinator() ? ' It will be omitted from the generated CSS.' : '';
+                    $suffix = Iterable_Util::every($rule->get_children(), fn(Css_Node $child): bool => $child instanceof Css_Comment) ? "\n(try converting to a //-style comment)" : '';
+                    $this->warn("The selector \"{$selector_string}\" is only valid for nesting and shouldn't\nhave children other than style rules.{$omitted_message}\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators", new Multi_Span(Span_Util::trim_right($complex->get_span()), 'invalid selector', ['this is not a style rule' . $suffix => $rule->get_children()[0]->get_span()]), Deprecation::bogusCombinators);
+                }
+            }
+        }
+    }
+    public function visit_supports_rule(Supports_Rule $node): ?Value
+    {
+        if ($this->declaration_name !== null) {
+            throw $this->exception('Supports rules may not be used within nested declarations.', $node->get_span());
+        }
+        $condition = new Css_Value($this->visit_supports_condition($node->get_condition()), $node->get_condition()->get_span());
+        $this->with_parent(new Modifiable_Css_Supports_Rule($condition, $node->get_span()), function () use ($node): void {
+            $style_rule = $this->get_style_rule();
+            if ($style_rule !== null) {
+                // If we're in a style rule, copy it into the supports rule so that
+                // declarations immediately inside @supports have somewhere to go.
+                //
+                // For example, "a {@supports (a: b) {b: c}}" should produce "@supports
+                // (a: b) {a {b: c}}".
+                $this->with_parent($style_rule->copy_without_children(), function () use ($node): void {
+                    foreach ($node->get_children() as $child) {
                         $child->accept($this);
                     }
                 });
-            },
-            $nest ? fn ($node): bool => $node instanceof CssStyleRule : null,
-            $node->hasDeclarations()
-        );
-        $this->atRootExcludingStyleRule = $oldAtRootExcludingStyleRule;
-
-        $this->warnForBogusCombinators($rule);
-
-        if ($this->getStyleRule() === null && \count($this->getParent()->getChildren()) > 0) {
-            $lastChild = ListUtil::last($this->getParent()->getChildren());
-            $lastChild->setGroupEnd(true);
-        }
-
-        return null;
-    }
-
-    private function warnForBogusCombinators(CssStyleRule $rule): void
-    {
-        if (!$rule->isInvisibleOtherThanBogusCombinators()) {
-            foreach ($rule->getSelector()->getComponents() as $complex) {
-                if (!$complex->isBogus()) {
-                    continue;
-                }
-
-                $selectorString = trim($complex);
-
-                if ($complex->isUseless()) {
-                    $this->warn(
-                        "The selector \"$selectorString\" is invalid CSS. It will be omitted from the generated CSS.\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators",
-                        SpanUtil::trimRight($complex->getSpan()),
-                        Deprecation::bogusCombinators
-                    );
-                } elseif (\count($complex->getLeadingCombinators()) > 0) {
-                    if (!$this->getStylesheet()->isPlainCss()) {
-                        $this->warn(
-                            "The selector \"$selectorString\" is invalid CSS.\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators",
-                            SpanUtil::trimRight($complex->getSpan()),
-                            Deprecation::bogusCombinators
-                        );
-                    }
-                } else {
-                    $omittedMessage = $complex->isBogusOtherThanLeadingCombinator() ? ' It will be omitted from the generated CSS.' : '';
-                    $suffix = IterableUtil::every($rule->getChildren(), fn (CssNode $child): bool => $child instanceof CssComment) ? "\n(try converting to a //-style comment)" : '';
-                    $this->warn(
-                        "The selector \"$selectorString\" is only valid for nesting and shouldn't\nhave children other than style rules.$omittedMessage\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators",
-                        new MultiSpan(SpanUtil::trimRight($complex->getSpan()), 'invalid selector', [
-                            'this is not a style rule' . $suffix => $rule->getChildren()[0]->getSpan(),
-                        ]),
-                        Deprecation::bogusCombinators
-                    );
+            } else {
+                foreach ($node->get_children() as $child) {
+                    $child->accept($this);
                 }
             }
-        }
-    }
-
-    public function visitSupportsRule(SupportsRule $node): ?Value
-    {
-        if ($this->declarationName !== null) {
-            throw $this->exception('Supports rules may not be used within nested declarations.', $node->getSpan());
-        }
-
-        $condition = new CssValue($this->visitSupportsCondition($node->getCondition()), $node->getCondition()->getSpan());
-
-        $this->withParent(
-            new ModifiableCssSupportsRule($condition, $node->getSpan()),
-            function () use ($node): void {
-                $styleRule = $this->getStyleRule();
-
-                if ($styleRule !== null) {
-                    // If we're in a style rule, copy it into the supports rule so that
-                    // declarations immediately inside @supports have somewhere to go.
-                    //
-                    // For example, "a {@supports (a: b) {b: c}}" should produce "@supports
-                    // (a: b) {a {b: c}}".
-                    $this->withParent($styleRule->copyWithoutChildren(), function () use ($node): void {
-                        foreach ($node->getChildren() as $child) {
-                            $child->accept($this);
-                        }
-                    });
-                } else {
-                    foreach ($node->getChildren() as $child) {
-                        $child->accept($this);
-                    }
-                }
-            },
-            fn ($node) => $node instanceof CssStyleRule,
-            $node->hasDeclarations()
-        );
-
+        }, fn($node) => $node instanceof Css_Style_Rule, $node->has_declarations());
         return null;
     }
-
-    private function visitSupportsCondition(SupportsCondition $condition): string
+    private function visit_supports_condition(Supports_Condition $condition): string
     {
-        if ($condition instanceof SupportsOperation) {
-            return sprintf('%s %s %s', $this->parenthesize($condition->getLeft(), $condition->getOperator()), $condition->getOperator(), $this->parenthesize($condition->getRight(), $condition->getOperator()));
+        if ($condition instanceof Supports_Operation) {
+            return sprintf('%s %s %s', $this->parenthesize($condition->get_left(), $condition->get_operator()), $condition->get_operator(), $this->parenthesize($condition->get_right(), $condition->get_operator()));
         }
-
-        if ($condition instanceof SupportsNegation) {
-            return 'not ' . $this->parenthesize($condition->getCondition());
+        if ($condition instanceof Supports_Negation) {
+            return 'not ' . $this->parenthesize($condition->get_condition());
         }
-
-        if ($condition instanceof SupportsInterpolation) {
-            return $this->evaluateToCss($condition->getExpression(), false);
+        if ($condition instanceof Supports_Interpolation) {
+            return $this->evaluate_to_css($condition->get_expression(), false);
         }
-
-        if ($condition instanceof SupportsDeclaration) {
-            return $this->withSupportsDeclaration(fn () => sprintf('(%s:%s%s)', $this->evaluateToCss($condition->getName()), $condition->isCustomProperty() ? '' : ' ', $this->evaluateToCss($condition->getValue())));
+        if ($condition instanceof Supports_Declaration) {
+            return $this->with_supports_declaration(fn() => sprintf('(%s:%s%s)', $this->evaluate_to_css($condition->get_name()), $condition->is_custom_property() ? '' : ' ', $this->evaluate_to_css($condition->get_value())));
         }
-
-        if ($condition instanceof SupportsFunction) {
-            return sprintf('%s(%s)', $this->performInterpolation($condition->getName()), $this->performInterpolation($condition->getArguments()));
+        if ($condition instanceof Supports_Function) {
+            return sprintf('%s(%s)', $this->perform_interpolation($condition->get_name()), $this->perform_interpolation($condition->get_arguments()));
         }
-
-        if ($condition instanceof SupportsAnything) {
-            return '(' . $this->performInterpolation($condition->getContents()) . ')';
+        if ($condition instanceof Supports_Anything) {
+            return '(' . $this->perform_interpolation($condition->get_contents()) . ')';
         }
-
         throw new \InvalidArgumentException('Unknown supports condition type ' . $condition::class);
     }
-
     /**
      * Runs $callback in a context where {@see $inSupportsDeclaration} is true.
      *
@@ -1796,165 +1432,125 @@ class EvaluateVisitor implements StatementVisitor, ExpressionVisitor
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function withSupportsDeclaration(callable $callback)
+    private function with_supports_declaration(callable $callback)
     {
-        $oldInSupportsDeclaration = $this->inSupportsDeclaration;
-        $this->inSupportsDeclaration = true;
+        $old_in_supports_declaration = $this->in_supports_declaration;
+        $this->in_supports_declaration = true;
         try {
             return $callback();
         } finally {
-            $this->inSupportsDeclaration = $oldInSupportsDeclaration;
+            $this->in_supports_declaration = $old_in_supports_declaration;
         }
     }
-
-    private function parenthesize(SupportsCondition $condition, ?string $operator = null): string
+    private function parenthesize(Supports_Condition $condition, ?string $operator = null): string
     {
-        if ($condition instanceof SupportsNegation || $condition instanceof SupportsOperation && $operator !== $condition->getOperator()) {
-            return '(' . $this->visitSupportsCondition($condition) . ')';
+        if ($condition instanceof Supports_Negation || $condition instanceof Supports_Operation && $operator !== $condition->get_operator()) {
+            return '(' . $this->visit_supports_condition($condition) . ')';
         }
-
-        return $this->visitSupportsCondition($condition);
+        return $this->visit_supports_condition($condition);
     }
-
-    public function visitVariableDeclaration(VariableDeclaration $node): ?Value
+    public function visit_variable_declaration(Variable_Declaration $node): ?Value
     {
-        if ($node->isGuarded()) {
-            $value = $this->addExceptionSpan($node, fn () => $this->environment->getVariable($node->getName()));
-
-            if ($value !== null && $value !== SassNull::create()) {
+        if ($node->is_guarded()) {
+            $value = $this->add_exception_span($node, fn() => $this->environment->get_variable($node->get_name()));
+            if ($value !== null && $value !== Sass_Null::create()) {
                 return null;
             }
         }
-
-        if ($node->isGlobal() && !$this->environment->globalVariableExists($node->getName())) {
-            $this->warn(
-                $this->environment->atRoot()
-                    ? "As of Dart Sass 2.0.0, !global assignments won't be able to declare new variables.\n\nSince this assignment is at the root of the stylesheet, the !global flag is\nunnecessary and can safely be removed."
-                    : "As of Dart Sass 2.0.0, !global assignments won't be able to declare new variables.\n\nRecommendation: add `{$node->getOriginalName()}: null` at the stylesheet root.",
-                $node->getSpan(),
-                Deprecation::newGlobal
-            );
+        if ($node->is_global() && !$this->environment->global_variable_exists($node->get_name())) {
+            $this->warn($this->environment->at_root() ? "As of Dart Sass 2.0.0, !global assignments won't be able to declare new variables.\n\nSince this assignment is at the root of the stylesheet, the !global flag is\nunnecessary and can safely be removed." : "As of Dart Sass 2.0.0, !global assignments won't be able to declare new variables.\n\nRecommendation: add `{$node->get_original_name()}: null` at the stylesheet root.", $node->get_span(), Deprecation::newGlobal);
         }
-
-        $value = $this->withoutSlash($node->getExpression()->accept($this), $node->getExpression());
-        $this->addExceptionSpan($node, function () use ($value, $node): void {
-            $this->environment->setVariable($node->getName(), $value, $this->expressionNode($node->getExpression()), $node->isGlobal());
+        $value = $this->without_slash($node->get_expression()->accept($this), $node->get_expression());
+        $this->add_exception_span($node, function () use ($value, $node): void {
+            $this->environment->set_variable($node->get_name(), $value, $this->expression_node($node->get_expression()), $node->is_global());
         });
-
         return null;
     }
-
-    public function visitWarnRule(WarnRule $node): ?Value
+    public function visit_warn_rule(Warn_Rule $node): ?Value
     {
-        $value = $this->addExceptionSpan($node, fn () => $node->getExpression()->accept($this));
-        $this->logger->warn($value instanceof SassString ? $value->getText() : $this->serialize($value, $node->getExpression()), null, null, $this->stackTrace($node->getSpan()));
-
+        $value = $this->add_exception_span($node, fn() => $node->get_expression()->accept($this));
+        $this->logger->warn($value instanceof Sass_String ? $value->get_text() : $this->serialize($value, $node->get_expression()), null, null, $this->stack_trace($node->get_span()));
         return null;
     }
-
-    public function visitWhileRule(WhileRule $node): ?Value
+    public function visit_while_rule(While_Rule $node): ?Value
     {
-        return $this->environment->scope(function () use ($node): ?\ScssPhp\ScssPhp\Value\Value {
-            $iterationCount = 0;
-            $maxIterations = 10000;
-
-            while ($node->getCondition()->accept($this)->isTruthy()) {
-                if (++$iterationCount > $maxIterations) {
-                    throw new SimpleSassException(
-                        '@while loop exceeded maximum iteration limit of ' . $maxIterations,
-                        $node->getSpan()
-                    );
+        return $this->environment->scope(function () use ($node): ?\Scss_Php\Scss_Php\Value\Value {
+            $iteration_count = 0;
+            $max_iterations = 10000;
+            while ($node->get_condition()->accept($this)->is_truthy()) {
+                if (++$iteration_count > $max_iterations) {
+                    throw new Simple_Sass_Exception('@while loop exceeded maximum iteration limit of ' . $max_iterations, $node->get_span());
                 }
-
-                $result = $this->handleReturn($node->getChildren(), fn (Statement $child) => $child->accept($this));
-
+                $result = $this->handle_return($node->get_children(), fn(Statement $child) => $child->accept($this));
                 if ($result !== null) {
                     return $result;
                 }
             }
-
             return null;
-        }, $node->hasDeclarations(), true);
+        }, $node->has_declarations(), true);
     }
-
     // ## Expressions
-
-    public function visitBinaryOperationExpression(BinaryOperationExpression $node): Value
+    public function visit_binary_operation_expression(Binary_Operation_Expression $node): Value
     {
-        if ($this->getStylesheet()->isPlainCss() && $node->getOperator() !== BinaryOperator::SINGLE_EQUALS  && $node->getOperator() !== BinaryOperator::DIVIDED_BY) {
-            throw $this->exception("Operators aren't allowed in plain CSS.", $node->getOperatorSpan());
+        if ($this->get_stylesheet()->is_plain_css() && $node->get_operator() !== Binary_Operator::SINGLE_EQUALS && $node->get_operator() !== Binary_Operator::DIVIDED_BY) {
+            throw $this->exception("Operators aren't allowed in plain CSS.", $node->get_operator_span());
         }
-
-        return $this->addExceptionSpan($node, function () use ($node) {
-            $left = $node->getLeft()->accept($this);
-
-            return match ($node->getOperator()) {
-                BinaryOperator::SINGLE_EQUALS => $left->singleEquals($node->getRight()->accept($this)),
-                BinaryOperator::OR => $left->isTruthy() ? $left : $node->getRight()->accept($this),
-                BinaryOperator::AND => $left->isTruthy() ? $node->getRight()->accept($this) : $left,
-                BinaryOperator::EQUALS => SassBoolean::create($left->equals($node->getRight()->accept($this))),
-                BinaryOperator::NOT_EQUALS => SassBoolean::create(!$left->equals($node->getRight()->accept($this))),
-                BinaryOperator::GREATER_THAN => $left->greaterThan($node->getRight()->accept($this)),
-                BinaryOperator::GREATER_THAN_OR_EQUALS => $left->greaterThanOrEquals($node->getRight()->accept($this)),
-                BinaryOperator::LESS_THAN => $left->lessThan($node->getRight()->accept($this)),
-                BinaryOperator::LESS_THAN_OR_EQUALS => $left->lessThanOrEquals($node->getRight()->accept($this)),
-                BinaryOperator::PLUS => $left->plus($node->getRight()->accept($this)),
-                BinaryOperator::MINUS => $left->minus($node->getRight()->accept($this)),
-                BinaryOperator::TIMES => $left->times($node->getRight()->accept($this)),
-                BinaryOperator::DIVIDED_BY => $this->slash($left, $node->getRight()->accept($this), $node),
-                BinaryOperator::MODULO => $left->modulo($node->getRight()->accept($this)),
+        return $this->add_exception_span($node, function () use ($node) {
+            $left = $node->get_left()->accept($this);
+            return match ($node->get_operator()) {
+                Binary_Operator::SINGLE_EQUALS => $left->single_equals($node->get_right()->accept($this)),
+                Binary_Operator::OR => $left->is_truthy() ? $left : $node->get_right()->accept($this),
+                Binary_Operator::AND => $left->is_truthy() ? $node->get_right()->accept($this) : $left,
+                Binary_Operator::EQUALS => Sass_Boolean::create($left->equals($node->get_right()->accept($this))),
+                Binary_Operator::NOT_EQUALS => Sass_Boolean::create(!$left->equals($node->get_right()->accept($this))),
+                Binary_Operator::GREATER_THAN => $left->greater_than($node->get_right()->accept($this)),
+                Binary_Operator::GREATER_THAN_OR_EQUALS => $left->greater_than_or_equals($node->get_right()->accept($this)),
+                Binary_Operator::LESS_THAN => $left->less_than($node->get_right()->accept($this)),
+                Binary_Operator::LESS_THAN_OR_EQUALS => $left->less_than_or_equals($node->get_right()->accept($this)),
+                Binary_Operator::PLUS => $left->plus($node->get_right()->accept($this)),
+                Binary_Operator::MINUS => $left->minus($node->get_right()->accept($this)),
+                Binary_Operator::TIMES => $left->times($node->get_right()->accept($this)),
+                Binary_Operator::DIVIDED_BY => $this->slash($left, $node->get_right()->accept($this), $node),
+                Binary_Operator::MODULO => $left->modulo($node->get_right()->accept($this)),
             };
         });
     }
-
     /**
      * Returns the result of the SassScript `/` operation between $left and
      * $right in $node.
      */
-    private function slash(Value $left, Value $right, BinaryOperationExpression $node): Value
+    private function slash(Value $left, Value $right, Binary_Operation_Expression $node): Value
     {
-        $result = $left->dividedBy($right);
-
-        if ($left instanceof SassNumber && $right instanceof SassNumber && $node->allowsSlash() && $this->operandAllowsSlash($node->getLeft()) && $this->operandAllowsSlash($node->getRight())) {
-            assert($result instanceof SassNumber);
-
-            return $result->withSlash($left, $right);
+        $result = $left->divided_by($right);
+        if ($left instanceof Sass_Number && $right instanceof Sass_Number && $node->allows_slash() && $this->operand_allows_slash($node->get_left()) && $this->operand_allows_slash($node->get_right())) {
+            assert($result instanceof Sass_Number);
+            return $result->with_slash($left, $right);
         }
-
-        if ($left instanceof SassNumber && $right instanceof SassNumber) {
+        if ($left instanceof Sass_Number && $right instanceof Sass_Number) {
             $recommendation = function (Expression $expression) use (&$recommendation): string {
-                if ($expression instanceof BinaryOperationExpression && $expression->getOperator() === BinaryOperator::DIVIDED_BY) {
-                    $leftRecommendation = $recommendation($expression->getLeft());
-                    $rightRecommendation = $recommendation($expression->getRight());
-
-                    return "math.div($leftRecommendation, $rightRecommendation)";
+                if ($expression instanceof Binary_Operation_Expression && $expression->get_operator() === Binary_Operator::DIVIDED_BY) {
+                    $left_recommendation = $recommendation($expression->get_left());
+                    $right_recommendation = $recommendation($expression->get_right());
+                    return "math.div({$left_recommendation}, {$right_recommendation})";
                 }
-
-                if ($expression instanceof ParenthesizedExpression) {
-                    return (string) $expression->getExpression();
+                if ($expression instanceof Parenthesized_Expression) {
+                    return (string) $expression->get_expression();
                 }
-
                 return (string) $expression;
             };
-
-            $calcRecommendation = AstUtil::expressionToCalc($node);
-
+            $calc_recommendation = Ast_Util::expression_to_calc($node);
             $message = <<<WARNING
-Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
-
-Recommendation: {$recommendation($node)} or $calcRecommendation
-
-More info and automated migrator: https://sass-lang.com/d/slash-div
-WARNING;
-
-            $this->warn($message, $node->getSpan(), Deprecation::slashDiv);
-
+            Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+            
+            Recommendation: {$recommendation($node)} or {$calc_recommendation}
+            
+            More info and automated migrator: https://sass-lang.com/d/slash-div
+            WARNING;
+            $this->warn($message, $node->get_span(), Deprecation::slashDiv);
             return $result;
         }
-
         return $result;
     }
-
     /**
      * Returns whether $node can be used as a component of a slash-separated
      * number.
@@ -1962,159 +1558,117 @@ WARNING;
      * Although this logic is mostly resolved at parse-time, we can't tell
      * whether operands will be evaluated as calculations until evaluation-time.
      */
-    private function operandAllowsSlash(Expression $node): bool
+    private function operand_allows_slash(Expression $node): bool
     {
-        if (!$node instanceof FunctionExpression) {
+        if (!$node instanceof Function_Expression) {
             return true;
         }
-
-        if ($node->getNamespace() !== null) {
+        if ($node->get_namespace() !== null) {
             return false;
         }
-
-        return \in_array(strtolower($node->getName()), ['calc', 'clamp', 'hypot', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sqrt', 'exp', 'sign', 'mod', 'rem', 'atan2', 'pow', 'log'], true) && $this->environment->getFunction($node->getName()) === null;
+        return \in_array(strtolower($node->get_name()), ['calc', 'clamp', 'hypot', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sqrt', 'exp', 'sign', 'mod', 'rem', 'atan2', 'pow', 'log'], true) && $this->environment->get_function($node->get_name()) === null;
     }
-
-    public function visitValueExpression(ValueExpression $node): Value
+    public function visit_value_expression(Value_Expression $node): Value
     {
-        return $node->getValue();
+        return $node->get_value();
     }
-
-    public function visitVariableExpression(VariableExpression $node): Value
+    public function visit_variable_expression(Variable_Expression $node): Value
     {
-        $result = $this->addExceptionSpan($node, fn () => $this->environment->getVariable($node->getName()));
-
+        $result = $this->add_exception_span($node, fn() => $this->environment->get_variable($node->get_name()));
         if ($result !== null) {
             return $result;
         }
-
-        throw $this->exception('Undefined variable.', $node->getSpan());
+        throw $this->exception('Undefined variable.', $node->get_span());
     }
-
-    public function visitUnaryOperationExpression(UnaryOperationExpression $node): Value
+    public function visit_unary_operation_expression(Unary_Operation_Expression $node): Value
     {
-        $operand = $node->getOperand()->accept($this);
-
-        return $this->addExceptionSpan($node, fn () => match ($node->getOperator()) {
-            UnaryOperator::PLUS => $operand->unaryPlus(),
-            UnaryOperator::MINUS => $operand->unaryMinus(),
-            UnaryOperator::DIVIDE => $operand->unaryDivide(),
-            UnaryOperator::NOT => $operand->unaryNot(),
+        $operand = $node->get_operand()->accept($this);
+        return $this->add_exception_span($node, fn() => match ($node->get_operator()) {
+            Unary_Operator::PLUS => $operand->unary_plus(),
+            Unary_Operator::MINUS => $operand->unary_minus(),
+            Unary_Operator::DIVIDE => $operand->unary_divide(),
+            Unary_Operator::NOT => $operand->unary_not(),
         });
     }
-
-    public function visitBooleanExpression(BooleanExpression $node): Value
+    public function visit_boolean_expression(Boolean_Expression $node): Value
     {
-        return SassBoolean::create($node->getValue());
+        return Sass_Boolean::create($node->get_value());
     }
-
-    public function visitIfExpression(IfExpression $node): Value
+    public function visit_if_expression(If_Expression $node): Value
     {
-        [$positional, $named] = $this->evaluateMacroArguments($node);
-
-        $this->verifyArguments(\count($positional), $named, IfExpression::getDeclaration(), $node);
-
+        [$positional, $named] = $this->evaluate_macro_arguments($node);
+        $this->verify_arguments(\count($positional), $named, If_Expression::get_declaration(), $node);
         $condition = $positional[0] ?? $named['condition'];
-        $ifTrue = $positional[1] ?? $named['if-true'];
-        $ifFalse = $positional[2] ?? $named['if-false'];
-
-        $result = $condition->accept($this)->isTruthy() ? $ifTrue : $ifFalse;
-
-        return $this->withoutSlash($result->accept($this), $this->expressionNode($result));
+        $if_true = $positional[1] ?? $named['if-true'];
+        $if_false = $positional[2] ?? $named['if-false'];
+        $result = $condition->accept($this)->is_truthy() ? $if_true : $if_false;
+        return $this->without_slash($result->accept($this), $this->expression_node($result));
     }
-
-    public function visitNullExpression(NullExpression $node): Value
+    public function visit_null_expression(Null_Expression $node): Value
     {
-        return SassNull::create();
+        return Sass_Null::create();
     }
-
-    public function visitNumberExpression(NumberExpression $node): Value
+    public function visit_number_expression(Number_Expression $node): Value
     {
-        return SassNumber::create($node->getValue(), $node->getUnit());
+        return Sass_Number::create($node->get_value(), $node->get_unit());
     }
-
-    public function visitParenthesizedExpression(ParenthesizedExpression $node): Value
+    public function visit_parenthesized_expression(Parenthesized_Expression $node): Value
     {
-        if ($this->getStylesheet()->isPlainCss()) {
-            throw $this->exception("Parentheses aren't allowed in plain CSS.", $node->getSpan());
+        if ($this->get_stylesheet()->is_plain_css()) {
+            throw $this->exception("Parentheses aren't allowed in plain CSS.", $node->get_span());
         }
-
-        return $node->getExpression()->accept($this);
+        return $node->get_expression()->accept($this);
     }
-
-    public function visitColorExpression(ColorExpression $node): Value
+    public function visit_color_expression(Color_Expression $node): Value
     {
-        return $node->getValue();
+        return $node->get_value();
     }
-
-    public function visitListExpression(ListExpression $node): Value
+    public function visit_list_expression(List_Expression $node): Value
     {
-        return new SassList(array_map(fn (Expression $expression) => $expression->accept($this), $node->getContents()), $node->getSeparator(), $node->hasBrackets());
+        return new Sass_List(array_map(fn(Expression $expression) => $expression->accept($this), $node->get_contents()), $node->get_separator(), $node->has_brackets());
     }
-
-    public function visitMapExpression(MapExpression $node): Value
+    public function visit_map_expression(Map_Expression $node): Value
     {
         /** @var Map<Value> $map */
         $map = new Map();
         /** @var Map<AstNode> $keyNodes */
-        $keyNodes = new Map();
-
-        foreach ($node->getPairs() as $pair) {
-            $keyValue = $pair[0]->accept($this);
-            $valueValue = $pair[1]->accept($this);
-
-            $oldValue = $map->get($keyValue);
-
-            if ($oldValue !== null) {
-                $oldValueSpan = $keyNodes->get($keyValue)?->getSpan();
-                throw new MultiSpanSassRuntimeException(
-                    'Duplicate key.',
-                    $pair[0]->getSpan(),
-                    'second key',
-                    $oldValueSpan !== null ? ['first key' => $oldValueSpan] : [],
-                    $this->stackTrace($pair[0]->getSpan())
-                );
+        $key_nodes = new Map();
+        foreach ($node->get_pairs() as $pair) {
+            $key_value = $pair[0]->accept($this);
+            $value_value = $pair[1]->accept($this);
+            $old_value = $map->get($key_value);
+            if ($old_value !== null) {
+                $old_value_span = $key_nodes->get($key_value)?->get_span();
+                throw new Multi_Span_Sass_Runtime_Exception('Duplicate key.', $pair[0]->get_span(), 'second key', $old_value_span !== null ? ['first key' => $old_value_span] : [], $this->stack_trace($pair[0]->get_span()));
             }
-
-            $map->put($keyValue, $valueValue);
-            $keyNodes->put($keyValue, $pair[0]);
+            $map->put($key_value, $value_value);
+            $key_nodes->put($key_value, $pair[0]);
         }
-
-        return SassMap::create($map);
+        return Sass_Map::create($map);
     }
-
-    private function getBuiltinFunction(string $name): ?SassCallable
+    private function get_builtin_function(string $name): ?Sass_Callable
     {
-        if (!isset($this->builtInFunctions[$name]) && FunctionRegistry::has($name)) {
-            $this->builtInFunctions[$name] = FunctionRegistry::get($name);
+        if (!isset($this->built_in_functions[$name]) && Function_Registry::has($name)) {
+            $this->built_in_functions[$name] = Function_Registry::get($name);
         }
-
-        return $this->builtInFunctions[$name] ?? null;
+        return $this->built_in_functions[$name] ?? null;
     }
-
-    public function visitFunctionExpression(FunctionExpression $node): Value
+    public function visit_function_expression(Function_Expression $node): Value
     {
-        $function = $this->getStylesheet()->isPlainCss() ? null : $this->addExceptionSpan($node, fn () => $this->environment->getFunction($node->getName()));
-
+        $function = $this->get_stylesheet()->is_plain_css() ? null : $this->add_exception_span($node, fn() => $this->environment->get_function($node->get_name()));
         if ($function === null) {
-            if ($node->getNamespace() !== null) {
-                throw $this->exception('Undefined function.', $node->getSpan());
+            if ($node->get_namespace() !== null) {
+                throw $this->exception('Undefined function.', $node->get_span());
             }
-
-            switch (strtolower($node->getName())) {
+            switch (strtolower($node->get_name())) {
                 case 'min':
                 case 'max':
                 case 'round':
                 case 'abs':
-                    if (
-                        $node->getArguments()->getNamed() === []
-                        && $node->getArguments()->getRest() === null
-                        && IterableUtil::every($node->getArguments()->getPositional(), fn (Expression $argument) => $argument->accept(new IsCalculationSafeVisitor()))
-                    ) {
-                        return $this->visitCalculation($node, true);
+                    if ($node->get_arguments()->get_named() === [] && $node->get_arguments()->get_rest() === null && Iterable_Util::every($node->get_arguments()->get_positional(), fn(Expression $argument) => $argument->accept(new Is_Calculation_Safe_Visitor()))) {
+                        return $this->visit_calculation($node, true);
                     }
                     break;
-
                 case 'calc':
                 case 'clamp':
                 case 'hypot':
@@ -2132,110 +1686,89 @@ WARNING;
                 case 'atan2':
                 case 'pow':
                 case 'log':
-                    return $this->visitCalculation($node);
+                    return $this->visit_calculation($node);
             }
-
-            $function = ($this->getStylesheet()->isPlainCss() ? null : $this->getBuiltinFunction($node->getName())) ?? new PlainCssCallable($node->getOriginalName());
+            $function = ($this->get_stylesheet()->is_plain_css() ? null : $this->get_builtin_function($node->get_name())) ?? new Plain_Css_Callable($node->get_original_name());
         }
-
-        if (str_starts_with($node->getOriginalName(), '--') && $function instanceof UserDefinedCallable && !str_starts_with($function->getDeclaration()->getOriginalName(), '--')) {
-            $this->warn("Sass @function names beginning with -- are deprecated for forward-compatibility with plain CSS functions.\n\nFor details, see https://sass-lang.com/d/css-function-mixin", $node->getNameSpan(), Deprecation::cssFunctionMixin);
+        if (str_starts_with($node->get_original_name(), '--') && $function instanceof User_Defined_Callable && !str_starts_with($function->get_declaration()->get_original_name(), '--')) {
+            $this->warn("Sass @function names beginning with -- are deprecated for forward-compatibility with plain CSS functions.\n\nFor details, see https://sass-lang.com/d/css-function-mixin", $node->get_name_span(), Deprecation::cssFunctionMixin);
         }
-
-        $oldInFunction = $this->inFunction;
-        $this->inFunction = true;
-        $result = $this->addErrorSpan($node, fn () => $this->runFunctionCallable($node->getArguments(), $function, $node));
-        $this->inFunction = $oldInFunction;
-
+        $old_in_function = $this->in_function;
+        $this->in_function = true;
+        $result = $this->add_error_span($node, fn() => $this->run_function_callable($node->get_arguments(), $function, $node));
+        $this->in_function = $old_in_function;
         return $result;
     }
-
-    private function visitCalculation(FunctionExpression $node, bool $inLegacySassFunction = false): Value
+    private function visit_calculation(Function_Expression $node, bool $in_legacy_sass_function = false): Value
     {
-        if ($node->getArguments()->getNamed() !== []) {
-            throw $this->exception("Keyword arguments can't be used with calculations.", $node->getSpan());
+        if ($node->get_arguments()->get_named() !== []) {
+            throw $this->exception("Keyword arguments can't be used with calculations.", $node->get_span());
         }
-
-        if ($node->getArguments()->getRest() !== null) {
-            throw $this->exception("Rest arguments can't be used with calculations.", $node->getSpan());
+        if ($node->get_arguments()->get_rest() !== null) {
+            throw $this->exception("Rest arguments can't be used with calculations.", $node->get_span());
         }
-
-        $this->checkCalculationArguments($node);
-        $arguments = array_map(fn (\ScssPhp\ScssPhp\Ast\Sass\Expression $argument) => $this->visitCalculationExpression($argument, $inLegacySassFunction), $node->getArguments()->getPositional());
-
-        if ($this->inSupportsDeclaration) {
-            return SassCalculation::unsimplified($node->getName(), $arguments);
+        $this->check_calculation_arguments($node);
+        $arguments = array_map(fn(\Scss_Php\Scss_Php\Ast\Sass\Expression $argument) => $this->visit_calculation_expression($argument, $in_legacy_sass_function), $node->get_arguments()->get_positional());
+        if ($this->in_supports_declaration) {
+            return Sass_Calculation::unsimplified($node->get_name(), $arguments);
         }
-
-        $oldCallableNode = $this->callableNode;
-        $this->callableNode = $node;
-
+        $old_callable_node = $this->callable_node;
+        $this->callable_node = $node;
         try {
-            return match (strtolower($node->getName())) {
-                'calc' => SassCalculation::calc($arguments[0]),
-                'sqrt' => SassCalculation::sqrt($arguments[0]),
-                'sin' => SassCalculation::sin($arguments[0]),
-                'cos' => SassCalculation::cos($arguments[0]),
-                'tan' => SassCalculation::tan($arguments[0]),
-                'asin' => SassCalculation::asin($arguments[0]),
-                'acos' => SassCalculation::acos($arguments[0]),
-                'atan' => SassCalculation::atan($arguments[0]),
-                'abs' => SassCalculation::abs($arguments[0]),
-                'exp' => SassCalculation::exp($arguments[0]),
-                'sign' => SassCalculation::sign($arguments[0]),
-                'min' => SassCalculation::min($arguments),
-                'max' => SassCalculation::max($arguments),
-                'hypot' => SassCalculation::hypot($arguments),
-                'pow' => SassCalculation::pow($arguments[0], $arguments[1] ?? null),
-                'atan2' => SassCalculation::atan2($arguments[0], $arguments[1] ?? null),
-                'log' => SassCalculation::log($arguments[0], $arguments[1] ?? null),
-                'mod' => SassCalculation::mod($arguments[0], $arguments[1] ?? null),
-                'rem' => SassCalculation::rem($arguments[0], $arguments[1] ?? null),
-                'round' => SassCalculation::round($arguments[0], $arguments[1] ?? null, $arguments[2] ?? null),
-                'clamp' => SassCalculation::clamp($arguments[0], $arguments[1] ?? null, $arguments[2] ?? null),
-                default => throw new \UnexpectedValueException(sprintf('Unknown calculation name "%s".', $node->getName())),
+            return match (strtolower($node->get_name())) {
+                'calc' => Sass_Calculation::calc($arguments[0]),
+                'sqrt' => Sass_Calculation::sqrt($arguments[0]),
+                'sin' => Sass_Calculation::sin($arguments[0]),
+                'cos' => Sass_Calculation::cos($arguments[0]),
+                'tan' => Sass_Calculation::tan($arguments[0]),
+                'asin' => Sass_Calculation::asin($arguments[0]),
+                'acos' => Sass_Calculation::acos($arguments[0]),
+                'atan' => Sass_Calculation::atan($arguments[0]),
+                'abs' => Sass_Calculation::abs($arguments[0]),
+                'exp' => Sass_Calculation::exp($arguments[0]),
+                'sign' => Sass_Calculation::sign($arguments[0]),
+                'min' => Sass_Calculation::min($arguments),
+                'max' => Sass_Calculation::max($arguments),
+                'hypot' => Sass_Calculation::hypot($arguments),
+                'pow' => Sass_Calculation::pow($arguments[0], $arguments[1] ?? null),
+                'atan2' => Sass_Calculation::atan2($arguments[0], $arguments[1] ?? null),
+                'log' => Sass_Calculation::log($arguments[0], $arguments[1] ?? null),
+                'mod' => Sass_Calculation::mod($arguments[0], $arguments[1] ?? null),
+                'rem' => Sass_Calculation::rem($arguments[0], $arguments[1] ?? null),
+                'round' => Sass_Calculation::round($arguments[0], $arguments[1] ?? null, $arguments[2] ?? null),
+                'clamp' => Sass_Calculation::clamp($arguments[0], $arguments[1] ?? null, $arguments[2] ?? null),
+                default => throw new \UnexpectedValueException(sprintf('Unknown calculation name "%s".', $node->get_name())),
             };
-        } catch (SassScriptException $e) {
+        } catch (Sass_Script_Exception $e) {
             // The simplification logic in the SassCalculation static methods will
             // throw an error if the arguments aren't compatible, but we have access
             // to the original spans so we can throw a more informative error.
-            if (str_contains($e->getMessage(), 'compatible')) {
-                $this->verifyCompatibleNumbers($arguments, $node->getArguments()->getPositional());
+            if (str_contains($e->get_message(), 'compatible')) {
+                $this->verify_compatible_numbers($arguments, $node->get_arguments()->get_positional());
             }
-
-            throw $this->exception($e->getMessage(), $node->getSpan(), $e);
+            throw $this->exception($e->get_message(), $node->get_span(), $e);
         } finally {
-            $this->callableNode = $oldCallableNode;
+            $this->callable_node = $old_callable_node;
         }
     }
-
-    private function checkCalculationArguments(FunctionExpression $node): void
+    private function check_calculation_arguments(Function_Expression $node): void
     {
-        $check = function (?int $maxArgs = null) use ($node): void {
-            if ($node->getArguments()->getPositional() === []) {
-                throw $this->exception('Missing argument.', $node->getSpan());
+        $check = function (?int $max_args = null) use ($node): void {
+            if ($node->get_arguments()->get_positional() === []) {
+                throw $this->exception('Missing argument.', $node->get_span());
             }
-
-            if ($maxArgs !== null && \count($node->getArguments()->getPositional()) > $maxArgs) {
-                throw $this->exception(sprintf(
-                    'Only %d %s allowed, but %d %s passed.',
-                    $maxArgs,
-                    StringUtil::pluralize('argument', $maxArgs),
-                    \count($node->getArguments()->getPositional()),
-                    StringUtil::pluralize('was', \count($node->getArguments()->getPositional()), 'were')
-                ), $node->getSpan());
+            if ($max_args !== null && \count($node->get_arguments()->get_positional()) > $max_args) {
+                throw $this->exception(sprintf('Only %d %s allowed, but %d %s passed.', $max_args, String_Util::pluralize('argument', $max_args), \count($node->get_arguments()->get_positional()), String_Util::pluralize('was', \count($node->get_arguments()->get_positional()), 'were')), $node->get_span());
             }
         };
-
-        match (strtolower($node->getName())) {
+        match (strtolower($node->get_name())) {
             'calc', 'sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'abs', 'exp', 'sign' => $check(1),
             'min', 'max', 'hypot' => $check(),
             'pow', 'atan2', 'log', 'mod', 'rem' => $check(2),
             'round', 'clamp' => $check(3),
-            default => throw new \UnexpectedValueException(sprintf('Unknown calculation name "%s".', $node->getName())),
+            default => throw new \UnexpectedValueException(sprintf('Unknown calculation name "%s".', $node->get_name())),
         };
     }
-
     /**
      * Verifies that $args all have compatible units that can be used for CSS
      * calculations, and throws a {@see SassException} if not.
@@ -2247,44 +1780,31 @@ WARNING;
      *
      * @throws SassException
      */
-    private function verifyCompatibleNumbers(array $args, array $nodesWithSpans): void
+    private function verify_compatible_numbers(array $args, array $nodes_with_spans): void
     {
         for ($i = 0; $i < \count($args); $i++) {
             $arg = $args[$i];
-            if ($arg instanceof SassNumber && $arg->hasComplexUnits()) {
-                throw $this->exception("Number $arg isn't compatible with CSS calculations.", $nodesWithSpans[$i]->getSpan());
+            if ($arg instanceof Sass_Number && $arg->has_complex_units()) {
+                throw $this->exception("Number {$arg} isn't compatible with CSS calculations.", $nodes_with_spans[$i]->get_span());
             }
         }
-
         for ($i = 0; $i < \count($args); $i++) {
             $number1 = $args[$i];
-
-            if (!$number1 instanceof SassNumber) {
+            if (!$number1 instanceof Sass_Number) {
                 continue;
             }
-
             for ($j = $i + 1; $j < \count($args); $j++) {
                 $number2 = $args[$j];
-
-                if (!$number2 instanceof SassNumber) {
+                if (!$number2 instanceof Sass_Number) {
                     continue;
                 }
-
-                if ($number1->hasPossiblyCompatibleUnits($number2)) {
+                if ($number1->has_possibly_compatible_units($number2)) {
                     continue;
                 }
-
-                throw new MultiSpanSassRuntimeException(
-                    "$number1 and $number2 are incompatible.",
-                    $nodesWithSpans[$i]->getSpan(),
-                    (string) $number1,
-                    [(string) $number2 => $nodesWithSpans[$j]->getSpan()],
-                    $this->stackTrace($nodesWithSpans[$i]->getSpan())
-                );
+                throw new Multi_Span_Sass_Runtime_Exception("{$number1} and {$number2} are incompatible.", $nodes_with_spans[$i]->get_span(), (string) $number1, [(string) $number2 => $nodes_with_spans[$j]->get_span()], $this->stack_trace($nodes_with_spans[$i]->get_span()));
             }
         }
     }
-
     /**
      * Evaluates $node as a component of a calculation.
      *
@@ -2294,175 +1814,134 @@ WARNING;
      *
      * @return SassNumber|CalculationOperation|SassString|SassCalculation|Value
      */
-    private function visitCalculationExpression(Expression $node, bool $inLegacySassFunction): object
+    private function visit_calculation_expression(Expression $node, bool $in_legacy_sass_function): object
     {
-        if ($node instanceof ParenthesizedExpression) {
-            $result = $this->visitCalculationExpression($node->getExpression(), $inLegacySassFunction);
-
-            return $result instanceof SassString
-                ? new SassString('(' . $result->getText() . ')', false)
-                : $result;
+        if ($node instanceof Parenthesized_Expression) {
+            $result = $this->visit_calculation_expression($node->get_expression(), $in_legacy_sass_function);
+            return $result instanceof Sass_String ? new Sass_String('(' . $result->get_text() . ')', false) : $result;
         }
-
-        if ($node instanceof StringExpression) {
-            if (!$node->accept(new IsCalculationSafeVisitor())) {
-                throw $this->exception("This expression can't be used in a calculation.", $node->getSpan());
+        if ($node instanceof String_Expression) {
+            if (!$node->accept(new Is_Calculation_Safe_Visitor())) {
+                throw $this->exception("This expression can't be used in a calculation.", $node->get_span());
             }
-
-            assert(!$node->hasQuotes());
-
-            $text = $node->getText()->getAsPlain();
+            assert(!$node->has_quotes());
+            $text = $node->get_text()->get_as_plain();
             if ($text === null) {
-                return new SassString($this->performInterpolation($node->getText()), false);
+                return new Sass_String($this->perform_interpolation($node->get_text()), false);
             }
-
             return match (strtolower($text)) {
-                'pi' => SassNumber::create(M_PI),
-                'e' => SassNumber::create(M_E),
-                'infinity' => SassNumber::create(INF),
-                '-infinity' => SassNumber::create(-INF),
-                'nan' => SassNumber::create(NAN),
-                default => new SassString($text, false),
+                'pi' => Sass_Number::create(M_PI),
+                'e' => Sass_Number::create(M_E),
+                'infinity' => Sass_Number::create(INF),
+                '-infinity' => Sass_Number::create(-INF),
+                'nan' => Sass_Number::create(NAN),
+                default => new Sass_String($text, false),
             };
         }
-
-        if ($node instanceof BinaryOperationExpression) {
-            $this->checkWhitespaceAroundCalculationOperator($node);
-            return $this->addExceptionSpan($node, fn () => SassCalculation::operateInternal(
-                $this->binaryOperatorToCalculationOperator($node->getOperator(), $node),
-                $this->visitCalculationExpression($node->getLeft(), $inLegacySassFunction),
-                $this->visitCalculationExpression($node->getRight(), $inLegacySassFunction),
-                $inLegacySassFunction,
-                !$this->inSupportsDeclaration
-            ));
+        if ($node instanceof Binary_Operation_Expression) {
+            $this->check_whitespace_around_calculation_operator($node);
+            return $this->add_exception_span($node, fn() => Sass_Calculation::operate_internal($this->binary_operator_to_calculation_operator($node->get_operator(), $node), $this->visit_calculation_expression($node->get_left(), $in_legacy_sass_function), $this->visit_calculation_expression($node->get_right(), $in_legacy_sass_function), $in_legacy_sass_function, !$this->in_supports_declaration));
         }
-
-        if ($node instanceof NumberExpression || $node instanceof VariableExpression || $node instanceof FunctionExpression || $node instanceof IfExpression) {
+        if ($node instanceof Number_Expression || $node instanceof Variable_Expression || $node instanceof Function_Expression || $node instanceof If_Expression) {
             $result = $node->accept($this);
-
-            if ($result instanceof SassNumber || $result instanceof SassCalculation) {
+            if ($result instanceof Sass_Number || $result instanceof Sass_Calculation) {
                 return $result;
             }
-
-            if ($result instanceof SassString && !$result->hasQuotes()) {
+            if ($result instanceof Sass_String && !$result->has_quotes()) {
                 return $result;
             }
-
-            throw $this->exception("Value $result can't be used in a calculation.", $node->getSpan());
+            throw $this->exception("Value {$result} can't be used in a calculation.", $node->get_span());
         }
-
-        if ($node instanceof ListExpression && !$node->hasBrackets() && $node->getSeparator() === ListSeparator::SPACE && \count($node->getContents()) > 1) {
+        if ($node instanceof List_Expression && !$node->has_brackets() && $node->get_separator() === List_Separator::SPACE && \count($node->get_contents()) > 1) {
             $elements = [];
-            foreach ($node->getContents() as $element) {
-                $elements[] = $this->visitCalculationExpression($element, $inLegacySassFunction);
+            foreach ($node->get_contents() as $element) {
+                $elements[] = $this->visit_calculation_expression($element, $in_legacy_sass_function);
             }
-
-            $this->checkAdjacentCalculationValues($elements, $node);
-
+            $this->check_adjacent_calculation_values($elements, $node);
             foreach ($elements as $i => $element) {
-                if ($element instanceof CalculationOperation && $node->getContents()[$i] instanceof ParenthesizedExpression) {
-                    $elements[$i] = new SassString("($element)", false);
+                if ($element instanceof Calculation_Operation && $node->get_contents()[$i] instanceof Parenthesized_Expression) {
+                    $elements[$i] = new Sass_String("({$element})", false);
                 }
             }
-
-            return new SassString(implode(' ', $elements), false);
+            return new Sass_String(implode(' ', $elements), false);
         }
-
-        \assert(!$node->accept(new IsCalculationSafeVisitor()));
-
-        throw $this->exception("This expression can't be used in a calculation.", $node->getSpan());
+        \assert(!$node->accept(new Is_Calculation_Safe_Visitor()));
+        throw $this->exception("This expression can't be used in a calculation.", $node->get_span());
     }
-
     /**
      * Throws an error if $node requires whitespace around its operator in a
      * calculation but doesn't have it.
      */
-    private function checkWhitespaceAroundCalculationOperator(BinaryOperationExpression $node): void
+    private function check_whitespace_around_calculation_operator(Binary_Operation_Expression $node): void
     {
-        if ($node->getOperator() !== BinaryOperator::PLUS && $node->getOperator() !== BinaryOperator::MINUS) {
+        if ($node->get_operator() !== Binary_Operator::PLUS && $node->get_operator() !== Binary_Operator::MINUS) {
             return;
         }
-
         // We _should_ never be able to violate these conditions since we always
         // parse binary operations from a single file, but it's better to be safe
         // than have this crash bizarrely.
-        if ($node->getLeft()->getSpan()->getFile() !== $node->getRight()->getSpan()->getFile()) {
+        if ($node->get_left()->get_span()->get_file() !== $node->get_right()->get_span()->get_file()) {
             return;
         }
-        if ($node->getLeft()->getSpan()->getEnd()->getOffset() >= $node->getRight()->getSpan()->getStart()->getOffset()) {
+        if ($node->get_left()->get_span()->get_end()->get_offset() >= $node->get_right()->get_span()->get_start()->get_offset()) {
             return;
         }
-        $textBetweenOperands = $node->getLeft()->getSpan()->getFile()->getText($node->getLeft()->getSpan()->getEnd()->getOffset(), $node->getRight()->getSpan()->getStart()->getOffset());
-
-        $first = $textBetweenOperands[0];
-        $last = $textBetweenOperands[\strlen($textBetweenOperands) - 1];
-
-        if (!(Character::isWhitespace($first) || $first === '/') || !(Character::isWhitespace($last) || $last === '/')) {
-            throw $this->exception('"+" and "-" must be surrounded by whitespace in calculations.', $node->getOperatorSpan());
+        $text_between_operands = $node->get_left()->get_span()->get_file()->get_text($node->get_left()->get_span()->get_end()->get_offset(), $node->get_right()->get_span()->get_start()->get_offset());
+        $first = $text_between_operands[0];
+        $last = $text_between_operands[\strlen($text_between_operands) - 1];
+        if (!(Character::is_whitespace($first) || $first === '/') || !(Character::is_whitespace($last) || $last === '/')) {
+            throw $this->exception('"+" and "-" must be surrounded by whitespace in calculations.', $node->get_operator_span());
         }
     }
-
     /**
      * Returns the {@see CalculationOperator} that corresponds to $operator.
      */
-    private function binaryOperatorToCalculationOperator(BinaryOperator $operator, BinaryOperationExpression $node): CalculationOperator
+    private function binary_operator_to_calculation_operator(Binary_Operator $operator, Binary_Operation_Expression $node): Calculation_Operator
     {
         return match ($operator) {
-            BinaryOperator::PLUS => CalculationOperator::PLUS,
-            BinaryOperator::MINUS => CalculationOperator::MINUS,
-            BinaryOperator::TIMES => CalculationOperator::TIMES,
-            BinaryOperator::DIVIDED_BY => CalculationOperator::DIVIDED_BY,
-            default => throw $this->exception("This operation can't be used in a calculation.", $node->getOperatorSpan()),
+            Binary_Operator::PLUS => Calculation_Operator::PLUS,
+            Binary_Operator::MINUS => Calculation_Operator::MINUS,
+            Binary_Operator::TIMES => Calculation_Operator::TIMES,
+            Binary_Operator::DIVIDED_BY => Calculation_Operator::DIVIDED_BY,
+            default => throw $this->exception("This operation can't be used in a calculation.", $node->get_operator_span()),
         };
     }
-
     /**
      * @param list<object> $elements
      */
-    private function checkAdjacentCalculationValues(array $elements, ListExpression $node): void
+    private function check_adjacent_calculation_values(array $elements, List_Expression $node): void
     {
         \assert(\count($elements) > 1);
-
         for ($i = 1; $i < \count($elements); $i++) {
             $previous = $elements[$i - 1];
             $current = $elements[$i];
-            if ($previous instanceof SassString) {
+            if ($previous instanceof Sass_String) {
                 continue;
             }
-            if ($current instanceof SassString) {
+            if ($current instanceof Sass_String) {
                 continue;
             }
-
-            $previousNode = $node->getContents()[$i - 1];
-            $currentNode = $node->getContents()[$i];
-
-            if (
-                $currentNode instanceof UnaryOperationExpression && ($currentNode->getOperator() === UnaryOperator::MINUS || $currentNode->getOperator() === UnaryOperator::PLUS)
-                || $currentNode instanceof NumberExpression && $currentNode->getValue() < 0
-            ) {
+            $previous_node = $node->get_contents()[$i - 1];
+            $current_node = $node->get_contents()[$i];
+            if ($current_node instanceof Unary_Operation_Expression && ($current_node->get_operator() === Unary_Operator::MINUS || $current_node->get_operator() === Unary_Operator::PLUS) || $current_node instanceof Number_Expression && $current_node->get_value() < 0) {
                 // `calc(1 -2)` parses as a space-separated list whose second value is a
                 // unary operator or a negative number, but just saying it's an invalid
                 // expression doesn't help the user understand what's going wrong. We
                 // add special case error handling to help clarify the issue.
-                throw $this->exception('"+" and "-" must be surrounded by whitespace in calculations.', $currentNode->getSpan()->subspan(0, 1));
+                throw $this->exception('"+" and "-" must be surrounded by whitespace in calculations.', $current_node->get_span()->subspan(0, 1));
             }
-
-            throw $this->exception('Missing math operator.', $previousNode->getSpan()->expand($currentNode->getSpan()));
+            throw $this->exception('Missing math operator.', $previous_node->get_span()->expand($current_node->get_span()));
         }
     }
-
-    public function visitInterpolatedFunctionExpression(InterpolatedFunctionExpression $node): Value
+    public function visit_interpolated_function_expression(Interpolated_Function_Expression $node): Value
     {
-        $function = new PlainCssCallable($this->performInterpolation($node->getName()));
-
-        $oldInFunction = $this->inFunction;
-        $this->inFunction = true;
-        $result = $this->addErrorSpan($node, fn () => $this->runFunctionCallable($node->getArguments(), $function, $node));
-        $this->inFunction = $oldInFunction;
-
+        $function = new Plain_Css_Callable($this->perform_interpolation($node->get_name()));
+        $old_in_function = $this->in_function;
+        $this->in_function = true;
+        $result = $this->add_error_span($node, fn() => $this->run_function_callable($node->get_arguments(), $function, $node));
+        $this->in_function = $old_in_function;
         return $result;
     }
-
     /**
      * @template V of Value|null
      *
@@ -2472,317 +1951,231 @@ WARNING;
      *
      * @param-immediately-invoked-callable $run
      */
-    private function runUserDefinedCallable(ArgumentInvocation $arguments, UserDefinedCallable $callable, AstNode $nodeWithSpan, callable $run): ?Value
+    private function run_user_defined_callable(Argument_Invocation $arguments, User_Defined_Callable $callable, Ast_Node $node_with_span, callable $run): ?Value
     {
-        $evaluated = $this->evaluateArguments($arguments);
-        $name = $callable->getName();
-
+        $evaluated = $this->evaluate_arguments($arguments);
+        $name = $callable->get_name();
         if ($name !== '@content') {
             $name .= '()';
         }
-
-        $oldCallable = $this->currentCallable;
-        $this->currentCallable = $callable;
-
-        $result = $this->withStackFrame(
+        $old_callable = $this->current_callable;
+        $this->current_callable = $callable;
+        $result = $this->with_stack_frame(
             $name,
-            $nodeWithSpan,
+            $node_with_span,
             // Add an extra closure() call so that modifications to the environment
             // don't affect the underlying environment closure.
-            fn () => $this->withEnvironment($callable->getEnvironment()->closure(), fn () => $this->environment->scope(function () use ($callable, $evaluated, $nodeWithSpan, $run) {
-                $this->verifyArguments(\count($evaluated->getPositional()), $evaluated->getNamed(), $callable->getDeclaration()->getArguments(), $nodeWithSpan);
-
-                $declaredArguments = $callable->getDeclaration()->getArguments()->getArguments();
-                $minLength = min(\count($evaluated->getPositional()), \count($declaredArguments));
-
-                for ($i = 0; $i < $minLength; $i++) {
-                    $this->environment->setLocalVariable($declaredArguments[$i]->getName(), $evaluated->getPositional()[$i], $evaluated->getPositionalNodes()[$i]);
+            fn() => $this->with_environment($callable->get_environment()->closure(), fn() => $this->environment->scope(function () use ($callable, $evaluated, $node_with_span, $run) {
+                $this->verify_arguments(\count($evaluated->get_positional()), $evaluated->get_named(), $callable->get_declaration()->get_arguments(), $node_with_span);
+                $declared_arguments = $callable->get_declaration()->get_arguments()->get_arguments();
+                $min_length = min(\count($evaluated->get_positional()), \count($declared_arguments));
+                for ($i = 0; $i < $min_length; $i++) {
+                    $this->environment->set_local_variable($declared_arguments[$i]->get_name(), $evaluated->get_positional()[$i], $evaluated->get_positional_nodes()[$i]);
                 }
-
-                $named = $evaluated->getNamed();
-                $namedNodes = $evaluated->getNamedNodes();
-
-                for ($i = \count($evaluated->getPositional()); $i < \count($declaredArguments); $i++) {
-                    $argument = $declaredArguments[$i];
-
-                    if (isset($named[$argument->getName()])) {
-                        $value = $named[$argument->getName()];
-                        unset($named[$argument->getName()]);
-                        $nodeForSpan = $namedNodes[$argument->getName()];
+                $named = $evaluated->get_named();
+                $named_nodes = $evaluated->get_named_nodes();
+                for ($i = \count($evaluated->get_positional()); $i < \count($declared_arguments); $i++) {
+                    $argument = $declared_arguments[$i];
+                    if (isset($named[$argument->get_name()])) {
+                        $value = $named[$argument->get_name()];
+                        unset($named[$argument->get_name()]);
+                        $node_for_span = $named_nodes[$argument->get_name()];
                     } else {
-                        assert($argument->getDefaultValue() !== null);
-                        $value = $this->withoutSlash($argument->getDefaultValue()->accept($this), $this->expressionNode($argument->getDefaultValue()));
-                        $nodeForSpan = $this->expressionNode($argument->getDefaultValue());
+                        assert($argument->get_default_value() !== null);
+                        $value = $this->without_slash($argument->get_default_value()->accept($this), $this->expression_node($argument->get_default_value()));
+                        $node_for_span = $this->expression_node($argument->get_default_value());
                     }
-
-                    $this->environment->setLocalVariable($argument->getName(), $value, $nodeForSpan);
+                    $this->environment->set_local_variable($argument->get_name(), $value, $node_for_span);
                 }
-
-                $argumentList = null;
-                $restArgument = $callable->getDeclaration()->getArguments()->getRestArgument();
-                if ($restArgument !== null) {
-                    $rest = array_values(array_slice($evaluated->getPositional(), \count($declaredArguments)));
-                    $argumentList = new SassArgumentList($rest, $named, $evaluated->getSeparator() === ListSeparator::UNDECIDED ? ListSeparator::COMMA : $evaluated->getSeparator());
-                    $this->environment->setLocalVariable($restArgument, $argumentList, $nodeWithSpan);
+                $argument_list = null;
+                $rest_argument = $callable->get_declaration()->get_arguments()->get_rest_argument();
+                if ($rest_argument !== null) {
+                    $rest = array_values(array_slice($evaluated->get_positional(), \count($declared_arguments)));
+                    $argument_list = new Sass_Argument_List($rest, $named, $evaluated->get_separator() === List_Separator::UNDECIDED ? List_Separator::COMMA : $evaluated->get_separator());
+                    $this->environment->set_local_variable($rest_argument, $argument_list, $node_with_span);
                 }
-
                 $result = $run();
-
-                if ($argumentList === null) {
+                if ($argument_list === null) {
                     return $result;
                 }
                 if ($named === []) {
                     return $result;
                 }
-                if ($argumentList->wereKeywordAccessed()) {
+                if ($argument_list->were_keyword_accessed()) {
                     return $result;
                 }
-
-                $unknownNames = array_keys($named);
-                $lastName = array_pop($unknownNames);
-                $message = sprintf(
-                    'No argument%s named $%s%s.',
-                    $unknownNames ? 's' : '',
-                    $unknownNames ? implode(', $', $unknownNames) . ' or $' : '',
-                    $lastName
-                );
-
-                throw new MultiSpanSassRuntimeException(
-                    $message,
-                    $nodeWithSpan->getSpan(),
-                    'invocation',
-                    ['declaration' => $callable->getDeclaration()->getArguments()->getSpanWithName()],
-                    $this->stackTrace($nodeWithSpan->getSpan())
-                );
+                $unknown_names = array_keys($named);
+                $last_name = array_pop($unknown_names);
+                $message = sprintf('No argument%s named $%s%s.', $unknown_names ? 's' : '', $unknown_names ? implode(', $', $unknown_names) . ' or $' : '', $last_name);
+                throw new Multi_Span_Sass_Runtime_Exception($message, $node_with_span->get_span(), 'invocation', ['declaration' => $callable->get_declaration()->get_arguments()->get_span_with_name()], $this->stack_trace($node_with_span->get_span()));
             }))
         );
-
-        $this->currentCallable = $oldCallable;
-
+        $this->current_callable = $old_callable;
         return $result;
     }
-
-    private function runFunctionCallable(ArgumentInvocation $arguments, ?SassCallable $callable, AstNode $nodeWithSpan): Value
+    private function run_function_callable(Argument_Invocation $arguments, ?Sass_Callable $callable, Ast_Node $node_with_span): Value
     {
-        if ($callable instanceof BuiltInCallable) {
-            return $this->withoutSlash($this->runBuiltInCallable($arguments, $callable, $nodeWithSpan), $nodeWithSpan);
+        if ($callable instanceof Built_In_Callable) {
+            return $this->without_slash($this->run_built_in_callable($arguments, $callable, $node_with_span), $node_with_span);
         }
-
-        if ($callable instanceof UserDefinedCallable) {
-            return $this->runUserDefinedCallable($arguments, $callable, $nodeWithSpan, function () use ($callable): \ScssPhp\ScssPhp\Value\Value {
-                foreach ($callable->getDeclaration()->getChildren() as $statement) {
-                    $returnValue = $statement->accept($this);
-
-                    if ($returnValue instanceof Value) {
-                        return $returnValue;
+        if ($callable instanceof User_Defined_Callable) {
+            return $this->run_user_defined_callable($arguments, $callable, $node_with_span, function () use ($callable): \Scss_Php\Scss_Php\Value\Value {
+                foreach ($callable->get_declaration()->get_children() as $statement) {
+                    $return_value = $statement->accept($this);
+                    if ($return_value instanceof Value) {
+                        return $return_value;
                     }
                 }
-
-                throw $this->exception('Function finished without @return.', $callable->getDeclaration()->getSpan());
+                throw $this->exception('Function finished without @return.', $callable->get_declaration()->get_span());
             });
         }
-
-        if ($callable instanceof PlainCssCallable) {
-            if (\count($arguments->getNamed()) > 0 || $arguments->getKeywordRest() !== null) {
-                throw $this->exception("Plain CSS functions don't support keyword arguments.", $nodeWithSpan->getSpan());
+        if ($callable instanceof Plain_Css_Callable) {
+            if (\count($arguments->get_named()) > 0 || $arguments->get_keyword_rest() !== null) {
+                throw $this->exception("Plain CSS functions don't support keyword arguments.", $node_with_span->get_span());
             }
-
-            $buffer = $callable->getName() . '(';
-
+            $buffer = $callable->get_name() . '(';
             try {
                 $first = true;
-
-                foreach ($arguments->getPositional() as $argument) {
+                foreach ($arguments->get_positional() as $argument) {
                     if ($first) {
                         $first = false;
                     } else {
                         $buffer .= ', ';
                     }
-
-                    $buffer .= $this->evaluateToCss($argument);
+                    $buffer .= $this->evaluate_to_css($argument);
                 }
-
-                $restArg = $arguments->getRest();
-                if ($restArg !== null) {
-                    $rest = $restArg->accept($this);
+                $rest_arg = $arguments->get_rest();
+                if ($rest_arg !== null) {
+                    $rest = $rest_arg->accept($this);
                     if (!$first) {
                         $buffer .= ', ';
                     }
-
-                    $buffer .= $this->serialize($rest, $restArg);
+                    $buffer .= $this->serialize($rest, $rest_arg);
                 }
-            } catch (SassRuntimeException $e) {
-                if (!str_ends_with($e->getOriginalMessage(), "isn't a valid CSS value.")) {
+            } catch (Sass_Runtime_Exception $e) {
+                if (!str_ends_with($e->get_original_message(), "isn't a valid CSS value.")) {
                     throw $e;
                 }
-
-                throw new MultiSpanSassRuntimeException(
-                    $e->getOriginalMessage(),
-                    $e->getSpan(),
-                    'value',
-                    ['unknown function treated as plain CSS' => $nodeWithSpan->getSpan()],
-                    $e->getSassTrace()
-                );
+                throw new Multi_Span_Sass_Runtime_Exception($e->get_original_message(), $e->get_span(), 'value', ['unknown function treated as plain CSS' => $node_with_span->get_span()], $e->get_sass_trace());
             }
-
             $buffer .= ')';
-
-            return new SassString($buffer, false);
+            return new Sass_String($buffer, false);
         }
-
-        throw new \InvalidArgumentException('Unknown callable type ' . (get_debug_type($callable)) . '.');
+        throw new \InvalidArgumentException('Unknown callable type ' . get_debug_type($callable) . '.');
     }
-
-    private function runBuiltInCallable(ArgumentInvocation $arguments, BuiltInCallable $callable, AstNode $nodeWithSpan): Value
+    private function run_built_in_callable(Argument_Invocation $arguments, Built_In_Callable $callable, Ast_Node $node_with_span): Value
     {
-        $evaluated = $this->evaluateArguments($arguments);
-        $oldCallableNode = $this->callableNode;
-        $this->callableNode = $nodeWithSpan;
-
+        $evaluated = $this->evaluate_arguments($arguments);
+        $old_callable_node = $this->callable_node;
+        $this->callable_node = $node_with_span;
         /** @var ArgumentDeclaration $overload */
-        [$overload, $callback] = $callable->callbackFor(\count($evaluated->getPositional()), $evaluated->getNamed());
-
-        $this->addExceptionSpan($nodeWithSpan, function () use ($overload, $evaluated): void {
-            $overload->verify(\count($evaluated->getPositional()), $evaluated->getNamed());
+        [$overload, $callback] = $callable->callback_for(\count($evaluated->get_positional()), $evaluated->get_named());
+        $this->add_exception_span($node_with_span, function () use ($overload, $evaluated): void {
+            $overload->verify(\count($evaluated->get_positional()), $evaluated->get_named());
         });
-
-        $declaredArguments = $overload->getArguments();
-
-        $positional = $evaluated->getPositional();
-        $named = $evaluated->getNamed();
-
-        for ($i = \count($positional); $i < \count($declaredArguments); $i++) {
-            $argument = $declaredArguments[$i];
-
-            if (isset($named[$argument->getName()])) {
-                $positional[] = $named[$argument->getName()];
-                unset($named[$argument->getName()]);
+        $declared_arguments = $overload->get_arguments();
+        $positional = $evaluated->get_positional();
+        $named = $evaluated->get_named();
+        for ($i = \count($positional); $i < \count($declared_arguments); $i++) {
+            $argument = $declared_arguments[$i];
+            if (isset($named[$argument->get_name()])) {
+                $positional[] = $named[$argument->get_name()];
+                unset($named[$argument->get_name()]);
             } else {
-                assert($argument->getDefaultValue() !== null);
-                $positional[] = $this->withoutSlash($argument->getDefaultValue()->accept($this), $argument->getDefaultValue());
+                assert($argument->get_default_value() !== null);
+                $positional[] = $this->without_slash($argument->get_default_value()->accept($this), $argument->get_default_value());
             }
         }
-
-        $argumentList = null;
-        if ($overload->getRestArgument() !== null) {
-            $rest = array_values(array_splice($positional, \count($declaredArguments)));
+        $argument_list = null;
+        if ($overload->get_rest_argument() !== null) {
+            $rest = array_values(array_splice($positional, \count($declared_arguments)));
             \assert(array_is_list($positional));
-            $argumentList = new SassArgumentList($rest, $named, $evaluated->getSeparator() === ListSeparator::UNDECIDED ? ListSeparator::COMMA : $evaluated->getSeparator());
-            $positional[] = $argumentList;
+            $argument_list = new Sass_Argument_List($rest, $named, $evaluated->get_separator() === List_Separator::UNDECIDED ? List_Separator::COMMA : $evaluated->get_separator());
+            $positional[] = $argument_list;
         }
-
         try {
-            $result = $this->addExceptionSpan($nodeWithSpan, fn () => $callback($positional));
-        } catch (SassException $e) {
+            $result = $this->add_exception_span($node_with_span, fn() => $callback($positional));
+        } catch (Sass_Exception $e) {
             throw $e;
         } catch (\Throwable $e) {
-            throw $this->exception($e->getMessage(), $nodeWithSpan->getSpan(), $e);
+            throw $this->exception($e->get_message(), $node_with_span->get_span(), $e);
         }
-
-        $this->callableNode = $oldCallableNode;
-
-        if ($argumentList === null) {
+        $this->callable_node = $old_callable_node;
+        if ($argument_list === null) {
             return $result;
         }
         if ($named === []) {
             return $result;
         }
-        if ($argumentList->wereKeywordAccessed()) {
+        if ($argument_list->were_keyword_accessed()) {
             return $result;
         }
-
-        $unknownNames = array_keys($named);
-        $lastName = array_pop($unknownNames);
-        $message = sprintf(
-            'No argument%s named $%s%s.',
-            $unknownNames ? 's' : '',
-            $unknownNames ? implode(', $', $unknownNames) . ' or $' : '',
-            $lastName
-        );
-
-        throw new MultiSpanSassRuntimeException(
-            $message,
-            $nodeWithSpan->getSpan(),
-            'invocation',
-            ['declaration' => $overload->getSpanWithName()],
-            $this->stackTrace($nodeWithSpan->getSpan())
-        );
+        $unknown_names = array_keys($named);
+        $last_name = array_pop($unknown_names);
+        $message = sprintf('No argument%s named $%s%s.', $unknown_names ? 's' : '', $unknown_names ? implode(', $', $unknown_names) . ' or $' : '', $last_name);
+        throw new Multi_Span_Sass_Runtime_Exception($message, $node_with_span->get_span(), 'invocation', ['declaration' => $overload->get_span_with_name()], $this->stack_trace($node_with_span->get_span()));
     }
-
-    private function evaluateArguments(ArgumentInvocation $arguments): ArgumentResults
+    private function evaluate_arguments(Argument_Invocation $arguments): Argument_Results
     {
         $positional = [];
-        $positionalNodes = [];
-
-        foreach ($arguments->getPositional() as $expression) {
-            $nodeForSpan = $this->expressionNode($expression);
-            $positional[] = $this->withoutSlash($expression->accept($this), $nodeForSpan);
-            $positionalNodes[] = $nodeForSpan;
+        $positional_nodes = [];
+        foreach ($arguments->get_positional() as $expression) {
+            $node_for_span = $this->expression_node($expression);
+            $positional[] = $this->without_slash($expression->accept($this), $node_for_span);
+            $positional_nodes[] = $node_for_span;
         }
-
         $named = [];
-        $namedNodes = [];
-
-        foreach ($arguments->getNamed() as $key => $value) {
-            $nodeForSpan = $this->expressionNode($value);
-            $named[$key] = $this->withoutSlash($value->accept($this), $nodeForSpan);
-            $namedNodes[$key] = $nodeForSpan;
+        $named_nodes = [];
+        foreach ($arguments->get_named() as $key => $value) {
+            $node_for_span = $this->expression_node($value);
+            $named[$key] = $this->without_slash($value->accept($this), $node_for_span);
+            $named_nodes[$key] = $node_for_span;
         }
-
-        $restArgs = $arguments->getRest();
-        if ($restArgs === null) {
-            return new ArgumentResults($positional, $positionalNodes, $named, $namedNodes, ListSeparator::UNDECIDED);
+        $rest_args = $arguments->get_rest();
+        if ($rest_args === null) {
+            return new Argument_Results($positional, $positional_nodes, $named, $named_nodes, List_Separator::UNDECIDED);
         }
-
-        $rest = $restArgs->accept($this);
-        $restNodeForSpan = $this->expressionNode($restArgs);
-        $separator = ListSeparator::UNDECIDED;
-
-        if ($rest instanceof SassMap) {
-            $this->addRestMap($named, $rest, $restArgs, fn ($value): \ScssPhp\ScssPhp\Value\Value => $value);
-            foreach ($rest->getContents() as $key => $_) {
-                assert($key instanceof SassString);
-                $namedNodes[$key->getText()] = $restNodeForSpan;
+        $rest = $rest_args->accept($this);
+        $rest_node_for_span = $this->expression_node($rest_args);
+        $separator = List_Separator::UNDECIDED;
+        if ($rest instanceof Sass_Map) {
+            $this->add_rest_map($named, $rest, $rest_args, fn($value): \Scss_Php\Scss_Php\Value\Value => $value);
+            foreach ($rest->get_contents() as $key => $_) {
+                assert($key instanceof Sass_String);
+                $named_nodes[$key->get_text()] = $rest_node_for_span;
             }
-        } elseif ($rest instanceof SassList) {
-            foreach ($rest->asList() as $value) {
-                $positional[] = $this->withoutSlash($value, $restNodeForSpan);
-                $positionalNodes[] = $restNodeForSpan;
-                $separator = $rest->getSeparator();
+        } elseif ($rest instanceof Sass_List) {
+            foreach ($rest->as_list() as $value) {
+                $positional[] = $this->without_slash($value, $rest_node_for_span);
+                $positional_nodes[] = $rest_node_for_span;
+                $separator = $rest->get_separator();
             }
-
-            if ($rest instanceof SassArgumentList) {
-                foreach ($rest->getKeywords() as $key => $value) {
-                    $named[$key] = $this->withoutSlash($value, $restNodeForSpan);
-                    $namedNodes[$key] = $restNodeForSpan;
+            if ($rest instanceof Sass_Argument_List) {
+                foreach ($rest->get_keywords() as $key => $value) {
+                    $named[$key] = $this->without_slash($value, $rest_node_for_span);
+                    $named_nodes[$key] = $rest_node_for_span;
                 }
             }
         } else {
-            $positional[] = $this->withoutSlash($rest, $restNodeForSpan);
-            $positionalNodes[] = $restNodeForSpan;
+            $positional[] = $this->without_slash($rest, $rest_node_for_span);
+            $positional_nodes[] = $rest_node_for_span;
         }
-
-        $keywordRestArgs = $arguments->getKeywordRest();
-        if ($keywordRestArgs === null) {
-            return new ArgumentResults($positional, $positionalNodes, $named, $namedNodes, $separator);
+        $keyword_rest_args = $arguments->get_keyword_rest();
+        if ($keyword_rest_args === null) {
+            return new Argument_Results($positional, $positional_nodes, $named, $named_nodes, $separator);
         }
-
-        $keywordRest = $keywordRestArgs->accept($this);
-        $keywordRestNodeForSpan = $this->expressionNode($keywordRestArgs);
-
-        if ($keywordRest instanceof SassMap) {
-            $this->addRestMap($named, $keywordRest, $keywordRestArgs, fn ($value): \ScssPhp\ScssPhp\Value\Value => $value);
-            foreach ($keywordRest->getContents() as $key => $_) {
-                assert($key instanceof SassString);
-                $namedNodes[$key->getText()] = $keywordRestNodeForSpan;
+        $keyword_rest = $keyword_rest_args->accept($this);
+        $keyword_rest_node_for_span = $this->expression_node($keyword_rest_args);
+        if ($keyword_rest instanceof Sass_Map) {
+            $this->add_rest_map($named, $keyword_rest, $keyword_rest_args, fn($value): \Scss_Php\Scss_Php\Value\Value => $value);
+            foreach ($keyword_rest->get_contents() as $key => $_) {
+                assert($key instanceof Sass_String);
+                $named_nodes[$key->get_text()] = $keyword_rest_node_for_span;
             }
-
-            return new ArgumentResults($positional, $positionalNodes, $named, $namedNodes, $separator);
+            return new Argument_Results($positional, $positional_nodes, $named, $named_nodes, $separator);
         }
-
-        throw $this->exception("Variable keyword arguments must be a map (was $keywordRest).", $keywordRestArgs->getSpan());
+        throw $this->exception("Variable keyword arguments must be a map (was {$keyword_rest}).", $keyword_rest_args->get_span());
     }
-
     /**
      * Evaluates the arguments in [arguments] only as much as necessary to
      * separate out positional and named arguments.
@@ -2792,51 +2185,42 @@ WARNING;
      *
      * @return array{list<Expression>, array<string, Expression>}
      */
-    private function evaluateMacroArguments(CallableInvocation $invocation): array
+    private function evaluate_macro_arguments(Callable_Invocation $invocation): array
     {
-        $restArgs = $invocation->getArguments()->getRest();
-        if ($restArgs === null) {
-            return [$invocation->getArguments()->getPositional(), $invocation->getArguments()->getNamed()];
+        $rest_args = $invocation->get_arguments()->get_rest();
+        if ($rest_args === null) {
+            return [$invocation->get_arguments()->get_positional(), $invocation->get_arguments()->get_named()];
         }
-
-        $positional = $invocation->getArguments()->getPositional();
-        $named = $invocation->getArguments()->getNamed();
-        $rest = $restArgs->accept($this);
-        $restNodeForSpan = $this->expressionNode($restArgs);
-
-        if ($rest instanceof SassMap) {
-            $this->addRestMap($named, $rest, $restArgs, fn ($value) => new ValueExpression($value, $restArgs->getSpan()));
-        } elseif ($rest instanceof SassList) {
-            foreach ($rest->asList() as $value) {
-                $positional[] = new ValueExpression($this->withoutSlash($value, $restNodeForSpan), $restArgs->getSpan());
+        $positional = $invocation->get_arguments()->get_positional();
+        $named = $invocation->get_arguments()->get_named();
+        $rest = $rest_args->accept($this);
+        $rest_node_for_span = $this->expression_node($rest_args);
+        if ($rest instanceof Sass_Map) {
+            $this->add_rest_map($named, $rest, $rest_args, fn($value) => new Value_Expression($value, $rest_args->get_span()));
+        } elseif ($rest instanceof Sass_List) {
+            foreach ($rest->as_list() as $value) {
+                $positional[] = new Value_Expression($this->without_slash($value, $rest_node_for_span), $rest_args->get_span());
             }
-
-            if ($rest instanceof SassArgumentList) {
-                foreach ($rest->getKeywords() as $key => $value) {
-                    $named[$key] = new ValueExpression($this->withoutSlash($value, $restNodeForSpan), $restArgs->getSpan());
+            if ($rest instanceof Sass_Argument_List) {
+                foreach ($rest->get_keywords() as $key => $value) {
+                    $named[$key] = new Value_Expression($this->without_slash($value, $rest_node_for_span), $rest_args->get_span());
                 }
             }
         } else {
-            $positional[] = new ValueExpression($this->withoutSlash($rest, $restNodeForSpan), $restArgs->getSpan());
+            $positional[] = new Value_Expression($this->without_slash($rest, $rest_node_for_span), $rest_args->get_span());
         }
-
-        $keywordRestArgs = $invocation->getArguments()->getKeywordRest();
-        if ($keywordRestArgs === null) {
+        $keyword_rest_args = $invocation->get_arguments()->get_keyword_rest();
+        if ($keyword_rest_args === null) {
             return [$positional, $named];
         }
-
-        $keywordRest = $keywordRestArgs->accept($this);
-        $keywordRestNodeForSpan = $this->expressionNode($keywordRestArgs);
-
-        if ($keywordRest instanceof SassMap) {
-            $this->addRestMap($named, $keywordRest, $keywordRestArgs, fn ($value) => new ValueExpression($this->withoutSlash($value, $keywordRestNodeForSpan), $keywordRestArgs->getSpan()));
-
+        $keyword_rest = $keyword_rest_args->accept($this);
+        $keyword_rest_node_for_span = $this->expression_node($keyword_rest_args);
+        if ($keyword_rest instanceof Sass_Map) {
+            $this->add_rest_map($named, $keyword_rest, $keyword_rest_args, fn($value) => new Value_Expression($this->without_slash($value, $keyword_rest_node_for_span), $keyword_rest_args->get_span()));
             return [$positional, $named];
         }
-
-        throw $this->exception("Variable keyword arguments must be a map (was $keywordRest).", $keywordRestArgs->getSpan());
+        throw $this->exception("Variable keyword arguments must be a map (was {$keyword_rest}).", $keyword_rest_args->get_span());
     }
-
     /**
      * Adds the values in $map to $values.
      *
@@ -2850,72 +2234,59 @@ WARNING;
      *
      * @param-immediately-invoked-callable $convert
      */
-    private function addRestMap(array &$values, SassMap $map, AstNode $nodeWithSpan, callable $convert): void
+    private function add_rest_map(array &$values, Sass_Map $map, Ast_Node $node_with_span, callable $convert): void
     {
-        $expressionNode = $this->expressionNode($nodeWithSpan);
-
-        foreach ($map->getContents() as $key => $value) {
-            if ($key instanceof SassString) {
-                $values[$key->getText()] = $convert($this->withoutSlash($value, $expressionNode));
+        $expression_node = $this->expression_node($node_with_span);
+        foreach ($map->get_contents() as $key => $value) {
+            if ($key instanceof Sass_String) {
+                $values[$key->get_text()] = $convert($this->without_slash($value, $expression_node));
             } else {
-                throw $this->exception("Variable keyword argument map must have string keys.\n$key is not a string in $map.", $nodeWithSpan->getSpan());
+                throw $this->exception("Variable keyword argument map must have string keys.\n{$key} is not a string in {$map}.", $node_with_span->get_span());
             }
         }
     }
-
     /**
      * @param array<string, mixed> $named
      *
      * @throws SassRuntimeException if $positional and $named aren't valid when applied to $arguments.
      */
-    private function verifyArguments(int $positional, array $named, ArgumentDeclaration $arguments, AstNode $nodeWithSpan): void
+    private function verify_arguments(int $positional, array $named, Argument_Declaration $arguments, Ast_Node $node_with_span): void
     {
-        $this->addExceptionSpan($nodeWithSpan, function () use ($positional, $named, $arguments): void {
+        $this->add_exception_span($node_with_span, function () use ($positional, $named, $arguments): void {
             $arguments->verify($positional, $named);
         });
     }
-
-    public function visitSelectorExpression(SelectorExpression $node): Value
+    public function visit_selector_expression(Selector_Expression $node): Value
     {
-        if ($this->styleRuleIgnoringAtRoot === null) {
-            return SassNull::create();
+        if ($this->style_rule_ignoring_at_root === null) {
+            return Sass_Null::create();
         }
-
-        return $this->styleRuleIgnoringAtRoot->getOriginalSelector()->asSassList();
+        return $this->style_rule_ignoring_at_root->get_original_selector()->as_sass_list();
     }
-
-    public function visitStringExpression(StringExpression $node): Value
+    public function visit_string_expression(String_Expression $node): Value
     {
         // Don't use [performInterpolation] here because we need to get the raw text
         // from strings, rather than the semantic value.
-        $oldInSupportsDeclaration = $this->inSupportsDeclaration;
-        $this->inSupportsDeclaration = false;
-
-        $result = new SassString(implode('', array_map(function (\ScssPhp\ScssPhp\Ast\Sass\Expression|string $value): string {
+        $old_in_supports_declaration = $this->in_supports_declaration;
+        $this->in_supports_declaration = false;
+        $result = new Sass_String(implode('', array_map(function (\Scss_Php\Scss_Php\Ast\Sass\Expression|string $value): string {
             if (\is_string($value)) {
                 return $value;
             }
-
             $expression = $value;
             $result = $expression->accept($this);
-
-            if ($result instanceof SassString) {
-                return $result->getText();
+            if ($result instanceof Sass_String) {
+                return $result->get_text();
             }
-
             return $this->serialize($result, $expression, false);
-        }, $node->getText()->getContents())), $node->hasQuotes());
-
-        $this->inSupportsDeclaration = $oldInSupportsDeclaration;
-
+        }, $node->get_text()->get_contents())), $node->has_quotes());
+        $this->in_supports_declaration = $old_in_supports_declaration;
         return $result;
     }
-
-    public function visitSupportsExpression(SupportsExpression $node): Value
+    public function visit_supports_expression(Supports_Expression $node): Value
     {
-        return new SassString($this->visitSupportsCondition($node->getCondition()), false);
+        return new Sass_String($this->visit_supports_condition($node->get_condition()), false);
     }
-
     /**
      * Runs $callback for each value in $list until it returns a {@see Value}.
      *
@@ -2929,19 +2300,16 @@ WARNING;
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function handleReturn(array $list, callable $callback): ?Value
+    private function handle_return(array $list, callable $callback): ?Value
     {
         foreach ($list as $value) {
             $result = $callback($value);
-
             if ($result !== null) {
                 return $result;
             }
         }
-
         return null;
     }
-
     /**
      * Runs $callback with $environment as the current environment.
      *
@@ -2952,39 +2320,33 @@ WARNING;
      * @return T
      * @param-immediately-invoked-callable $callback
      */
-    private function withEnvironment(Environment $environment, callable $callback)
+    private function with_environment(Environment $environment, callable $callback)
     {
-        $oldEnvironment = $this->environment;
+        $old_environment = $this->environment;
         $this->environment = $environment;
         $result = $callback();
-        $this->environment = $oldEnvironment;
-
+        $this->environment = $old_environment;
         return $result;
     }
-
     /**
      * @return CssValue<string>
      */
-    private function interpolationToValue(Interpolation $interpolation, bool $warnForColor = false, bool $trim = false): CssValue
+    private function interpolation_to_value(Interpolation $interpolation, bool $warn_for_color = false, bool $trim = false): Css_Value
     {
-        $result = $this->performInterpolation($interpolation, $warnForColor);
-
-        return new CssValue($trim ? StringUtil::trimAscii($result, true) : $result, $interpolation->getSpan());
+        $result = $this->perform_interpolation($interpolation, $warn_for_color);
+        return new Css_Value($trim ? String_Util::trim_ascii($result, true) : $result, $interpolation->get_span());
     }
-
     /**
      * Evaluates $interpolation.
      *
      * If $warnForColor is `true`, this will emit a warning for any named color
      * values passed into the interpolation.
      */
-    private function performInterpolation(Interpolation $interpolation, bool $warnForColor = false): string
+    private function perform_interpolation(Interpolation $interpolation, bool $warn_for_color = false): string
     {
-        $tuple = $this->performInterpolationHelper($interpolation, false, $warnForColor);
-
+        $tuple = $this->perform_interpolation_helper($interpolation, false, $warn_for_color);
         return $tuple[0];
     }
-
     /**
      * Like {@see performInterpolation}, but also returns a {@see InterpolationMap} that
      * can map spans from the resulting string back to the original
@@ -2992,71 +2354,53 @@ WARNING;
      *
      * @return array{string, InterpolationMap}
      */
-    private function performInterpolationWithMap(Interpolation $interpolation, bool $warnForColor = false): array
+    private function perform_interpolation_with_map(Interpolation $interpolation, bool $warn_for_color = false): array
     {
-        $tuple = $this->performInterpolationHelper($interpolation, true, $warnForColor);
+        $tuple = $this->perform_interpolation_helper($interpolation, true, $warn_for_color);
         \assert($tuple[1] !== null);
-
         return $tuple;
     }
-
     /**
      * A helper that implements the core logic of both {@see performInterpolation}
      * and {@see performInterpolationWithMap}.
      *
      * @return array{string, InterpolationMap|null}
      */
-    private function performInterpolationHelper(Interpolation $interpolation, bool $sourceMap, bool $warnForColor = false): array
+    private function perform_interpolation_helper(Interpolation $interpolation, bool $source_map, bool $warn_for_color = false): array
     {
-        $targetLocations = $sourceMap ? [] : null;
-
-        $oldInSupportsDeclaration = $this->inSupportsDeclaration;
-        $this->inSupportsDeclaration = false;
-
+        $target_locations = $source_map ? [] : null;
+        $old_in_supports_declaration = $this->in_supports_declaration;
+        $this->in_supports_declaration = false;
         $buffer = '';
         $first = true;
-
-        foreach ($interpolation->getContents() as $value) {
-            if (!$first && $targetLocations !== null) {
-                $targetLocations[] = new SimpleSourceLocation(\strlen($buffer));
+        foreach ($interpolation->get_contents() as $value) {
+            if (!$first && $target_locations !== null) {
+                $target_locations[] = new Simple_Source_Location(\strlen($buffer));
             }
-
             $first = false;
-
             if (\is_string($value)) {
                 $buffer .= $value;
                 continue;
             }
-
             $expression = $value;
             $result = $expression->accept($this);
-
-            if ($warnForColor && $result instanceof SassColor && null !== $colorName = Colors::RGBaToColorName($result->getRed(), $result->getGreen(), $result->getBlue(), $result->getAlpha())) {
-                $alternative = new BinaryOperationExpression(
-                    BinaryOperator::PLUS,
-                    new StringExpression(new Interpolation([''], $interpolation->getSpan()), true),
-                    $expression
-                );
-                $this->warn("You probably don't mean to use the color value $colorName in interpolation here.\nIt may end up represented as $result, which will likely produce invalid CSS.\nAlways quote color names when using them as strings or map keys (for example, \"$colorName\").\nIf you really want to use the color value here, use '$alternative'.", $expression->getSpan());
+            if ($warn_for_color && $result instanceof Sass_Color && null !== $color_name = Colors::rg_ba_to_color_name($result->get_red(), $result->get_green(), $result->get_blue(), $result->get_alpha())) {
+                $alternative = new Binary_Operation_Expression(Binary_Operator::PLUS, new String_Expression(new Interpolation([''], $interpolation->get_span()), true), $expression);
+                $this->warn("You probably don't mean to use the color value {$color_name} in interpolation here.\nIt may end up represented as {$result}, which will likely produce invalid CSS.\nAlways quote color names when using them as strings or map keys (for example, \"{$color_name}\").\nIf you really want to use the color value here, use '{$alternative}'.", $expression->get_span());
             }
-
             $buffer .= $this->serialize($result, $expression, false);
         }
-
-        $this->inSupportsDeclaration = $oldInSupportsDeclaration;
-
-        return [$buffer, $targetLocations === null ? null : new InterpolationMap($interpolation, $targetLocations)];
+        $this->in_supports_declaration = $old_in_supports_declaration;
+        return [$buffer, $target_locations === null ? null : new Interpolation_Map($interpolation, $target_locations)];
     }
-
     /**
      * Evaluates $expression and calls `toCssString()` and wraps a
      * {@see SassScriptException} to associate it with its span.
      */
-    private function evaluateToCss(Expression $expression, bool $quote = true): string
+    private function evaluate_to_css(Expression $expression, bool $quote = true): string
     {
         return $this->serialize($expression->accept($this), $expression, $quote);
     }
-
     /**
      * Calls `value->toCssString()` and wraps a {@see SassScriptException} to associate
      * it with $nodeWithSpan's source span.
@@ -3065,11 +2409,10 @@ WARNING;
      * {@see AstNode::getSpan} if the span isn't required, since some nodes need to do
      * real work to manufacture a source span.
      */
-    private function serialize(Value $value, AstNode $nodeWithSpan, bool $quote = true): string
+    private function serialize(Value $value, Ast_Node $node_with_span, bool $quote = true): string
     {
-        return $this->addExceptionSpan($nodeWithSpan, fn () => $value->toCssString($quote));
+        return $this->add_exception_span($node_with_span, fn() => $value->to_css_string($quote));
     }
-
     /**
      * Runs $callback with $rule as the current style rule.
      *
@@ -3080,16 +2423,14 @@ WARNING;
      * @return T
      * @param-immediately-invoked-callable $callback
      */
-    private function withStyleRule(ModifiableCssStyleRule $rule, callable $callback)
+    private function with_style_rule(Modifiable_Css_Style_Rule $rule, callable $callback)
     {
-        $oldRule = $this->styleRuleIgnoringAtRoot;
-        $this->styleRuleIgnoringAtRoot = $rule;
+        $old_rule = $this->style_rule_ignoring_at_root;
+        $this->style_rule_ignoring_at_root = $rule;
         $result = $callback();
-        $this->styleRuleIgnoringAtRoot = $oldRule;
-
+        $this->style_rule_ignoring_at_root = $old_rule;
         return $result;
     }
-
     /**
      * Runs $callback with $queries as the current media queries.
      *
@@ -3107,19 +2448,17 @@ WARNING;
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function withMediaQueries(?array $queries, ?array $sources, callable $callback)
+    private function with_media_queries(?array $queries, ?array $sources, callable $callback)
     {
-        $oldMediaQueries = $this->mediaQueries;
-        $oldSources = $this->mediaQuerySources;
-        $this->mediaQueries = $queries;
-        $this->mediaQuerySources = $sources;
+        $old_media_queries = $this->media_queries;
+        $old_sources = $this->media_query_sources;
+        $this->media_queries = $queries;
+        $this->media_query_sources = $sources;
         $result = $callback();
-        $this->mediaQueries = $oldMediaQueries;
-        $this->mediaQuerySources = $oldSources;
-
+        $this->media_queries = $old_media_queries;
+        $this->media_query_sources = $old_sources;
         return $result;
     }
-
     /**
      * Returns the {@see AstNode} whose span should be used for $expression.
      *
@@ -3127,15 +2466,13 @@ WARNING;
      * where that variable was originally declared. Otherwise, this will just
      * return $expression.
      */
-    private function expressionNode(AstNode $expression): AstNode
+    private function expression_node(Ast_Node $expression): Ast_Node
     {
-        if ($expression instanceof VariableExpression) {
-            return $this->addExceptionSpan($expression, fn () => $this->environment->getVariableNode($expression->getName()) ?? $expression);
+        if ($expression instanceof Variable_Expression) {
+            return $this->add_exception_span($expression, fn() => $this->environment->get_variable_node($expression->get_name()) ?? $expression);
         }
-
         return $expression;
     }
-
     /**
      * Adds $node as a child of the current parent, then runs $callback with
      * $node as the current parent.
@@ -3158,18 +2495,15 @@ WARNING;
      * @param-immediately-invoked-callable $callback
      * @param-immediately-invoked-callable $through
      */
-    private function withParent(ModifiableCssParentNode $node, callable $callback, ?callable $through = null, bool $scopeWhen = true)
+    private function with_parent(Modifiable_Css_Parent_Node $node, callable $callback, ?callable $through = null, bool $scope_when = true)
     {
-        $this->addChild($node, $through);
-
-        $oldParent = $this->parent;
+        $this->add_child($node, $through);
+        $old_parent = $this->parent;
         $this->parent = $node;
-        $result = $this->environment->scope($callback, $scopeWhen);
-        $this->parent = $oldParent;
-
+        $result = $this->environment->scope($callback, $scope_when);
+        $this->parent = $old_parent;
         return $result;
     }
-
     /**
      * Adds $node as a child of the current parent.
      *
@@ -3181,42 +2515,37 @@ WARNING;
      *
      * @param-immediately-invoked-callable $through
      */
-    private function addChild(ModifiableCssNode $node, ?callable $through = null): void
+    private function add_child(Modifiable_Css_Node $node, ?callable $through = null): void
     {
         // Go up through parents that match [through].
-        $parent = $this->getParent();
+        $parent = $this->get_parent();
         if ($through !== null) {
             while ($through($parent)) {
-                $grandParent = $parent->getParent();
-
-                if ($grandParent === null) {
+                $grand_parent = $parent->get_parent();
+                if ($grand_parent === null) {
                     throw new \InvalidArgumentException('$through() must return false for at least one parent of the node.');
                 }
-
-                $parent = $grandParent;
+                $parent = $grand_parent;
             }
         }
-
         // If the parent has a (visible) following sibling, we shouldn't add to
         // the parent. Instead, we should create a copy and add it after the
         // interstitial sibling.
-        if ($parent->hasFollowingSibling()) {
-            $grandParent = $parent->getParent();
+        if ($parent->has_following_sibling()) {
+            $grand_parent = $parent->get_parent();
             // A node with siblings must have a parent
-            assert($grandParent !== null);
-            $lastChild = ListUtil::last($grandParent->getChildren());
-            if ($parent->equalsIgnoringChildren($lastChild)) {
-                \assert($lastChild instanceof ModifiableCssParentNode);
-                $parent = $lastChild;
+            assert($grand_parent !== null);
+            $last_child = List_Util::last($grand_parent->get_children());
+            if ($parent->equals_ignoring_children($last_child)) {
+                \assert($last_child instanceof Modifiable_Css_Parent_Node);
+                $parent = $last_child;
             } else {
-                $parent = $parent->copyWithoutChildren();
-                $grandParent->addChild($parent);
+                $parent = $parent->copy_without_children();
+                $grand_parent->add_child($parent);
             }
         }
-
-        $parent->addChild($node);
+        $parent->add_child($node);
     }
-
     /**
      * Adds a frame to the stack with the given $member name, and $nodeWithSpan
      * as the site of the new frame.
@@ -3235,114 +2564,95 @@ WARNING;
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function withStackFrame(string $member, AstNode $nodeWithSpan, callable $callback)
+    private function with_stack_frame(string $member, Ast_Node $node_with_span, callable $callback)
     {
-        $this->stack[] = [$this->member, $nodeWithSpan];
-        $oldMember = $this->member;
+        $this->stack[] = [$this->member, $node_with_span];
+        $old_member = $this->member;
         $this->member = $member;
         $result = $callback();
-        $this->member = $oldMember;
+        $this->member = $old_member;
         array_pop($this->stack);
-
         return $result;
     }
-
     /**
      * Like {@see Value::withoutSlash}, but produces a deprecation warning if $value
      * was a slash-separated number.
      */
-    private function withoutSlash(Value $value, AstNode $nodeForSpan): Value
+    private function without_slash(Value $value, Ast_Node $node_for_span): Value
     {
-        if ($value instanceof SassNumber && $value->getAsSlash() !== null) {
-            $recommendation = function (SassNumber $number) use (&$recommendation): string {
-                if ($number->getAsSlash() !== null) {
-                    [$before, $after] = $number->getAsSlash();
+        if ($value instanceof Sass_Number && $value->get_as_slash() !== null) {
+            $recommendation = function (Sass_Number $number) use (&$recommendation): string {
+                if ($number->get_as_slash() !== null) {
+                    [$before, $after] = $number->get_as_slash();
                     return "math.div({$recommendation($before)}, {$recommendation($after)})";
                 }
-
                 return (string) $number;
             };
-
             $message = <<<WARNING
-Using / for division is deprecated and will be removed in Dart Sass 2.0.0.
-
-Recommendation: {$recommendation($value)}
-
-More info and automated migrator: https://sass-lang.com/d/slash-div
-WARNING;
-            $this->warn($message, $nodeForSpan->getSpan(), Deprecation::slashDiv);
+            Using / for division is deprecated and will be removed in Dart Sass 2.0.0.
+            
+            Recommendation: {$recommendation($value)}
+            
+            More info and automated migrator: https://sass-lang.com/d/slash-div
+            WARNING;
+            $this->warn($message, $node_for_span->get_span(), Deprecation::slashDiv);
         }
-
-        return $value->withoutSlash();
+        return $value->without_slash();
     }
-
     /**
      * Creates a new stack frame with location information from $member$ and
      * $span.
      */
-    private function stackFrame(string $member, FileSpan $span): Frame
+    private function stack_frame(string $member, File_Span $span): Frame
     {
-        $url = $span->getSourceUrl();
-
+        $url = $span->get_source_url();
         if ($url !== null) {
-            $url = $this->importCache->humanize($url);
+            $url = $this->import_cache->humanize($url);
         }
-
-        return Util::frameForSpan($span, $member, $url);
+        return Util::frame_for_span($span, $member, $url);
     }
-
     /**
      * Returns a stack trace at the current point.
      *
      * If $span is passed, it's used for the innermost stack frame.
      */
-    private function stackTrace(?FileSpan $span = null): Trace
+    private function stack_trace(?File_Span $span = null): Trace
     {
         $frames = [];
-
-        foreach ($this->stack as [$member, $nodeWithSpan]) {
-            $frames[] = $this->stackFrame($member, $nodeWithSpan->getSpan());
+        foreach ($this->stack as [$member, $node_with_span]) {
+            $frames[] = $this->stack_frame($member, $node_with_span->get_span());
         }
-
         if ($span !== null) {
-            $frames[] = $this->stackFrame($this->member, $span);
+            $frames[] = $this->stack_frame($this->member, $span);
         }
-
         return new Trace(array_reverse($frames));
     }
-
-    public function warn(string $message, FileSpan $span, ?Deprecation $deprecation = null): void
+    public function warn(string $message, File_Span $span, ?Deprecation $deprecation = null): void
     {
-        if ($this->quietDeps && ($this->inDependency || ($this->currentCallable !== null && $this->currentCallable->isInDependency()))) {
+        if ($this->quiet_deps && ($this->in_dependency || $this->current_callable !== null && $this->current_callable->is_in_dependency())) {
             return;
         }
-
-        $spanString = ($span->getSourceUrl() ?? '') . "\0" . $span->getStart()->getOffset() . "\0" . $span->getEnd()->getOffset();
-
-        if (isset($this->warningsEmitted[$message][$spanString])) {
+        $span_string = ($span->get_source_url() ?? '') . "\x00" . $span->get_start()->get_offset() . "\x00" . $span->get_end()->get_offset();
+        if (isset($this->warnings_emitted[$message][$span_string])) {
             return;
         }
-        $this->warningsEmitted[$message][$spanString] = true;
-
-        $trace = $this->stackTrace($span);
-
+        $this->warnings_emitted[$message][$span_string] = true;
+        $trace = $this->stack_trace($span);
         if ($deprecation === null) {
             $this->logger->warn($message, null, $span, $trace);
         } else {
-            LoggerUtil::warnForDeprecation($this->logger, $deprecation, $message, $span, $trace);
+            Logger_Util::warn_for_deprecation($this->logger, $deprecation, $message, $span, $trace);
         }
     }
-
     /**
      * Returns a {@see SassRuntimeException} with the given $message.
      *
      * If $span is passed, it's used for the innermost stack frame.
      */
-    private function exception(string $message, ?FileSpan $span = null, ?\Throwable $previous = null): SassRuntimeException
+    private function exception(string $message, ?File_Span $span = null, ?\Throwable $previous = null): Sass_Runtime_Exception
     {
-        return new SimpleSassRuntimeException($message, $span ?? ListUtil::last($this->stack)[1]->getSpan(), $this->stackTrace($span), $previous);
+        return new Simple_Sass_Runtime_Exception($message, $span ?? List_Util::last($this->stack)[1]->get_span(), $this->stack_trace($span), $previous);
     }
-
     /**
      * Returns a {@see MultiSpanSassRuntimeException} with the given $message,
      * $primaryLabel, and $secondaryLabels.
@@ -3351,11 +2661,10 @@ WARNING;
      *
      * @param array<string, FileSpan> $secondarySpans
      */
-    private function multiSpanException(string $message, string $primaryLabel, array $secondarySpans): SassRuntimeException
+    private function multi_span_exception(string $message, string $primary_label, array $secondary_spans): Sass_Runtime_Exception
     {
-        return new MultiSpanSassRuntimeException($message, ListUtil::last($this->stack)[1]->getSpan(), $primaryLabel, $secondarySpans, $this->stackTrace());
+        return new Multi_Span_Sass_Runtime_Exception($message, List_Util::last($this->stack)[1]->get_span(), $primary_label, $secondary_spans, $this->stack_trace());
     }
-
     /**
      * Runs $callback, and converts any {@see SassScriptException}s it throws to
      * {@see SassRuntimeException}s with $nodeWithSpan's source span.
@@ -3377,15 +2686,14 @@ WARNING;
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function addExceptionSpan(AstNode $nodeWithSpan, callable $callback, bool $addStackFrame = true)
+    private function add_exception_span(Ast_Node $node_with_span, callable $callback, bool $add_stack_frame = true)
     {
         try {
             return $callback();
-        } catch (SassScriptException $e) {
-            throw $e->withSpan($nodeWithSpan->getSpan())->withTrace($this->stackTrace($addStackFrame ? $nodeWithSpan->getSpan() : null), $e);
+        } catch (Sass_Script_Exception $e) {
+            throw $e->with_span($node_with_span->get_span())->with_trace($this->stack_trace($add_stack_frame ? $node_with_span->get_span() : null), $e);
         }
     }
-
     /**
      * Runs $callback, and converts any {@see SassException}s that aren't already
      * {@see SassRuntimeException}s to {@see SassRuntimeException}s with the current stack
@@ -3398,17 +2706,16 @@ WARNING;
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function addExceptionTrace(callable $callback)
+    private function add_exception_trace(callable $callback)
     {
         try {
             return $callback();
-        } catch (SassRuntimeException $e) {
+        } catch (Sass_Runtime_Exception $e) {
             throw $e;
-        } catch (SassException $e) {
-            throw $e->withTrace($this->stackTrace($e->getSpan()), $e);
+        } catch (Sass_Exception $e) {
+            throw $e->with_trace($this->stack_trace($e->get_span()), $e);
         }
     }
-
     /**
      * Runs $callback, and converts any {@see SassRuntimeException}s containing an
      * `@error` to throw a more relevant {@see SassRuntimeException}s with $nodeWithSpan's
@@ -3421,16 +2728,15 @@ WARNING;
      * @return T
      * @param-immediately-invoked-callable $callback
      */
-    private function addErrorSpan(AstNode $nodeWithSpan, callable $callback)
+    private function add_error_span(Ast_Node $node_with_span, callable $callback)
     {
         try {
             return $callback();
-        } catch (SassRuntimeException $e) {
-            if (!str_starts_with($e->getSpan()->getText(), '@error')) {
+        } catch (Sass_Runtime_Exception $e) {
+            if (!str_starts_with($e->get_span()->get_text(), '@error')) {
                 throw $e;
             }
-
-            throw new SimpleSassRuntimeException($e->getOriginalMessage(), $nodeWithSpan->getSpan(), $this->stackTrace(), $e);
+            throw new Simple_Sass_Runtime_Exception($e->get_original_message(), $node_with_span->get_span(), $this->stack_trace(), $e);
         }
     }
 }

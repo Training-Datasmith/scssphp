@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Util;
+namespace Scss_Php\Scss_Php\Util;
 
 /**
  * @internal
  */
-final class ArrayUtil
+final class Array_Util
 {
     /**
      * Reduces a collection to a single value by iteratively combining elements
@@ -42,9 +40,7 @@ final class ArrayUtil
         if (\count($items) === 0) {
             throw new \LogicException('Cannot reduce an empty array');
         }
-
         $first = array_shift($items);
-
         return array_reduce($items, $combine, $first);
     }
 }

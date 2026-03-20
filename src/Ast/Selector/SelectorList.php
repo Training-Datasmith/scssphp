@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,28 +10,26 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use League\Uri\Contracts\UriInterface;
-use ScssPhp\ScssPhp\Ast\Css\CssValue;
-use ScssPhp\ScssPhp\Exception\MultiSpanSassException;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Exception\SimpleSassException;
-use ScssPhp\ScssPhp\Extend\ExtendUtil;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
-use ScssPhp\ScssPhp\Parser\InterpolationMap;
-use ScssPhp\ScssPhp\Parser\SelectorParser;
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use ScssPhp\ScssPhp\Util\ListUtil;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Value\SassList;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use SourceSpan\FileSpan;
-
+use League\Uri\Contracts\Uri_Interface;
+use Scss_Php\Scss_Php\Ast\Css\Css_Value;
+use Scss_Php\Scss_Php\Exception\Multi_Span_Sass_Exception;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Exception;
+use Scss_Php\Scss_Php\Extend\Extend_Util;
+use Scss_Php\Scss_Php\Logger\Logger_Interface;
+use Scss_Php\Scss_Php\Parser\Interpolation_Map;
+use Scss_Php\Scss_Php\Parser\Selector_Parser;
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Scss_Php\Scss_Php\Util\List_Util;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Value\Sass_List;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Source_Span\File_Span;
 /**
  * A selector list.
  *
@@ -41,7 +38,7 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class SelectorList extends Selector
+final class Selector_List extends Selector
 {
     /**
      * The components of this selector.
@@ -51,7 +48,6 @@ final class SelectorList extends Selector
      * @var non-empty-list<ComplexSelector>
      */
     private readonly array $components;
-
     /**
      * Parses a selector list from $contents.
      *
@@ -65,88 +61,75 @@ final class SelectorList extends Selector
      *
      * @throws SassFormatException if parsing fails.
      */
-    public static function parse(string $contents, ?LoggerInterface $logger = null, ?InterpolationMap $interpolationMap = null, ?UriInterface $url = null, bool $allowParent = true, bool $plainCss = false): SelectorList
+    public static function parse(string $contents, ?Logger_Interface $logger = null, ?Interpolation_Map $interpolation_map = null, ?Uri_Interface $url = null, bool $allow_parent = true, bool $plain_css = false): Selector_List
     {
-        return (new SelectorParser($contents, $logger, $url, $allowParent, $interpolationMap, $plainCss))->parse();
+        return (new Selector_Parser($contents, $logger, $url, $allow_parent, $interpolation_map, $plain_css))->parse();
     }
-
     /**
      * @param list<ComplexSelector> $components
      */
-    public function __construct(array $components, FileSpan $span)
+    public function __construct(array $components, File_Span $span)
     {
         if ($components === []) {
             throw new \InvalidArgumentException('components may not be empty.');
         }
-
         $this->components = $components;
         parent::__construct($span);
     }
-
     /**
      * @return non-empty-list<ComplexSelector>
      */
-    public function getComponents(): array
+    public function get_components(): array
     {
         return $this->components;
     }
-
     /**
      * Returns a SassScript list that represents this selector.
      *
      * This has the same format as a list returned by `selector-parse()`.
      */
-    public function asSassList(): SassList
+    public function as_sass_list(): Sass_List
     {
-        return new SassList(array_map(static function (ComplexSelector $complex): \ScssPhp\ScssPhp\Value\SassList {
+        return new Sass_List(array_map(static function (Complex_Selector $complex): \Scss_Php\Scss_Php\Value\Sass_List {
             $result = [];
-            foreach ($complex->getLeadingCombinators() as $combinator) {
-                $result[] = new SassString($combinator, false);
+            foreach ($complex->get_leading_combinators() as $combinator) {
+                $result[] = new Sass_String($combinator, false);
             }
-            foreach ($complex->getComponents() as $component) {
-                $result[] = new SassString((string) $component->getSelector(), false);
-
-                foreach ($component->getCombinators() as $combinator) {
-                    $result[] = new SassString($combinator, false);
+            foreach ($complex->get_components() as $component) {
+                $result[] = new Sass_String((string) $component->get_selector(), false);
+                foreach ($component->get_combinators() as $combinator) {
+                    $result[] = new Sass_String($combinator, false);
                 }
             }
-
-            return new SassList($result, ListSeparator::SPACE);
-        }, $this->components), ListSeparator::COMMA);
+            return new Sass_List($result, List_Separator::SPACE);
+        }, $this->components), List_Separator::COMMA);
     }
-
-    public function accept(SelectorVisitor $visitor)
+    public function accept(Selector_Visitor $visitor)
     {
-        return $visitor->visitSelectorList($this);
+        return $visitor->visit_selector_list($this);
     }
-
     /**
      * Returns a {@see SelectorList} that matches only elements that are matched by
      * both this and $other.
      *
      * If no such list can be produced, returns `null`.
      */
-    public function unify(SelectorList $other): ?SelectorList
+    public function unify(Selector_List $other): ?Selector_List
     {
         $contents = [];
-
         foreach ($this->components as $complex1) {
             foreach ($other->components as $complex2) {
-                $unified = ExtendUtil::unifyComplex([$complex1, $complex2], $complex1->getSpan());
-
+                $unified = Extend_Util::unify_complex([$complex1, $complex2], $complex1->get_span());
                 if ($unified === null) {
                     continue;
                 }
-
                 foreach ($unified as $complex) {
                     $contents[] = $complex;
                 }
             }
         }
-
-        return \count($contents) === 0 ? null : new SelectorList($contents, $this->getSpan());
+        return \count($contents) === 0 ? null : new Selector_List($contents, $this->get_span());
     }
-
     /**
      * Returns a new selector list that represents $this nested within $parent.
      *
@@ -163,84 +146,68 @@ final class SelectorList extends Selector
      * {@see ParentSelector}s or if $preserveParentSelectors is true. Otherwise, this
      * throws a {@see SassScriptException}.
      */
-    public function nestWithin(?SelectorList $parent, bool $implicitParent = true, bool $preserveParentSelectors = false): SelectorList
+    public function nest_within(?Selector_List $parent, bool $implicit_parent = true, bool $preserve_parent_selectors = false): Selector_List
     {
         if ($parent === null) {
-            if ($preserveParentSelectors) {
+            if ($preserve_parent_selectors) {
                 return $this;
             }
-
-            $parentSelector = $this->accept(new ParentSelectorVisitor());
-            if ($parentSelector === null) {
+            $parent_selector = $this->accept(new Parent_Selector_Visitor());
+            if ($parent_selector === null) {
                 return $this;
             }
-
-            throw new SimpleSassException('Top-level selectors may not contain the parent selector "&".', $parentSelector->getSpan());
+            throw new Simple_Sass_Exception('Top-level selectors may not contain the parent selector "&".', $parent_selector->get_span());
         }
-
-        return new SelectorList(ListUtil::flattenVertically(array_map(function (ComplexSelector $complex) use ($parent, $implicitParent, $preserveParentSelectors) {
-            if ($preserveParentSelectors || !self::containsParentSelector($complex)) {
-                if (!$implicitParent) {
+        return new Selector_List(List_Util::flatten_vertically(array_map(function (Complex_Selector $complex) use ($parent, $implicit_parent, $preserve_parent_selectors) {
+            if ($preserve_parent_selectors || !self::contains_parent_selector($complex)) {
+                if (!$implicit_parent) {
                     return [$complex];
                 }
-
-                return array_map(fn (ComplexSelector $parentComplex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $parentComplex->concatenate($complex, $complex->getSpan()), $parent->getComponents());
+                return array_map(fn(Complex_Selector $parent_complex): \Scss_Php\Scss_Php\Ast\Selector\Complex_Selector => $parent_complex->concatenate($complex, $complex->get_span()), $parent->get_components());
             }
-
             /** @var list<ComplexSelector> $newComplexes */
-            $newComplexes = [];
-
-            foreach ($complex->getComponents() as $component) {
-                $resolved = self::nestWithinCompound($component, $parent);
+            $new_complexes = [];
+            foreach ($complex->get_components() as $component) {
+                $resolved = self::nest_within_compound($component, $parent);
                 if ($resolved === null) {
-                    if (\count($newComplexes) === 0) {
-                        $newComplexes[] = new ComplexSelector($complex->getLeadingCombinators(), [$component], $complex->getSpan(), false);
+                    if (\count($new_complexes) === 0) {
+                        $new_complexes[] = new Complex_Selector($complex->get_leading_combinators(), [$component], $complex->get_span(), false);
                     } else {
-                        $newComplexes = array_map(fn ($newComplex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $newComplex->withAdditionalComponent($component, $complex->getSpan()), $newComplexes);
+                        $new_complexes = array_map(fn($new_complex): \Scss_Php\Scss_Php\Ast\Selector\Complex_Selector => $new_complex->with_additional_component($component, $complex->get_span()), $new_complexes);
                     }
-                } elseif (\count($newComplexes) === 0) {
-                    if (\count($complex->getLeadingCombinators()) === 0) {
-                        $newComplexes = $resolved;
+                } elseif (\count($new_complexes) === 0) {
+                    if (\count($complex->get_leading_combinators()) === 0) {
+                        $new_complexes = $resolved;
                     } else {
-                        $newComplexes = array_map(fn (ComplexSelector $resolvedComplex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => new ComplexSelector(
-                            array_merge($complex->getLeadingCombinators(), $resolvedComplex->getLeadingCombinators()),
-                            $resolvedComplex->getComponents(),
-                            $complex->getSpan(),
-                            $resolvedComplex->getLineBreak()
-                        ), $resolved);
+                        $new_complexes = array_map(fn(Complex_Selector $resolved_complex): \Scss_Php\Scss_Php\Ast\Selector\Complex_Selector => new Complex_Selector(array_merge($complex->get_leading_combinators(), $resolved_complex->get_leading_combinators()), $resolved_complex->get_components(), $complex->get_span(), $resolved_complex->get_line_break()), $resolved);
                     }
                 } else {
-                    $previousComplexes = $newComplexes;
-                    $newComplexes = [];
-
-                    foreach ($previousComplexes as $newComplex) {
-                        foreach ($resolved as $resolvedComplex) {
-                            $newComplexes[] = $newComplex->concatenate($resolvedComplex, $newComplex->getSpan());
+                    $previous_complexes = $new_complexes;
+                    $new_complexes = [];
+                    foreach ($previous_complexes as $new_complex) {
+                        foreach ($resolved as $resolved_complex) {
+                            $new_complexes[] = $new_complex->concatenate($resolved_complex, $new_complex->get_span());
                         }
                     }
                 }
             }
-
-            return $newComplexes;
-        }, $this->components)), $this->getSpan());
+            return $new_complexes;
+        }, $this->components)), $this->get_span());
     }
-
     /**
      * Whether this is a superselector of $other.
      *
      * That is, whether this matches every element that $other matches, as well
      * as possibly additional elements.
      */
-    public function isSuperselector(SelectorList $other): bool
+    public function is_superselector(Selector_List $other): bool
     {
-        return ExtendUtil::listIsSuperselector($this->components, $other->components);
+        return Extend_Util::list_is_superselector($this->components, $other->components);
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof SelectorList && EquatableUtil::listEquals($this->components, $other->components);
+        return $other instanceof Selector_List && Equatable_Util::list_equals($this->components, $other->components);
     }
-
     /**
      * Returns a new selector list based on $component with all
      * {@see ParentSelector}s replaced with $parent.
@@ -249,111 +216,82 @@ final class SelectorList extends Selector
      *
      * @return list<ComplexSelector>|null
      */
-    private static function nestWithinCompound(ComplexSelectorComponent $component, SelectorList $parent): ?array
+    private static function nest_within_compound(Complex_Selector_Component $component, Selector_List $parent): ?array
     {
-        $simples = $component->getSelector()->getComponents();
-        $containsSelectorPseudo = false;
+        $simples = $component->get_selector()->get_components();
+        $contains_selector_pseudo = false;
         foreach ($simples as $simple) {
-            if (!$simple instanceof PseudoSelector) {
+            if (!$simple instanceof Pseudo_Selector) {
                 continue;
             }
-            $selector = $simple->getSelector();
-
-            if ($selector !== null && self::containsParentSelector($selector)) {
-                $containsSelectorPseudo = true;
+            $selector = $simple->get_selector();
+            if ($selector !== null && self::contains_parent_selector($selector)) {
+                $contains_selector_pseudo = true;
                 break;
             }
         }
-
-        if (!$containsSelectorPseudo && !$simples[0] instanceof ParentSelector) {
+        if (!$contains_selector_pseudo && !$simples[0] instanceof Parent_Selector) {
             return null;
         }
-
-        if ($containsSelectorPseudo) {
-            $resolvedSimples = array_map(function (SimpleSelector $simple) use ($parent): SimpleSelector {
-                if (!$simple instanceof PseudoSelector) {
+        if ($contains_selector_pseudo) {
+            $resolved_simples = array_map(function (Simple_Selector $simple) use ($parent): Simple_Selector {
+                if (!$simple instanceof Pseudo_Selector) {
                     return $simple;
                 }
-
-                $selector = $simple->getSelector();
+                $selector = $simple->get_selector();
                 if ($selector === null) {
                     return $simple;
                 }
-                if (!self::containsParentSelector($selector)) {
+                if (!self::contains_parent_selector($selector)) {
                     return $simple;
                 }
-
-                return $simple->withSelector($selector->nestWithin($parent, false));
+                return $simple->with_selector($selector->nest_within($parent, false));
             }, $simples);
         } else {
-            $resolvedSimples = $simples;
+            $resolved_simples = $simples;
         }
-
-        $parentSelector = $simples[0];
-
-        if (!$parentSelector instanceof ParentSelector) {
-            return [
-                new ComplexSelector([], [
-                    new ComplexSelectorComponent(
-                        new CompoundSelector($resolvedSimples, $component->getSelector()->getSpan()),
-                        $component->getCombinators(),
-                        $component->getSpan()
-                    ),
-                ], $component->getSpan()),
-            ];
+        $parent_selector = $simples[0];
+        if (!$parent_selector instanceof Parent_Selector) {
+            return [new Complex_Selector([], [new Complex_Selector_Component(new Compound_Selector($resolved_simples, $component->get_selector()->get_span()), $component->get_combinators(), $component->get_span())], $component->get_span())];
         }
-
-        if (\count($simples) === 1 && $parentSelector->getSuffix() === null) {
-            return $parent->withAdditionalCombinators($component->getCombinators())->getComponents();
+        if (\count($simples) === 1 && $parent_selector->get_suffix() === null) {
+            return $parent->with_additional_combinators($component->get_combinators())->get_components();
         }
-
-        return array_map(function (ComplexSelector $complex) use ($parentSelector, $resolvedSimples, $component): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
-            $lastComponent = $complex->getLastComponent();
-
-            if (\count($lastComponent->getCombinators()) !== 0) {
-                throw new MultiSpanSassException("Selector \"$complex\" can't be used as a parent in a compound selector.", SpanUtil::trimRight($lastComponent->getSpan()), 'outer selector', ['parent selector' => $parentSelector->getSpan()]);
+        return array_map(function (Complex_Selector $complex) use ($parent_selector, $resolved_simples, $component): \Scss_Php\Scss_Php\Ast\Selector\Complex_Selector {
+            $last_component = $complex->get_last_component();
+            if (\count($last_component->get_combinators()) !== 0) {
+                throw new Multi_Span_Sass_Exception("Selector \"{$complex}\" can't be used as a parent in a compound selector.", Span_Util::trim_right($last_component->get_span()), 'outer selector', ['parent selector' => $parent_selector->get_span()]);
             }
-
-            $suffix = $parentSelector->getSuffix();
-            $lastSimples = $lastComponent->getSelector()->getComponents();
-
+            $suffix = $parent_selector->get_suffix();
+            $last_simples = $last_component->get_selector()->get_components();
             if ($suffix !== null) {
-                $last = new CompoundSelector(array_merge(
-                    ListUtil::exceptLast($lastSimples),
-                    [ListUtil::last($lastSimples)->addSuffix($suffix)],
-                    array_slice($resolvedSimples, 1)
-                ), $component->getSelector()->getSpan());
+                $last = new Compound_Selector(array_merge(List_Util::except_last($last_simples), [List_Util::last($last_simples)->add_suffix($suffix)], array_slice($resolved_simples, 1)), $component->get_selector()->get_span());
             } else {
-                $last = new CompoundSelector(array_merge($lastSimples, array_slice($resolvedSimples, 1)), $component->getSelector()->getSpan());
+                $last = new Compound_Selector(array_merge($last_simples, array_slice($resolved_simples, 1)), $component->get_selector()->get_span());
             }
-
-            $components = ListUtil::exceptLast($complex->getComponents());
-            $components[] = new ComplexSelectorComponent($last, $component->getCombinators(), $component->getSpan());
-
-            return new ComplexSelector($complex->getLeadingCombinators(), $components, $component->getSpan(), $complex->getLineBreak());
-        }, $parent->getComponents());
+            $components = List_Util::except_last($complex->get_components());
+            $components[] = new Complex_Selector_Component($last, $component->get_combinators(), $component->get_span());
+            return new Complex_Selector($complex->get_leading_combinators(), $components, $component->get_span(), $complex->get_line_break());
+        }, $parent->get_components());
     }
-
     /**
      * Returns a copy of `this` with $combinators added to the end of each
      * complex selector in {@see components}].
      *
      * @param list<CssValue<Combinator>> $combinators
      */
-    public function withAdditionalCombinators(array $combinators): SelectorList
+    public function with_additional_combinators(array $combinators): Selector_List
     {
         if ($combinators === []) {
             return $this;
         }
-
-        return new SelectorList(array_map(fn (ComplexSelector $complex): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector => $complex->withAdditionalCombinators($combinators), $this->components), $this->getSpan());
+        return new Selector_List(array_map(fn(Complex_Selector $complex): \Scss_Php\Scss_Php\Ast\Selector\Complex_Selector => $complex->with_additional_combinators($combinators), $this->components), $this->get_span());
     }
-
     /**
      * Returns whether $selector recursively contains a parent selector.
      */
-    private static function containsParentSelector(Selector $selector): bool
+    private static function contains_parent_selector(Selector $selector): bool
     {
-        return $selector->accept(new ParentSelectorVisitor()) !== null;
+        return $selector->accept(new Parent_Selector_Visitor()) !== null;
     }
 }

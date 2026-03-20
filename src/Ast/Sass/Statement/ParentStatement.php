@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,12 +10,10 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Import\DynamicImport;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-
+use Scss_Php\Scss_Php\Ast\Sass\Import\Dynamic_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
 /**
  * A {@see Statement} that can have child statements.
  *
@@ -28,10 +25,9 @@ use ScssPhp\ScssPhp\Ast\Sass\Statement;
  *
  * @internal
  */
-abstract class ParentStatement implements Statement
+abstract class Parent_Statement implements Statement
 {
     private readonly bool $declarations;
-
     /**
      * @param T $children
      */
@@ -41,35 +37,30 @@ abstract class ParentStatement implements Statement
             $this->declarations = false;
             return;
         }
-
         foreach ($this->children as $child) {
-            if ($child instanceof VariableDeclaration || $child instanceof FunctionRule || $child instanceof MixinRule) {
+            if ($child instanceof Variable_Declaration || $child instanceof Function_Rule || $child instanceof Mixin_Rule) {
                 $this->declarations = true;
                 return;
             }
-
-            if ($child instanceof ImportRule) {
-                foreach ($child->getImports() as $import) {
-                    if ($import instanceof DynamicImport) {
+            if ($child instanceof Import_Rule) {
+                foreach ($child->get_imports() as $import) {
+                    if ($import instanceof Dynamic_Import) {
                         $this->declarations = true;
                         return;
                     }
                 }
             }
         }
-
         $this->declarations = false;
     }
-
     /**
      * @return T
      */
-    final public function getChildren(): ?array
+    final public function get_children(): ?array
     {
         return $this->children;
     }
-
-    final public function hasDeclarations(): bool
+    final public function has_declarations(): bool
     {
         return $this->declarations;
     }

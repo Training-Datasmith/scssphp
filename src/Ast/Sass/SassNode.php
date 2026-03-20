@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,16 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass;
 
-namespace ScssPhp\ScssPhp\Ast\Sass;
-
-use ScssPhp\ScssPhp\Ast\AstNode;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
 /**
  * A node in the abstract syntax tree for an unevaluated Sass file.
  *
  * @internal
  */
-interface SassNode extends AstNode
+interface Sass_Node extends Ast_Node
 {
 }

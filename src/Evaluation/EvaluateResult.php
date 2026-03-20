@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,36 +10,32 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Evaluation;
 
-namespace ScssPhp\ScssPhp\Evaluation;
-
-use ScssPhp\ScssPhp\Ast\Css\CssStylesheet;
-
+use Scss_Php\Scss_Php\Ast\Css\Css_Stylesheet;
 /**
  * The result of compiling a Sass document to a CSS tree, along with metadata
  * about the compilation process.
  *
  * @internal
  */
-final class EvaluateResult
+final class Evaluate_Result
 {
     /**
      * @param list<string> $loadedUrls
      */
-    public function __construct(private readonly CssStylesheet $stylesheet, private readonly array $loadedUrls)
+    public function __construct(private readonly Css_Stylesheet $stylesheet, private readonly array $loaded_urls)
     {
     }
-
-    public function getStylesheet(): CssStylesheet
+    public function get_stylesheet(): Css_Stylesheet
     {
         return $this->stylesheet;
     }
-
     /**
      * @return list<string>
      */
-    public function getLoadedUrls(): array
+    public function get_loaded_urls(): array
     {
-        return $this->loadedUrls;
+        return $this->loaded_urls;
     }
 }

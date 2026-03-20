@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * A modifiable version of {@see CssParentNode} for use in the evaluation step.
  *
  * @internal
  */
-abstract class ModifiableCssParentNode extends ModifiableCssNode implements CssParentNode
+abstract class Modifiable_Css_Parent_Node extends Modifiable_Css_Node implements Css_Parent_Node
 {
     /**
      * @param list<ModifiableCssNode> $children
@@ -27,54 +25,47 @@ abstract class ModifiableCssParentNode extends ModifiableCssNode implements CssP
     public function __construct(private array $children = [])
     {
     }
-
     /**
      * @return list<ModifiableCssNode>
      */
-    public function getChildren(): array
+    public function get_children(): array
     {
         return $this->children;
     }
-
-    public function isChildless(): bool
+    public function is_childless(): bool
     {
         return false;
     }
-
     /**
      * Returns whether $this is equal to $other, ignoring their child nodes.
      */
-    abstract public function equalsIgnoringChildren(ModifiableCssNode $other): bool;
-
+    abstract public function equals_ignoring_children(Modifiable_Css_Node $other): bool;
     /**
      * Returns a copy of $this with an empty {@see children} list.
      *
      * This is *not* a deep copy. If other parts of this node are modifiable,
      * they are shared between the new and old nodes.
      */
-    abstract public function copyWithoutChildren(): ModifiableCssParentNode;
-
-    public function addChild(ModifiableCssNode $child): void
+    abstract public function copy_without_children(): Modifiable_Css_Parent_Node;
+    public function add_child(Modifiable_Css_Node $child): void
     {
-        $child->setParent($this, \count($this->children));
+        $child->set_parent($this, \count($this->children));
         $this->children[] = $child;
     }
-
     /**
      * @internal
      */
-    public function removeChildAt(int $index): void
+    public function remove_child_at(int $index): void
     {
         array_splice($this->children, $index, 1);
     }
-
     /**
      * Destructively removes all elements from {@see children}.
      */
-    public function clearChildren(): void
+    public function clear_children(): void
     {
         foreach ($this->children as $child) {
-            $child->resetParentReferences();
+            $child->reset_parent_references();
         }
         $this->children = [];
     }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,21 +10,16 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\SourceMap;
+namespace Scss_Php\Scss_Php\Source_Map;
 
 /**
  * A target segment entry read from a source map
  *
  * @internal
  */
-final class TargetEntry
+final class Target_Entry
 {
-    public function __construct(
-        public readonly int $column,
-        public readonly ?int $sourceUrlId = null,
-        public readonly ?int $sourceLine = null,
-        public readonly ?int $sourceColumn = null,
-    ) {
+    public function __construct(public readonly int $column, public readonly ?int $source_url_id = null, public readonly ?int $source_line = null, public readonly ?int $source_column = null)
+    {
     }
 }

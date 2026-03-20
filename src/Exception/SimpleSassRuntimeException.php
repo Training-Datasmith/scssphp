@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,56 +10,47 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Exception;
 
-namespace ScssPhp\ScssPhp\Exception;
-
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use ScssPhp\ScssPhp\Util\ErrorUtil;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Scss_Php\Scss_Php\Util\Error_Util;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class SimpleSassRuntimeException extends \Exception implements SassRuntimeException
+final class Simple_Sass_Runtime_Exception extends \Exception implements Sass_Runtime_Exception
 {
     /**
      * @var FileSpan
      * @readonly
      */
     private $span;
-
-    public function __construct(private readonly string $originalMessage, FileSpan $span, private readonly Trace $sassTrace, ?\Throwable $previous = null)
+    public function __construct(private readonly string $original_message, File_Span $span, private readonly Trace $sass_trace, ?\Throwable $previous = null)
     {
         $this->span = $span;
-
-        parent::__construct(ErrorUtil::formatErrorMessage($this->originalMessage, $span, $this->sassTrace), 0, $previous);
+        parent::__construct(Error_Util::format_error_message($this->original_message, $span, $this->sass_trace), 0, $previous);
     }
-
     /**
      * Gets the original message without the location info in it.
      */
-    public function getOriginalMessage(): string
+    public function get_original_message(): string
     {
-        return $this->originalMessage;
+        return $this->original_message;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function getSassTrace(): Trace
+    public function get_sass_trace(): Trace
     {
-        return $this->sassTrace;
+        return $this->sass_trace;
     }
-
-    public function withAdditionalSpan(FileSpan $span, string $label, ?\Throwable $previous = null): MultiSpanSassRuntimeException
+    public function with_additional_span(File_Span $span, string $label, ?\Throwable $previous = null): Multi_Span_Sass_Runtime_Exception
     {
-        return new MultiSpanSassRuntimeException($this->originalMessage, $this->span, '', [$label => $span], $this->sassTrace, $previous);
+        return new Multi_Span_Sass_Runtime_Exception($this->original_message, $this->span, '', [$label => $span], $this->sass_trace, $previous);
     }
-
-    public function withTrace(Trace $trace, ?\Throwable $previous = null): SassRuntimeException
+    public function with_trace(Trace $trace, ?\Throwable $previous = null): Sass_Runtime_Exception
     {
-        return new SimpleSassRuntimeException($this->originalMessage, $this->span, $trace, $previous);
+        return new Simple_Sass_Runtime_Exception($this->original_message, $this->span, $trace, $previous);
     }
 }

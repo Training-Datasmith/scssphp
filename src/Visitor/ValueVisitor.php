@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,19 +10,17 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Visitor;
 
-namespace ScssPhp\ScssPhp\Visitor;
-
-use ScssPhp\ScssPhp\Value\SassBoolean;
-use ScssPhp\ScssPhp\Value\SassCalculation;
-use ScssPhp\ScssPhp\Value\SassColor;
-use ScssPhp\ScssPhp\Value\SassFunction;
-use ScssPhp\ScssPhp\Value\SassList;
-use ScssPhp\ScssPhp\Value\SassMap;
-use ScssPhp\ScssPhp\Value\SassMixin;
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\SassString;
-
+use Scss_Php\Scss_Php\Value\Sass_Boolean;
+use Scss_Php\Scss_Php\Value\Sass_Calculation;
+use Scss_Php\Scss_Php\Value\Sass_Color;
+use Scss_Php\Scss_Php\Value\Sass_Function;
+use Scss_Php\Scss_Php\Value\Sass_List;
+use Scss_Php\Scss_Php\Value\Sass_Map;
+use Scss_Php\Scss_Php\Value\Sass_Mixin;
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Sass_String;
 /**
  * An interface for visitors that traverse SassScript $values.
  *
@@ -31,55 +28,46 @@ use ScssPhp\ScssPhp\Value\SassString;
  *
  * @template T
  */
-interface ValueVisitor
+interface Value_Visitor
 {
     /**
      * @return T
      */
-    public function visitBoolean(SassBoolean $value);
-
+    public function visit_boolean(Sass_Boolean $value);
     /**
      * @return T
      */
-    public function visitCalculation(SassCalculation $value);
-
+    public function visit_calculation(Sass_Calculation $value);
     /**
      * @return T
      */
-    public function visitColor(SassColor $value);
-
+    public function visit_color(Sass_Color $value);
     /**
      * @return T
      */
-    public function visitFunction(SassFunction $value);
-
+    public function visit_function(Sass_Function $value);
     /**
      * @return T
      */
-    public function visitMixin(SassMixin $value);
-
+    public function visit_mixin(Sass_Mixin $value);
     /**
      * @return T
      */
-    public function visitList(SassList $value);
-
+    public function visit_list(Sass_List $value);
     /**
      * @return T
      */
-    public function visitMap(SassMap $value);
-
+    public function visit_map(Sass_Map $value);
     /**
      * @return T
      */
-    public function visitNull();
-
+    public function visit_null();
     /**
      * @return T
      */
-    public function visitNumber(SassNumber $value);
-
+    public function visit_number(Sass_Number $value);
     /**
      * @return T
      */
-    public function visitString(SassString $value);
+    public function visit_string(Sass_String $value);
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,64 +10,51 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Value;
 
-namespace ScssPhp\ScssPhp\Value;
-
-use ScssPhp\ScssPhp\Visitor\ValueVisitor;
-
+use Scss_Php\Scss_Php\Visitor\Value_Visitor;
 /**
  * A SassScript boolean value.
  */
-final class SassBoolean extends Value
+final class Sass_Boolean extends Value
 {
-    private static SassBoolean $trueInstance;
-
-    private static SassBoolean $falseInstance;
-
-    public static function create(bool $value): SassBoolean
+    private static Sass_Boolean $true_instance;
+    private static Sass_Boolean $false_instance;
+    public static function create(bool $value): Sass_Boolean
     {
         if ($value) {
-            return self::$trueInstance ??= new self(true);
+            return self::$true_instance ??= new self(true);
         }
-
-        return self::$falseInstance ??= new self(false);
+        return self::$false_instance ??= new self(false);
     }
-
     private function __construct(private readonly bool $value)
     {
     }
-
-    public function getValue(): bool
+    public function get_value(): bool
     {
         return $this->value;
     }
-
-    public function isTruthy(): bool
+    public function is_truthy(): bool
     {
         return $this->value;
     }
-
-    public function accept(ValueVisitor $visitor)
+    public function accept(Value_Visitor $visitor)
     {
-        return $visitor->visitBoolean($this);
+        return $visitor->visit_boolean($this);
     }
-
-    public function assertBoolean(?string $name = null): SassBoolean
+    public function assert_boolean(?string $name = null): Sass_Boolean
     {
         return $this;
     }
-
-    public function unaryNot(): \ScssPhp\ScssPhp\Value\SassBoolean
+    public function unary_not(): \Scss_Php\Scss_Php\Value\Sass_Boolean
     {
         return self::create(!$this->value);
     }
-
     public function equals(object $other): bool
     {
-        if (!$other instanceof SassBoolean) {
+        if (!$other instanceof Sass_Boolean) {
             return false;
         }
-
         return $this->value === $other->value;
     }
 }

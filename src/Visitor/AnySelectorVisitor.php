@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,24 +10,22 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Visitor;
 
-namespace ScssPhp\ScssPhp\Visitor;
-
-use ScssPhp\ScssPhp\Ast\Selector\AttributeSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ClassSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelectorComponent;
-use ScssPhp\ScssPhp\Ast\Selector\CompoundSelector;
-use ScssPhp\ScssPhp\Ast\Selector\IDSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ParentSelector;
-use ScssPhp\ScssPhp\Ast\Selector\PlaceholderSelector;
-use ScssPhp\ScssPhp\Ast\Selector\PseudoSelector;
-use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
-use ScssPhp\ScssPhp\Ast\Selector\SimpleSelector;
-use ScssPhp\ScssPhp\Ast\Selector\TypeSelector;
-use ScssPhp\ScssPhp\Ast\Selector\UniversalSelector;
-use ScssPhp\ScssPhp\Util\IterableUtil;
-
+use Scss_Php\Scss_Php\Ast\Selector\Attribute_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Class_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector_Component;
+use Scss_Php\Scss_Php\Ast\Selector\Compound_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Id_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Parent_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Placeholder_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Pseudo_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Selector_List;
+use Scss_Php\Scss_Php\Ast\Selector\Simple_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Type_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Universal_Selector;
+use Scss_Php\Scss_Php\Util\Iterable_Util;
 /**
  * A visitor that visits each selector in a Sass selector AST and returns
  * `true` if any of the individual methods return `true`.
@@ -38,61 +35,50 @@ use ScssPhp\ScssPhp\Util\IterableUtil;
  * @template-implements SelectorVisitor<bool>
  * @internal
  */
-abstract class AnySelectorVisitor implements SelectorVisitor
+abstract class Any_Selector_Visitor implements Selector_Visitor
 {
-    public function visitComplexSelector(ComplexSelector $complex): bool
+    public function visit_complex_selector(Complex_Selector $complex): bool
     {
-        return IterableUtil::any($complex->getComponents(), fn (ComplexSelectorComponent $component): bool => $this->visitCompoundSelector($component->getSelector()));
+        return Iterable_Util::any($complex->get_components(), fn(Complex_Selector_Component $component): bool => $this->visit_compound_selector($component->get_selector()));
     }
-
-    public function visitCompoundSelector(CompoundSelector $compound): bool
+    public function visit_compound_selector(Compound_Selector $compound): bool
     {
-        return IterableUtil::any($compound->getComponents(), fn (SimpleSelector $simple) => $simple->accept($this));
+        return Iterable_Util::any($compound->get_components(), fn(Simple_Selector $simple) => $simple->accept($this));
     }
-
-    public function visitPseudoSelector(PseudoSelector $pseudo): bool
+    public function visit_pseudo_selector(Pseudo_Selector $pseudo): bool
     {
-        $selector = $pseudo->getSelector();
-
+        $selector = $pseudo->get_selector();
         return $selector === null ? false : $selector->accept($this);
     }
-
-    public function visitSelectorList(SelectorList $list): bool
+    public function visit_selector_list(Selector_List $list): bool
     {
-        return IterableUtil::any($list->getComponents(), $this->visitComplexSelector(...));
+        return Iterable_Util::any($list->get_components(), $this->visit_complex_selector(...));
     }
-
-    public function visitAttributeSelector(AttributeSelector $attribute): bool
+    public function visit_attribute_selector(Attribute_Selector $attribute): bool
     {
         return false;
     }
-
-    public function visitClassSelector(ClassSelector $klass): bool
+    public function visit_class_selector(Class_Selector $klass): bool
     {
         return false;
     }
-
-    public function visitIDSelector(IDSelector $id): bool
+    public function visit_id_selector(Id_Selector $id): bool
     {
         return false;
     }
-
-    public function visitParentSelector(ParentSelector $parent): bool
+    public function visit_parent_selector(Parent_Selector $parent): bool
     {
         return false;
     }
-
-    public function visitPlaceholderSelector(PlaceholderSelector $placeholder): bool
+    public function visit_placeholder_selector(Placeholder_Selector $placeholder): bool
     {
         return false;
     }
-
-    public function visitTypeSelector(TypeSelector $type): bool
+    public function visit_type_selector(Type_Selector $type): bool
     {
         return false;
     }
-
-    public function visitUniversalSelector(UniversalSelector $universal): bool
+    public function visit_universal_selector(Universal_Selector $universal): bool
     {
         return false;
     }

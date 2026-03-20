@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,14 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\SassDeclaration;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Sass_Declaration;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * A function declaration.
  *
@@ -26,20 +23,18 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class FunctionRule extends CallableDeclaration implements SassDeclaration
+final class Function_Rule extends Callable_Declaration implements Sass_Declaration
 {
-    public function getNameSpan(): FileSpan
+    public function get_name_span(): File_Span
     {
-        return SpanUtil::initialIdentifier(SpanUtil::withoutInitialAtRule($this->getSpan()));
+        return Span_Util::initial_identifier(Span_Util::without_initial_at_rule($this->get_span()));
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitFunctionRule($this);
+        return $visitor->visit_function_rule($this);
     }
-
     public function __toString(): string
     {
-        return '@function ' . $this->getName() . '(' . $this->getArguments() . ') {' . implode(' ', $this->getChildren()) . '}';
+        return '@function ' . $this->get_name() . '(' . $this->get_arguments() . ') {' . implode(' ', $this->get_children()) . '}';
     }
 }

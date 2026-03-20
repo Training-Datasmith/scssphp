@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,22 +10,20 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass;
 
-namespace ScssPhp\ScssPhp\Ast\Sass;
-
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
 /**
  * A SassScript expression in a Sass syntax tree.
  *
  * @internal
  */
-interface Expression extends SassNode
+interface Expression extends Sass_Node
 {
     /**
      * @template T
      * @param ExpressionVisitor<T> $visitor
      * @return T
      */
-    public function accept(ExpressionVisitor $visitor);
+    public function accept(Expression_Visitor $visitor);
 }

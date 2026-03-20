@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,17 +10,15 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Util;
 
-namespace ScssPhp\ScssPhp\Util;
-
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\FunctionExpression;
-
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Function_Expression;
 /**
  * @internal
  */
-final class AstUtil
+final class Ast_Util
 {
     /**
      * Converts $expression to an equivalent `calc()`.
@@ -30,12 +27,8 @@ final class AstUtil
      * use in end-user messaging, and may not produce directly evaluable
      * expressions.
      */
-    public static function expressionToCalc(Expression $expression): FunctionExpression
+    public static function expression_to_calc(Expression $expression): Function_Expression
     {
-        return new FunctionExpression(
-            'calc',
-            new ArgumentInvocation([$expression->accept(new MakeExpressionCalculationSafe())], [], $expression->getSpan()),
-            $expression->getSpan()
-        );
+        return new Function_Expression('calc', new Argument_Invocation([$expression->accept(new Make_Expression_Calculation_Safe())], [], $expression->get_span()), $expression->get_span());
     }
 }

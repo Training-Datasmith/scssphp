@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,790 +10,606 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Function;
 
-namespace ScssPhp\ScssPhp\Function;
-
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Util\IterableUtil;
-use ScssPhp\ScssPhp\Util\NumberUtil;
-use ScssPhp\ScssPhp\Util\StringUtil;
-use ScssPhp\ScssPhp\Value\ColorFormatEnum;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Value\SassArgumentList;
-use ScssPhp\ScssPhp\Value\SassColor;
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Value\Value;
-use ScssPhp\ScssPhp\Warn;
-
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Util\Iterable_Util;
+use Scss_Php\Scss_Php\Util\Number_Util;
+use Scss_Php\Scss_Php\Util\String_Util;
+use Scss_Php\Scss_Php\Value\Color_Format_Enum;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Value\Sass_Argument_List;
+use Scss_Php\Scss_Php\Value\Sass_Color;
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Value\Value;
+use Scss_Php\Scss_Php\Warn;
 /**
  * @internal
  */
-class ColorFunctions
+class Color_Functions
 {
     /**
      * @param list<Value> $arguments
      */
     public static function rgb(array $arguments): Value
     {
-        return self::rgbImpl('rgb', $arguments);
+        return self::rgb_impl('rgb', $arguments);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function rgbTwoArgs(array $arguments): Value
+    public static function rgb_two_args(array $arguments): Value
     {
-        return self::rgbTwoArgsImpl('rgb', $arguments);
+        return self::rgb_two_args_impl('rgb', $arguments);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function rgbOneArgs(array $arguments): Value
+    public static function rgb_one_args(array $arguments): Value
     {
-        $parsed = self::parseChannels('rgb', ['$red', '$green', '$blue'], $arguments[0]);
-
-        return $parsed instanceof SassString ? $parsed : self::rgbImpl('rgb', $parsed);
+        $parsed = self::parse_channels('rgb', ['$red', '$green', '$blue'], $arguments[0]);
+        return $parsed instanceof Sass_String ? $parsed : self::rgb_impl('rgb', $parsed);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function rgba(array $arguments): Value
     {
-        return self::rgbImpl('rgba', $arguments);
+        return self::rgb_impl('rgba', $arguments);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function rgbaTwoArgs(array $arguments): Value
+    public static function rgba_two_args(array $arguments): Value
     {
-        return self::rgbTwoArgsImpl('rgba', $arguments);
+        return self::rgb_two_args_impl('rgba', $arguments);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function rgbaOneArgs(array $arguments): Value
+    public static function rgba_one_args(array $arguments): Value
     {
-        $parsed = self::parseChannels('rgba', ['$red', '$green', '$blue'], $arguments[0]);
-
-        return $parsed instanceof SassString ? $parsed : self::rgbImpl('rgba', $parsed);
+        $parsed = self::parse_channels('rgba', ['$red', '$green', '$blue'], $arguments[0]);
+        return $parsed instanceof Sass_String ? $parsed : self::rgb_impl('rgba', $parsed);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function invert(array $arguments): Value
     {
-        $weight = $arguments[1]->assertNumber('weight');
-        if ($arguments[0] instanceof SassNumber || $arguments[0]->isSpecialNumber()) {
-            if ($weight->getValue() !== 100.0 || !$weight->hasUnit('%')) {
-                throw new SassScriptException('Only one argument may be passed to the plain-CSS invert() function.');
+        $weight = $arguments[1]->assert_number('weight');
+        if ($arguments[0] instanceof Sass_Number || $arguments[0]->is_special_number()) {
+            if ($weight->get_value() !== 100.0 || !$weight->has_unit('%')) {
+                throw new Sass_Script_Exception('Only one argument may be passed to the plain-CSS invert() function.');
             }
-
             // Use the native CSS `invert` filter function.
-            return self::functionString('invert', [$arguments[0]]);
+            return self::function_string('invert', [$arguments[0]]);
         }
-
-        $color = $arguments[0]->assertColor('color');
-        $inverse = $color->changeRgb(255 - $color->getRed(), 255 - $color->getGreen(), 255 - $color->getBlue());
-
-        return self::mixColors($inverse, $color, $weight);
+        $color = $arguments[0]->assert_color('color');
+        $inverse = $color->change_rgb(255 - $color->get_red(), 255 - $color->get_green(), 255 - $color->get_blue());
+        return self::mix_colors($inverse, $color, $weight);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function hsl(array $arguments): Value
     {
-        return self::hslImpl('hsl', $arguments);
+        return self::hsl_impl('hsl', $arguments);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function hslTwoArgs(array $arguments): Value
+    public static function hsl_two_args(array $arguments): Value
     {
         // hsl(123, var(--foo)) is valid CSS because --foo might be `10%, 20%` and
         // functions are parsed after variable substitution.
-        if ($arguments[0]->isVar() || $arguments[1]->isVar()) {
-            return self::functionString('hsl', $arguments);
+        if ($arguments[0]->is_var() || $arguments[1]->is_var()) {
+            return self::function_string('hsl', $arguments);
         }
-
-        throw new SassScriptException('Missing argument $lightness.');
+        throw new Sass_Script_Exception('Missing argument $lightness.');
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function hslOneArgs(array $arguments): Value
+    public static function hsl_one_args(array $arguments): Value
     {
-        $parsed = self::parseChannels('hsl', ['$hue', '$saturation', '$lightness'], $arguments[0]);
-
-        return $parsed instanceof SassString ? $parsed : self::hslImpl('hsl', $parsed);
+        $parsed = self::parse_channels('hsl', ['$hue', '$saturation', '$lightness'], $arguments[0]);
+        return $parsed instanceof Sass_String ? $parsed : self::hsl_impl('hsl', $parsed);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function hsla(array $arguments): Value
     {
-        return self::hslImpl('hsla', $arguments);
+        return self::hsl_impl('hsla', $arguments);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function hslaTwoArgs(array $arguments): Value
+    public static function hsla_two_args(array $arguments): Value
     {
         // hsl(123, var(--foo)) is valid CSS because --foo might be `10%, 20%` and
         // functions are parsed after variable substitution.
-        if ($arguments[0]->isVar() || $arguments[1]->isVar()) {
-            return self::functionString('hsla', $arguments);
+        if ($arguments[0]->is_var() || $arguments[1]->is_var()) {
+            return self::function_string('hsla', $arguments);
         }
-
-        throw new SassScriptException('Missing argument $lightness.');
+        throw new Sass_Script_Exception('Missing argument $lightness.');
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function hslaOneArgs(array $arguments): Value
+    public static function hsla_one_args(array $arguments): Value
     {
-        $parsed = self::parseChannels('hsla', ['$hue', '$saturation', '$lightness'], $arguments[0]);
-
-        return $parsed instanceof SassString ? $parsed : self::hslImpl('hsla', $parsed);
+        $parsed = self::parse_channels('hsla', ['$hue', '$saturation', '$lightness'], $arguments[0]);
+        return $parsed instanceof Sass_String ? $parsed : self::hsl_impl('hsla', $parsed);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function grayscale(array $arguments): Value
     {
-        if ($arguments[0] instanceof SassNumber || $arguments[0]->isSpecialNumber()) {
+        if ($arguments[0] instanceof Sass_Number || $arguments[0]->is_special_number()) {
             // Use the native CSS `grayscale` filter function.
-            return self::functionString('grayscale', $arguments);
+            return self::function_string('grayscale', $arguments);
         }
-
-        $color = $arguments[0]->assertColor('color');
-
-        return $color->changeHsl(saturation: 0);
+        $color = $arguments[0]->assert_color('color');
+        return $color->change_hsl(saturation: 0);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function adjustHue(array $arguments): Value
+    public static function adjust_hue(array $arguments): Value
     {
-        $color = $arguments[0]->assertColor('color');
-        $degrees = self::angleValue($arguments[1], 'degrees');
-
-        return $color->changeHsl(hue: $color->getHue() + $degrees);
+        $color = $arguments[0]->assert_color('color');
+        $degrees = self::angle_value($arguments[1], 'degrees');
+        return $color->change_hsl(hue: $color->get_hue() + $degrees);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function lighten(array $arguments): Value
     {
-        $color = $arguments[0]->assertColor('color');
-        $amount = $arguments[1]->assertNumber('amount');
-
-        return $color->changeHsl(lightness: NumberUtil::clamp($color->getLightness() + $amount->valueInRange(0, 100, 'amount'), 0, 100));
+        $color = $arguments[0]->assert_color('color');
+        $amount = $arguments[1]->assert_number('amount');
+        return $color->change_hsl(lightness: Number_Util::clamp($color->get_lightness() + $amount->value_in_range(0, 100, 'amount'), 0, 100));
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function darken(array $arguments): Value
     {
-        $color = $arguments[0]->assertColor('color');
-        $amount = $arguments[1]->assertNumber('amount');
-
-        return $color->changeHsl(lightness: NumberUtil::clamp($color->getLightness() - $amount->valueInRange(0, 100, 'amount'), 0, 100));
+        $color = $arguments[0]->assert_color('color');
+        $amount = $arguments[1]->assert_number('amount');
+        return $color->change_hsl(lightness: Number_Util::clamp($color->get_lightness() - $amount->value_in_range(0, 100, 'amount'), 0, 100));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function saturateCss(array $arguments): Value
+    public static function saturate_css(array $arguments): Value
     {
-        if ($arguments[0] instanceof SassNumber || $arguments[0]->isSpecialNumber()) {
+        if ($arguments[0] instanceof Sass_Number || $arguments[0]->is_special_number()) {
             // Use the native CSS `saturate` filter function.
-            return self::functionString('saturate', $arguments);
+            return self::function_string('saturate', $arguments);
         }
-
-        $number = $arguments[0]->assertNumber('amount');
-
-        return new SassString('saturate(' . $number->toCssString() . ')', false);
+        $number = $arguments[0]->assert_number('amount');
+        return new Sass_String('saturate(' . $number->to_css_string() . ')', false);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function saturate(array $arguments): Value
     {
-        $color = $arguments[0]->assertColor('color');
-        $amount = $arguments[1]->assertNumber('amount');
-
-        return $color->changeHsl(saturation: NumberUtil::clamp($color->getSaturation() + $amount->valueInRange(0, 100, 'amount'), 0, 100));
+        $color = $arguments[0]->assert_color('color');
+        $amount = $arguments[1]->assert_number('amount');
+        return $color->change_hsl(saturation: Number_Util::clamp($color->get_saturation() + $amount->value_in_range(0, 100, 'amount'), 0, 100));
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function desaturate(array $arguments): Value
     {
-        $color = $arguments[0]->assertColor('color');
-        $amount = $arguments[1]->assertNumber('amount');
-
-        return $color->changeHsl(saturation: NumberUtil::clamp($color->getSaturation() - $amount->valueInRange(0, 100, 'amount'), 0, 100));
+        $color = $arguments[0]->assert_color('color');
+        $amount = $arguments[1]->assert_number('amount');
+        return $color->change_hsl(saturation: Number_Util::clamp($color->get_saturation() - $amount->value_in_range(0, 100, 'amount'), 0, 100));
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function alpha(array $arguments): Value
     {
         $argument = $arguments[0];
-        if ($argument instanceof SassString && !$argument->hasQuotes() && preg_match('/^[a-zA-Z]+\s*=/', $argument->getText())) {
+        if ($argument instanceof Sass_String && !$argument->has_quotes() && preg_match('/^[a-zA-Z]+\s*=/', $argument->get_text())) {
             // Support the proprietary Microsoft alpha() function.
-            return self::functionString('alpha', $arguments);
+            return self::function_string('alpha', $arguments);
         }
-
-        $color = $arguments[0]->assertColor('color');
-
-        return SassNumber::create($color->getAlpha());
+        $color = $arguments[0]->assert_color('color');
+        return Sass_Number::create($color->get_alpha());
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function alphaMicrosoft(array $arguments): Value
+    public static function alpha_microsoft(array $arguments): Value
     {
-        $argList = $arguments[0]->asList();
-        $argumentCount = \count($argList);
-
-        if ($argumentCount > 0 && IterableUtil::every($argList, fn ($argument): bool => $argument instanceof SassString && !$argument->hasQuotes() && preg_match('/^[a-zA-Z]+\s*=/', $argument->getText()))) {
+        $arg_list = $arguments[0]->as_list();
+        $argument_count = \count($arg_list);
+        if ($argument_count > 0 && Iterable_Util::every($arg_list, fn($argument): bool => $argument instanceof Sass_String && !$argument->has_quotes() && preg_match('/^[a-zA-Z]+\s*=/', $argument->get_text()))) {
             // Support the proprietary Microsoft alpha() function.
-            return self::functionString('alpha', $arguments);
+            return self::function_string('alpha', $arguments);
         }
-
-        \assert($argumentCount !== 1);
-
-        if ($argumentCount === 0) {
-            throw new SassScriptException('Missing argument $color.');
+        \assert($argument_count !== 1);
+        if ($argument_count === 0) {
+            throw new Sass_Script_Exception('Missing argument $color.');
         }
-
-        throw new SassScriptException("Only 1 argument allowed, but $argumentCount were passed.");
+        throw new Sass_Script_Exception("Only 1 argument allowed, but {$argument_count} were passed.");
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function opacity(array $arguments): Value
     {
-        if ($arguments[0] instanceof SassNumber || $arguments[0]->isSpecialNumber()) {
+        if ($arguments[0] instanceof Sass_Number || $arguments[0]->is_special_number()) {
             // Use the native CSS `opacity` filter function.
-            return self::functionString('opacity', $arguments);
+            return self::function_string('opacity', $arguments);
         }
-
-        $color = $arguments[0]->assertColor('color');
-
-        return SassNumber::create($color->getAlpha());
+        $color = $arguments[0]->assert_color('color');
+        return Sass_Number::create($color->get_alpha());
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function red(array $arguments): Value
     {
-        return SassNumber::create($arguments[0]->assertColor('color')->getRed());
+        return Sass_Number::create($arguments[0]->assert_color('color')->get_red());
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function green(array $arguments): Value
     {
-        return SassNumber::create($arguments[0]->assertColor('color')->getGreen());
+        return Sass_Number::create($arguments[0]->assert_color('color')->get_green());
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function blue(array $arguments): Value
     {
-        return SassNumber::create($arguments[0]->assertColor('color')->getBlue());
+        return Sass_Number::create($arguments[0]->assert_color('color')->get_blue());
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function mix(array $arguments): Value
     {
-        $color1 = $arguments[0]->assertColor('color1');
-        $color2 = $arguments[1]->assertColor('color2');
-        $weight = $arguments[2]->assertNumber('weight');
-
-        return self::mixColors($color1, $color2, $weight);
+        $color1 = $arguments[0]->assert_color('color1');
+        $color2 = $arguments[1]->assert_color('color2');
+        $weight = $arguments[2]->assert_number('weight');
+        return self::mix_colors($color1, $color2, $weight);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function hue(array $arguments): Value
     {
-        return SassNumber::create($arguments[0]->assertColor('color')->getHue(), 'deg');
+        return Sass_Number::create($arguments[0]->assert_color('color')->get_hue(), 'deg');
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function saturation(array $arguments): Value
     {
-        return SassNumber::create($arguments[0]->assertColor('color')->getSaturation(), '%');
+        return Sass_Number::create($arguments[0]->assert_color('color')->get_saturation(), '%');
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function lightness(array $arguments): Value
     {
-        return SassNumber::create($arguments[0]->assertColor('color')->getLightness(), '%');
+        return Sass_Number::create($arguments[0]->assert_color('color')->get_lightness(), '%');
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function complement(array $arguments): Value
     {
-        $color = $arguments[0]->assertColor('color');
-
-        return $color->changeHsl(hue: $color->getHue() + 180);
+        $color = $arguments[0]->assert_color('color');
+        return $color->change_hsl(hue: $color->get_hue() + 180);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function adjust(array $arguments): Value
     {
-        return self::updateComponents($arguments, adjust: true);
+        return self::update_components($arguments, adjust: true);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function scale(array $arguments): Value
     {
-        return self::updateComponents($arguments, scale: true);
+        return self::update_components($arguments, scale: true);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function change(array $arguments): Value
     {
-        return self::updateComponents($arguments, change: true);
+        return self::update_components($arguments, change: true);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function ieHexStr(array $arguments): Value
+    public static function ie_hex_str(array $arguments): Value
     {
-        $color = $arguments[0]->assertColor('color');
-        return new SassString('#' . self::hexString(NumberUtil::fuzzyRound($color->getAlpha() * 255)) . self::hexString($color->getRed()) . self::hexString($color->getGreen()) . self::hexString($color->getBlue()), false);
+        $color = $arguments[0]->assert_color('color');
+        return new Sass_String('#' . self::hex_string(Number_Util::fuzzy_round($color->get_alpha() * 255)) . self::hex_string($color->get_red()) . self::hex_string($color->get_green()) . self::hex_string($color->get_blue()), false);
     }
-
-    private static function hexString(int $component): string
+    private static function hex_string(int $component): string
     {
         return strtoupper(str_pad(dechex($component), 2, '0', STR_PAD_LEFT));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    private static function updateComponents(array $arguments, bool $change = false, bool $adjust = false, bool $scale = false): SassColor
+    private static function update_components(array $arguments, bool $change = false, bool $adjust = false, bool $scale = false): Sass_Color
     {
         \assert(\count(array_filter([$change, $adjust, $scale])) === 1);
-
-        $color = $arguments[0]->assertColor('color');
-        $argumentList = $arguments[1];
-        \assert($argumentList instanceof SassArgumentList);
-
-        if (\count($argumentList->asList()) > 0) {
-            throw new SassScriptException('Only one positional argument is allowed. All other arguments must be passed by name.');
+        $color = $arguments[0]->assert_color('color');
+        $argument_list = $arguments[1];
+        \assert($argument_list instanceof Sass_Argument_List);
+        if (\count($argument_list->as_list()) > 0) {
+            throw new Sass_Script_Exception('Only one positional argument is allowed. All other arguments must be passed by name.');
         }
-
-        $keywords = $argumentList->getKeywords();
-
-        $getParam = function (string $name, float $max, bool $checkPercent = false, bool $assertPercent = false, bool $checkUnitless = false) use (&$keywords, $change, $scale): ?float {
-            $number = ($keywords[$name] ?? null)?->assertNumber($name);
+        $keywords = $argument_list->get_keywords();
+        $get_param = function (string $name, float $max, bool $check_percent = false, bool $assert_percent = false, bool $check_unitless = false) use (&$keywords, $change, $scale): ?float {
+            $number = ($keywords[$name] ?? null)?->assert_number($name);
             unset($keywords[$name]);
-
             if ($number === null) {
                 return null;
             }
-
-            if (!$scale && $checkUnitless) {
-                if ($number->hasUnits()) {
-                    Warn::forDeprecation(
-                        <<<TXT
-\$$name: Passing a number with unit {$number->getUnitString()} is deprecated.
-
-To preserve current behavior: {$number->unitSuggestion($name)}
-
-More info: https://sass-lang.com/d/function-units
-TXT,
-                        Deprecation::functionUnits
-                    );
+            if (!$scale && $check_unitless) {
+                if ($number->has_units()) {
+                    Warn::for_deprecation(<<<TXT
+                    \${$name}: Passing a number with unit {$number->get_unit_string()} is deprecated.
+                    
+                    To preserve current behavior: {$number->unit_suggestion($name)}
+                    
+                    More info: https://sass-lang.com/d/function-units
+                    TXT, Deprecation::functionUnits);
                 }
             }
-            if (!$scale && $checkPercent) {
-                self::checkPercent($number, $name);
+            if (!$scale && $check_percent) {
+                self::check_percent($number, $name);
             }
-            if ($scale || $assertPercent) {
-                $number->assertUnit('%', $name);
+            if ($scale || $assert_percent) {
+                $number->assert_unit('%', $name);
             }
             if ($scale) {
                 $max = 100;
             }
-
-            return $scale || $assertPercent
-                ? $number->valueInRange($change ? 0 : -$max, $max, $name)
-                : $number->valueInRangeWithUnit($change ? 0 : -$max, $max, $name, $checkPercent ? '%' : '');
+            return $scale || $assert_percent ? $number->value_in_range($change ? 0 : -$max, $max, $name) : $number->value_in_range_with_unit($change ? 0 : -$max, $max, $name, $check_percent ? '%' : '');
         };
-
-        $alpha = $getParam('alpha', 1, checkUnitless: true);
-        $red = $getParam('red', 255);
-        $green = $getParam('green', 255);
-        $blue = $getParam('blue', 255);
-
+        $alpha = $get_param('alpha', 1, checkUnitless: true);
+        $red = $get_param('red', 255);
+        $green = $get_param('green', 255);
+        $blue = $get_param('blue', 255);
         if ($scale) {
             $hue = null;
         } else {
-            $hueValue = $keywords['hue'] ?? null;
+            $hue_value = $keywords['hue'] ?? null;
             unset($keywords['hue']);
-            $hue = $hueValue === null ? null : self::angleValue($hueValue, 'hue');
+            $hue = $hue_value === null ? null : self::angle_value($hue_value, 'hue');
         }
-
-        $saturation = $getParam('saturation', 100, checkPercent: true);
-        $lightness = $getParam('lightness', 100, checkPercent: true);
-        $whiteness = $getParam('whiteness', 100, assertPercent: true);
-        $blackness = $getParam('blackness', 100, assertPercent: true);
-
+        $saturation = $get_param('saturation', 100, checkPercent: true);
+        $lightness = $get_param('lightness', 100, checkPercent: true);
+        $whiteness = $get_param('whiteness', 100, assertPercent: true);
+        $blackness = $get_param('blackness', 100, assertPercent: true);
         if (\count($keywords) > 0) {
-            throw new SassScriptException(sprintf(
-                'No %s named %s.',
-                StringUtil::pluralize('argument', \count($keywords)),
-                StringUtil::toSentence(array_map(fn ($name): string => "\$$name", array_keys($keywords)), 'or')
-            ));
+            throw new Sass_Script_Exception(sprintf('No %s named %s.', String_Util::pluralize('argument', \count($keywords)), String_Util::to_sentence(array_map(fn($name): string => "\${$name}", array_keys($keywords)), 'or')));
         }
-
-        $hasRgb = $red !== null || $green !== null || $blue !== null;
-        $hasSL = $saturation !== null || $lightness !== null;
-        $hasWB = $whiteness !== null || $blackness !== null;
-
-        if ($hasRgb && ($hasSL || $hasWB || $hue !== null)) {
-            $format = $hasWB ? 'HWB' : 'HSL';
-            throw new SassScriptException("RGB parameters may not be passed along with $format parameters.");
+        $has_rgb = $red !== null || $green !== null || $blue !== null;
+        $has_sl = $saturation !== null || $lightness !== null;
+        $has_wb = $whiteness !== null || $blackness !== null;
+        if ($has_rgb && ($has_sl || $has_wb || $hue !== null)) {
+            $format = $has_wb ? 'HWB' : 'HSL';
+            throw new Sass_Script_Exception("RGB parameters may not be passed along with {$format} parameters.");
         }
-
-        if ($hasSL && $hasWB) {
-            throw new SassScriptException('HSL parameters may not be passed along with HWB parameters.');
+        if ($has_sl && $has_wb) {
+            throw new Sass_Script_Exception('HSL parameters may not be passed along with HWB parameters.');
         }
-
-        $updateValue = function (float $current, ?float $param, float $max) use ($change, $adjust): float {
+        $update_value = function (float $current, ?float $param, float $max) use ($change, $adjust): float {
             if ($param === null) {
                 return $current;
             }
-
             if ($change) {
                 return $param;
             }
-
             if ($adjust) {
-                return NumberUtil::clamp($current + $param, 0, $max);
+                return Number_Util::clamp($current + $param, 0, $max);
             }
-
             return $current + ($param > 0 ? $max - $current : $current) * $param / 100;
         };
-
-        $updateRgb = (fn (int $current, ?float $param): int => NumberUtil::fuzzyRound($updateValue($current, $param, 255)));
-
-        if ($hasRgb) {
-            return $color->changeRgb(
-                $updateRgb($color->getRed(), $red),
-                $updateRgb($color->getGreen(), $green),
-                $updateRgb($color->getBlue(), $blue),
-                $updateValue($color->getAlpha(), $alpha, 1)
-            );
+        $update_rgb = fn(int $current, ?float $param): int => Number_Util::fuzzy_round($update_value($current, $param, 255));
+        if ($has_rgb) {
+            return $color->change_rgb($update_rgb($color->get_red(), $red), $update_rgb($color->get_green(), $green), $update_rgb($color->get_blue(), $blue), $update_value($color->get_alpha(), $alpha, 1));
         }
-
-        if ($hasWB) {
-            return $color->changeHwb(
-                $change ? $hue : $color->getHue() + ($hue ?? 0),
-                $updateValue($color->getWhiteness(), $whiteness, 100),
-                $updateValue($color->getBlackness(), $blackness, 100),
-                $updateValue($color->getAlpha(), $alpha, 1)
-            );
+        if ($has_wb) {
+            return $color->change_hwb($change ? $hue : $color->get_hue() + ($hue ?? 0), $update_value($color->get_whiteness(), $whiteness, 100), $update_value($color->get_blackness(), $blackness, 100), $update_value($color->get_alpha(), $alpha, 1));
         }
-
-        if ($hue !== null || $hasSL) {
-            return $color->changeHsl(
-                $change ? $hue : $color->getHue() + ($hue ?? 0),
-                $updateValue($color->getSaturation(), $saturation, 100),
-                $updateValue($color->getLightness(), $lightness, 100),
-                $updateValue($color->getAlpha(), $alpha, 1)
-            );
+        if ($hue !== null || $has_sl) {
+            return $color->change_hsl($change ? $hue : $color->get_hue() + ($hue ?? 0), $update_value($color->get_saturation(), $saturation, 100), $update_value($color->get_lightness(), $lightness, 100), $update_value($color->get_alpha(), $alpha, 1));
         }
-
         if ($alpha !== null) {
-            return $color->changeAlpha($updateValue($color->getAlpha(), $alpha, 1));
+            return $color->change_alpha($update_value($color->get_alpha(), $alpha, 1));
         }
-
         return $color;
     }
-
     /**
      * Returns a string representation of $name called with $arguments, as though
      * it were a plain CSS function.
      *
      * @param Value[] $arguments
      */
-    private static function functionString(string $name, array $arguments): SassString
+    private static function function_string(string $name, array $arguments): Sass_String
     {
-        return new SassString($name . '(' . implode(', ', array_map(fn (Value $argument): string => $argument->toCssString(), $arguments)) . ')', false);
+        return new Sass_String($name . '(' . implode(', ', array_map(fn(Value $argument): string => $argument->to_css_string(), $arguments)) . ')', false);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    private static function rgbImpl(string $name, array $arguments): Value
+    private static function rgb_impl(string $name, array $arguments): Value
     {
         $alpha = $arguments[3] ?? null;
-
-        if ($arguments[0]->isSpecialNumber() || $arguments[1]->isSpecialNumber() || $arguments[2]->isSpecialNumber() || ($alpha?->isSpecialNumber() ?? false)) {
-            return self::functionString($name, $arguments);
+        if ($arguments[0]->is_special_number() || $arguments[1]->is_special_number() || $arguments[2]->is_special_number() || ($alpha?->is_special_number() ?? false)) {
+            return self::function_string($name, $arguments);
         }
-
-        $red = $arguments[0]->assertNumber('red');
-        $green = $arguments[1]->assertNumber('green');
-        $blue = $arguments[2]->assertNumber('blue');
-
-        return SassColor::rgbInternal(
-            NumberUtil::fuzzyRound(self::percentageOrUnitless($red, 255, 'red')),
-            NumberUtil::fuzzyRound(self::percentageOrUnitless($green, 255, 'green')),
-            NumberUtil::fuzzyRound(self::percentageOrUnitless($blue, 255, 'blue')),
-            $alpha !== null ? self::percentageOrUnitless($alpha->assertNumber('alpha'), 1, 'alpha') : 1,
-            ColorFormatEnum::rgbFunction
-        );
+        $red = $arguments[0]->assert_number('red');
+        $green = $arguments[1]->assert_number('green');
+        $blue = $arguments[2]->assert_number('blue');
+        return Sass_Color::rgb_internal(Number_Util::fuzzy_round(self::percentage_or_unitless($red, 255, 'red')), Number_Util::fuzzy_round(self::percentage_or_unitless($green, 255, 'green')), Number_Util::fuzzy_round(self::percentage_or_unitless($blue, 255, 'blue')), $alpha !== null ? self::percentage_or_unitless($alpha->assert_number('alpha'), 1, 'alpha') : 1, Color_Format_Enum::rgbFunction);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    private static function rgbTwoArgsImpl(string $name, array $arguments): Value
+    private static function rgb_two_args_impl(string $name, array $arguments): Value
     {
         // rgba(var(--foo), 0.5) is valid CSS because --foo might be `123, 456, 789`
         // and functions are parsed after variable substitution.
-        if ($arguments[0]->isVar() || (!$arguments[0] instanceof SassColor && $arguments[1]->isVar())) {
-            return self::functionString($name, $arguments);
+        if ($arguments[0]->is_var() || !$arguments[0] instanceof Sass_Color && $arguments[1]->is_var()) {
+            return self::function_string($name, $arguments);
         }
-
-        if ($arguments[1]->isSpecialNumber()) {
-            $color = $arguments[0]->assertColor('color');
-
-            return new SassString("$name({$color->getRed()}, {$color->getGreen()}, {$color->getBlue()}, {$arguments[1]->toCssString()})", false);
+        if ($arguments[1]->is_special_number()) {
+            $color = $arguments[0]->assert_color('color');
+            return new Sass_String("{$name}({$color->get_red()}, {$color->get_green()}, {$color->get_blue()}, {$arguments[1]->to_css_string()})", false);
         }
-
-        $color = $arguments[0]->assertColor('color');
-        $alpha = $arguments[1]->assertNumber('alpha');
-
-        return $color->changeAlpha(self::percentageOrUnitless($alpha, 1, 'alpha'));
+        $color = $arguments[0]->assert_color('color');
+        $alpha = $arguments[1]->assert_number('alpha');
+        return $color->change_alpha(self::percentage_or_unitless($alpha, 1, 'alpha'));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    private static function hslImpl(string $name, array $arguments): Value
+    private static function hsl_impl(string $name, array $arguments): Value
     {
         $alpha = $arguments[3] ?? null;
-
-        if ($arguments[0]->isSpecialNumber() || $arguments[1]->isSpecialNumber() || $arguments[2]->isSpecialNumber() || ($alpha?->isSpecialNumber() ?? false)) {
-            return self::functionString($name, $arguments);
+        if ($arguments[0]->is_special_number() || $arguments[1]->is_special_number() || $arguments[2]->is_special_number() || ($alpha?->is_special_number() ?? false)) {
+            return self::function_string($name, $arguments);
         }
-
-        $hue = self::angleValue($arguments[0], 'hue');
-        $saturation = $arguments[1]->assertNumber('saturation');
-        $lightness = $arguments[2]->assertNumber('lightness');
-
-        self::checkPercent($saturation, 'saturation');
-        self::checkPercent($lightness, 'lightness');
-
-        return SassColor::hslInternal(
-            $hue,
-            NumberUtil::clamp($saturation->getValue(), 0, 100),
-            NumberUtil::clamp($lightness->getValue(), 0, 100),
-            $alpha !== null ? self::percentageOrUnitless($alpha->assertNumber('alpha'), 1, 'alpha') : 1,
-            ColorFormatEnum::hslFunction
-        );
+        $hue = self::angle_value($arguments[0], 'hue');
+        $saturation = $arguments[1]->assert_number('saturation');
+        $lightness = $arguments[2]->assert_number('lightness');
+        self::check_percent($saturation, 'saturation');
+        self::check_percent($lightness, 'lightness');
+        return Sass_Color::hsl_internal($hue, Number_Util::clamp($saturation->get_value(), 0, 100), Number_Util::clamp($lightness->get_value(), 0, 100), $alpha !== null ? self::percentage_or_unitless($alpha->assert_number('alpha'), 1, 'alpha') : 1, Color_Format_Enum::hslFunction);
     }
-
     /**
      * Asserts that $angle is a number and returns its value in degrees.
      *
      * Prints a deprecation warning if $angle has a non-angle unit.
      */
-    private static function angleValue(Value $angleValue, string $name): float
+    private static function angle_value(Value $angle_value, string $name): float
     {
-        $angle = $angleValue->assertNumber($name);
-
-        if ($angle->compatibleWithUnit('deg')) {
-            return $angle->coerceValueToUnit('deg');
+        $angle = $angle_value->assert_number($name);
+        if ($angle->compatible_with_unit('deg')) {
+            return $angle->coerce_value_to_unit('deg');
         }
-
-        Warn::forDeprecation(
-            <<<TXT
-\$$name: Passing a unit other than deg ($angle) is deprecated.
-
-To preserve current behavior: {$angle->unitSuggestion($name)}
-
-See https://sass-lang.com/d/function-units
-TXT,
-            Deprecation::functionUnits
-        );
-
-        return $angle->getValue();
+        Warn::for_deprecation(<<<TXT
+        \${$name}: Passing a unit other than deg ({$angle}) is deprecated.
+        
+        To preserve current behavior: {$angle->unit_suggestion($name)}
+        
+        See https://sass-lang.com/d/function-units
+        TXT, Deprecation::functionUnits);
+        return $angle->get_value();
     }
-
-    private static function checkPercent(SassNumber $number, string $name): void
+    private static function check_percent(Sass_Number $number, string $name): void
     {
-        if ($number->hasUnit('%')) {
+        if ($number->has_unit('%')) {
             return;
         }
-
-        Warn::forDeprecation(
-            <<<TXT
-\$$name: Passing a number without unit % ($number) is deprecated.
-
-To preserve current behavior: {$number->unitSuggestion($name, '%')}
-
-More info: https://sass-lang.com/d/function-units
-TXT,
-            Deprecation::functionUnits
-        );
+        Warn::for_deprecation(<<<TXT
+        \${$name}: Passing a number without unit % ({$number}) is deprecated.
+        
+        To preserve current behavior: {$number->unit_suggestion($name, '%')}
+        
+        More info: https://sass-lang.com/d/function-units
+        TXT, Deprecation::functionUnits);
     }
-
     /**
      * @param list<string> $argumentNames
      *
      * @return SassString|list<Value>
      */
-    private static function parseChannels(string $name, array $argumentNames, Value $channels): SassString|array
+    private static function parse_channels(string $name, array $argument_names, Value $channels): Sass_String|array
     {
-        if ($channels->isVar()) {
-            return self::functionString($name, [$channels]);
+        if ($channels->is_var()) {
+            return self::function_string($name, [$channels]);
         }
-
-        $originalChannels = $channels;
-        $alphaFromSlashList = null;
-
-        if ($channels->getSeparator() === ListSeparator::SLASH) {
-            $list = $channels->asList();
-
+        $original_channels = $channels;
+        $alpha_from_slash_list = null;
+        if ($channels->get_separator() === List_Separator::SLASH) {
+            $list = $channels->as_list();
             if (\count($list) !== 2) {
-                throw new SassScriptException(sprintf(
-                    'Only 2 slash-separated elements allowed, but %s %s passed.',
-                    \count($list),
-                    StringUtil::pluralize('was', \count($list), 'were')
-                ));
+                throw new Sass_Script_Exception(sprintf('Only 2 slash-separated elements allowed, but %s %s passed.', \count($list), String_Util::pluralize('was', \count($list), 'were')));
             }
-
             $channels = $list[0];
-            $alphaFromSlashList = $list[1];
-
-            if (!$alphaFromSlashList->isSpecialNumber()) {
-                $alphaFromSlashList->assertNumber('alpha');
+            $alpha_from_slash_list = $list[1];
+            if (!$alpha_from_slash_list->is_special_number()) {
+                $alpha_from_slash_list->assert_number('alpha');
             }
-
-            if ($list[0]->isVar()) {
-                return self::functionString($name, [$originalChannels]);
+            if ($list[0]->is_var()) {
+                return self::function_string($name, [$original_channels]);
             }
         }
-
-        $isCommaSeparated = $channels->getSeparator() === ListSeparator::COMMA;
-        $isBracketed = $channels->hasBrackets();
-
-        if ($isCommaSeparated || $isBracketed) {
+        $is_comma_separated = $channels->get_separator() === List_Separator::COMMA;
+        $is_bracketed = $channels->has_brackets();
+        if ($is_comma_separated || $is_bracketed) {
             $buffer = '$channels must be';
-            if ($isBracketed) {
+            if ($is_bracketed) {
                 $buffer .= ' an unbracketed';
             }
-            if ($isCommaSeparated) {
-                $buffer .= $isBracketed ? ',' : ' a';
+            if ($is_comma_separated) {
+                $buffer .= $is_bracketed ? ',' : ' a';
                 $buffer .= ' space-separated';
             }
-
             $buffer .= ' list.';
-
-            throw new SassScriptException($buffer);
+            throw new Sass_Script_Exception($buffer);
         }
-
-        $list = $channels->asList();
-
-        if (\count($list) >= 2 && $list[0] instanceof SassString && !$list[0]->hasQuotes() && StringUtil::equalsIgnoreCase($list[0]->getText(), 'from')) {
-            return self::functionString($name, [$originalChannels]);
+        $list = $channels->as_list();
+        if (\count($list) >= 2 && $list[0] instanceof Sass_String && !$list[0]->has_quotes() && String_Util::equals_ignore_case($list[0]->get_text(), 'from')) {
+            return self::function_string($name, [$original_channels]);
         }
-
         if (\count($list) > 3) {
-            throw new SassScriptException(sprintf(
-                'Only 3 elements allowed, but %s were passed.',
-                \count($list)
-            ));
+            throw new Sass_Script_Exception(sprintf('Only 3 elements allowed, but %s were passed.', \count($list)));
         }
-
         if (\count($list) < 3) {
-            if (IterableUtil::any($list, fn (Value $value): bool => $value->isVar()) || (\count($list) > 0 && self::isVarSlash($list[0]))) {
-                return self::functionString($name, [$originalChannels]);
+            if (Iterable_Util::any($list, fn(Value $value): bool => $value->is_var()) || \count($list) > 0 && self::is_var_slash($list[0])) {
+                return self::function_string($name, [$original_channels]);
             }
-
-            $argument = $argumentNames[\count($list)];
-
-            throw new SassScriptException("Missing element $argument.");
+            $argument = $argument_names[\count($list)];
+            throw new Sass_Script_Exception("Missing element {$argument}.");
         }
-
-        if ($alphaFromSlashList !== null) {
-            return [...$list, $alphaFromSlashList];
+        if ($alpha_from_slash_list !== null) {
+            return [...$list, $alpha_from_slash_list];
         }
-
-        if ($list[2] instanceof SassNumber && $list[2]->getAsSlash() !== null) {
-            [$channel3, $alpha] = $list[2]->getAsSlash();
-
+        if ($list[2] instanceof Sass_Number && $list[2]->get_as_slash() !== null) {
+            [$channel3, $alpha] = $list[2]->get_as_slash();
             return [$list[0], $list[1], $channel3, $alpha];
         }
-
-        if ($list[2] instanceof SassString && !$list[2]->hasQuotes() && str_contains($list[2]->getText(), '/')) {
-            return self::functionString($name, [$channels]);
+        if ($list[2] instanceof Sass_String && !$list[2]->has_quotes() && str_contains($list[2]->get_text(), '/')) {
+            return self::function_string($name, [$channels]);
         }
-
         return $list;
     }
-
     /**
      * Returns whether $value is an unquoted string that start with `var(` and
      * contains `/`.
      */
-    private static function isVarSlash(Value $value): bool
+    private static function is_var_slash(Value $value): bool
     {
-        return $value instanceof SassString && $value->hasQuotes() && StringUtil::startsWithIgnoreCase($value->getText(), 'var(') && str_contains($value->getText(), '/');
+        return $value instanceof Sass_String && $value->has_quotes() && String_Util::starts_with_ignore_case($value->get_text(), 'var(') && str_contains($value->get_text(), '/');
     }
-
     /**
      * Asserts that $number is a percentage or has no units, and normalizes the
      * value.
@@ -805,23 +620,20 @@ TXT,
      *
      * $name is used to identify the argument in the error message.
      */
-    private static function percentageOrUnitless(SassNumber $number, float $max, string $name): float
+    private static function percentage_or_unitless(Sass_Number $number, float $max, string $name): float
     {
-        if (!$number->hasUnits()) {
-            $value = $number->getValue();
-        } elseif ($number->hasUnit('%')) {
-            $value = $max * $number->getValue() / 100;
+        if (!$number->has_units()) {
+            $value = $number->get_value();
+        } elseif ($number->has_unit('%')) {
+            $value = $max * $number->get_value() / 100;
         } else {
-            throw new SassScriptException("\$$name: Expected $number to have unit \"%\" or no units.");
+            throw new Sass_Script_Exception("\${$name}: Expected {$number} to have unit \"%\" or no units.");
         }
-
-        return NumberUtil::clamp($value, 0, $max);
+        return Number_Util::clamp($value, 0, $max);
     }
-
-    private static function mixColors(SassColor $color1, SassColor $color2, SassNumber $weight): SassColor
+    private static function mix_colors(Sass_Color $color1, Sass_Color $color2, Sass_Number $weight): Sass_Color
     {
-        self::checkPercent($weight, 'weight');
-
+        self::check_percent($weight, 'weight');
         // This algorithm factors in both the user-provided weight (w) and the
         // difference between the alpha values of the two colors (a) to decide how
         // to perform the weighted average of the two RGB values.
@@ -842,45 +654,30 @@ TXT,
         //
         // Finally, the weight of color1 is renormalized to be within [0, 1] and the
         // weight of color2 is given by 1 minus the weight of color1.
-
-        $weightScale = $weight->valueInRange(0, 100, 'weight') / 100;
-        $normalizedWeight = $weightScale * 2 - 1;
-        $alphaDistance = $color1->getAlpha() - $color2->getAlpha();
-
-        $combinedWeight1 = $normalizedWeight * $alphaDistance == -1
-            ? $normalizedWeight
-            : ($normalizedWeight + $alphaDistance) / (1 + $normalizedWeight * $alphaDistance);
-
-        $weight1 = ($combinedWeight1 + 1) / 2;
+        $weight_scale = $weight->value_in_range(0, 100, 'weight') / 100;
+        $normalized_weight = $weight_scale * 2 - 1;
+        $alpha_distance = $color1->get_alpha() - $color2->get_alpha();
+        $combined_weight1 = $normalized_weight * $alpha_distance == -1 ? $normalized_weight : ($normalized_weight + $alpha_distance) / (1 + $normalized_weight * $alpha_distance);
+        $weight1 = ($combined_weight1 + 1) / 2;
         $weight2 = 1 - $weight1;
-
-        return SassColor::rgb(
-            NumberUtil::fuzzyRound($color1->getRed() * $weight1 + $color2->getRed() * $weight2),
-            NumberUtil::fuzzyRound($color1->getGreen() * $weight1 + $color2->getGreen() * $weight2),
-            NumberUtil::fuzzyRound($color1->getBlue() * $weight1 + $color2->getBlue() * $weight2),
-            $color1->getAlpha() * $weightScale + $color2->getAlpha() * (1 -  $weightScale)
-        );
+        return Sass_Color::rgb(Number_Util::fuzzy_round($color1->get_red() * $weight1 + $color2->get_red() * $weight2), Number_Util::fuzzy_round($color1->get_green() * $weight1 + $color2->get_green() * $weight2), Number_Util::fuzzy_round($color1->get_blue() * $weight1 + $color2->get_blue() * $weight2), $color1->get_alpha() * $weight_scale + $color2->get_alpha() * (1 - $weight_scale));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function opacify(array $arguments): SassColor
+    public static function opacify(array $arguments): Sass_Color
     {
-        $color = $arguments[0]->assertColor('color');
-        $amount = $arguments[1]->assertNumber('amount');
-
-        return $color->changeAlpha(NumberUtil::clamp($color->getAlpha() + $amount->valueInRangeWithUnit(0, 1, 'amount', ''), 0, 1));
+        $color = $arguments[0]->assert_color('color');
+        $amount = $arguments[1]->assert_number('amount');
+        return $color->change_alpha(Number_Util::clamp($color->get_alpha() + $amount->value_in_range_with_unit(0, 1, 'amount', ''), 0, 1));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function transparentize(array $arguments): SassColor
+    public static function transparentize(array $arguments): Sass_Color
     {
-        $color = $arguments[0]->assertColor('color');
-        $amount = $arguments[1]->assertNumber('amount');
-
-        return $color->changeAlpha(NumberUtil::clamp($color->getAlpha() - $amount->valueInRangeWithUnit(0, 1, 'amount', ''), 0, 1));
+        $color = $arguments[0]->assert_color('color');
+        $amount = $arguments[1]->assert_number('amount');
+        return $color->change_alpha(Number_Util::clamp($color->get_alpha() - $amount->value_in_range_with_unit(0, 1, 'amount', ''), 0, 1));
     }
 }

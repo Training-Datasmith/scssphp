@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,11 +10,9 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Visitor\StatementSearchVisitor;
-
+use Scss_Php\Scss_Php\Visitor\Statement_Search_Visitor;
 /**
  * A visitor for determining whether a {@see MixinRule} recursively contains a
  * {@see ContentRule}.
@@ -24,9 +21,9 @@ use ScssPhp\ScssPhp\Visitor\StatementSearchVisitor;
  *
  * @extends StatementSearchVisitor<bool>
  */
-final class HasContentVisitor extends StatementSearchVisitor
+final class Has_Content_Visitor extends Statement_Search_Visitor
 {
-    public function visitContentRule(ContentRule $node): bool
+    public function visit_content_rule(Content_Rule $node): bool
     {
         return true;
     }

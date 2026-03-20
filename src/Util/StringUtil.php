@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,28 +10,24 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Util;
+namespace Scss_Php\Scss_Php\Util;
 
 /**
  * @internal
  */
-final class StringUtil
+final class String_Util
 {
     /**
      * @param non-empty-array<string> $iter
      */
-    public static function toSentence(array $iter, string $conjunction = 'and'): string
+    public static function to_sentence(array $iter, string $conjunction = 'and'): string
     {
         if (\count($iter) === 1) {
             return $iter[array_key_first($iter)];
         }
-
         $last = array_pop($iter);
-
         return implode(', ', $iter) . ' ' . $conjunction . ' ' . $last;
     }
-
     /**
      * Returns $name if $number is 1, or the plural of $name otherwise.
      *
@@ -44,39 +39,29 @@ final class StringUtil
         if ($number === 1) {
             return $name;
         }
-
         if ($plural !== null) {
             return $plural;
         }
-
         return $name . 's';
     }
-
-    public static function trimAscii(string $string, bool $excludeEscape = false): string
+    public static function trim_ascii(string $string, bool $exclude_escape = false): string
     {
-        $start = self::firstNonWhitespace($string);
-
+        $start = self::first_non_whitespace($string);
         if ($start === null) {
             return '';
         }
-
-        $end = self::lastNonWhitespace($string, $excludeEscape);
+        $end = self::last_non_whitespace($string, $exclude_escape);
         assert($end !== null);
-
         return substr($string, $start, $end + 1);
     }
-
-    public static function trimAsciiRight(string $string, bool $excludeEscape = false): string
+    public static function trim_ascii_right(string $string, bool $exclude_escape = false): string
     {
-        $end = self::lastNonWhitespace($string, $excludeEscape);
-
+        $end = self::last_non_whitespace($string, $exclude_escape);
         if ($end === null) {
             return '';
         }
-
         return substr($string, 0, $end + 1);
     }
-
     /**
      * Returns the index of the first character in $string that's not ASCII
      * whitespace, or `null` if $string is entirely spaces.
@@ -84,19 +69,16 @@ final class StringUtil
      * If $excludeEscape is `true`, this doesn't move past whitespace that's
      * included in a CSS escape.
      */
-    private static function firstNonWhitespace(string $string): ?int
+    private static function first_non_whitespace(string $string): ?int
     {
         for ($i = 0; $i < \strlen($string); $i++) {
             $char = $string[$i];
-
-            if (!Character::isWhitespace($char)) {
+            if (!Character::is_whitespace($char)) {
                 return $i;
             }
         }
-
         return null;
     }
-
     /**
      * Returns the index of the last character in $string that's not ASCII
      * whitespace, or `null` if $string is entirely spaces.
@@ -104,57 +86,47 @@ final class StringUtil
      * If $excludeEscape is `true`, this doesn't move past whitespace that's
      * included in a CSS escape.
      */
-    private static function lastNonWhitespace(string $string, bool $excludeEscape = false): ?int
+    private static function last_non_whitespace(string $string, bool $exclude_escape = false): ?int
     {
         for ($i = \strlen($string) - 1; $i >= 0; $i--) {
             $char = $string[$i];
-
-            if (!Character::isWhitespace($char)) {
-                if ($excludeEscape && $i !== 0 && $i !== \strlen($string) && $char === '\\') {
+            if (!Character::is_whitespace($char)) {
+                if ($exclude_escape && $i !== 0 && $i !== \strlen($string) && $char === '\\') {
                     return $i + 1;
                 }
-
                 return $i;
             }
         }
-
         return null;
     }
-
     /**
      * Returns whether $string1 and $string2 are equal, ignoring ASCII case.
      */
-    public static function equalsIgnoreCase(?string $string1, string $string2): bool
+    public static function equals_ignore_case(?string $string1, string $string2): bool
     {
         if ($string1 === $string2) {
             return true;
         }
-
         if ($string1 === null) {
             return false;
         }
-
-        return self::toAsciiLowerCase($string1) === self::toAsciiLowerCase($string2);
+        return self::to_ascii_lower_case($string1) === self::to_ascii_lower_case($string2);
     }
-
     /**
      * Returns whether $string starts with $prefix, ignoring ASCII case.
      */
-    public static function startsWithIgnoreCase(string $string, string $prefix): bool
+    public static function starts_with_ignore_case(string $string, string $prefix): bool
     {
         if (\strlen($string) < \strlen($prefix)) {
             return false;
         }
-
         for ($i = 0; $i < \strlen($prefix); $i++) {
-            if (!Character::equalsIgnoreCase($string[$i], $prefix[$i])) {
+            if (!Character::equals_ignore_case($string[$i], $prefix[$i])) {
                 return false;
             }
         }
-
         return true;
     }
-
     /**
      * Converts all ASCII chars to lowercase in the input string.
      *
@@ -163,11 +135,10 @@ final class StringUtil
      * Passing an input string in an encoding that it is not ASCII compatible is
      * unsupported, and will probably generate garbage.
      */
-    public static function toAsciiLowerCase(string $string): string
+    public static function to_ascii_lower_case(string $string): string
     {
         return strtr($string, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
     }
-
     /**
      * Converts all ASCII chars to uppercase in the input string.
      *
@@ -176,7 +147,7 @@ final class StringUtil
      * Passing an input string in an encoding that it is not ASCII compatible is
      * unsupported, and will probably generate garbage.
      */
-    public static function toAsciiUpperCase(string $string): string
+    public static function to_ascii_upper_case(string $string): string
     {
         return strtr($string, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
     }

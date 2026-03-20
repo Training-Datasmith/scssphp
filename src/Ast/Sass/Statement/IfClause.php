@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,18 +10,16 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
 /**
  * An `@if` or `@else if` clause in an `@if` rule.
  *
  * @internal
  */
-final class IfClause extends IfRuleClause
+final class If_Clause extends If_Rule_Clause
 {
     /**
      * @param Statement[] $children
@@ -31,8 +28,7 @@ final class IfClause extends IfRuleClause
     {
         parent::__construct($children);
     }
-
-    public function getExpression(): Expression
+    public function get_expression(): Expression
     {
         return $this->expression;
     }

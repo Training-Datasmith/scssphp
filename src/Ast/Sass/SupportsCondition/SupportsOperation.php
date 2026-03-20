@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,65 +10,58 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Source_Span\File_Span;
 /**
  * An operation defining the relationship between two conditions.
  *
  * @internal
  */
-final class SupportsOperation implements SupportsCondition
+final class Supports_Operation implements Supports_Condition
 {
-    private readonly FileSpan $span;
-
-    public function __construct(/**
-     * The left-hand operand.
-     */
-        private readonly SupportsCondition $left, /**
-     * The right-hand operand.
-     */
-        private readonly SupportsCondition $right,
+    private readonly File_Span $span;
+    public function __construct(
+        /**
+         * The left-hand operand.
+         */
+        private readonly Supports_Condition $left,
+        /**
+         * The right-hand operand.
+         */
+        private readonly Supports_Condition $right,
         private readonly string $operator,
-        FileSpan $span
-    ) {
+        File_Span $span
+    )
+    {
         $this->span = $span;
     }
-
-    public function getLeft(): SupportsCondition
+    public function get_left(): Supports_Condition
     {
         return $this->left;
     }
-
-    public function getRight(): SupportsCondition
+    public function get_right(): Supports_Condition
     {
         return $this->right;
     }
-
-    public function getOperator(): string
+    public function get_operator(): string
     {
         return $this->operator;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
         return $this->parenthesize($this->left) . ' ' . $this->operator . ' ' . $this->parenthesize($this->right);
     }
-
-    private function parenthesize(SupportsCondition $condition): string
+    private function parenthesize(Supports_Condition $condition): string
     {
-        if ($condition instanceof SupportsNegation || $condition instanceof SupportsOperation && $condition->operator === $this->operator) {
-            return "($condition)";
+        if ($condition instanceof Supports_Negation || $condition instanceof Supports_Operation && $condition->operator === $this->operator) {
+            return "({$condition})";
         }
-
         return (string) $condition;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,23 +10,21 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * A {@see CssNode} that can have child statements.
  *
  * @internal
  */
-interface CssParentNode extends CssNode
+interface Css_Parent_Node extends Css_Node
 {
     /**
      * The child statements of this node.
      *
      * @return list<CssNode>
      */
-    public function getChildren(): array;
-
+    public function get_children(): array;
     /**
      * Whether the rule has no children and should be emitted without curly
      * braces.
@@ -35,5 +32,5 @@ interface CssParentNode extends CssNode
      * This implies `children.isEmpty`, but the reverse is not true—for a rule
      * like `@foo {}`, {@see getChildren} is empty but {@see isChildless} is `false`.
      */
-    public function isChildless(): bool;
+    public function is_childless(): bool;
 }

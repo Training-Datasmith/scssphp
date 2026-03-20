@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
 /**
  * @internal
  */
-enum BinaryOperator
+enum Binary_Operator
 {
     case SINGLE_EQUALS;
     case OR;
@@ -33,11 +31,10 @@ enum BinaryOperator
     case TIMES;
     case DIVIDED_BY;
     case MODULO;
-
     /**
      * The Sass syntax for this operator
      */
-    public function getOperator(): string
+    public function get_operator(): string
     {
         return match ($this) {
             self::SINGLE_EQUALS => '=',
@@ -56,8 +53,7 @@ enum BinaryOperator
             self::MODULO => '%',
         };
     }
-
-    public function getPrecedence(): int
+    public function get_precedence(): int
     {
         return match ($this) {
             self::SINGLE_EQUALS => 0,
@@ -69,13 +65,12 @@ enum BinaryOperator
             self::TIMES, self::DIVIDED_BY, self::MODULO => 6,
         };
     }
-
     /**
      * Whether this operation has the [associative property].
      *
      * [associative property]: https://en.wikipedia.org/wiki/Associative_property
      */
-    public function isAssociative(): bool
+    public function is_associative(): bool
     {
         return match ($this) {
             self::OR, self::AND, self::PLUS, self::TIMES => true,

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,14 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * An expression-level `@supports` condition.
  *
@@ -27,27 +24,23 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class SupportsExpression implements Expression
+final class Supports_Expression implements Expression
 {
-    public function __construct(private readonly SupportsCondition $condition)
+    public function __construct(private readonly Supports_Condition $condition)
     {
     }
-
-    public function getCondition(): SupportsCondition
+    public function get_condition(): Supports_Condition
     {
         return $this->condition;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
-        return $this->condition->getSpan();
+        return $this->condition->get_span();
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitSupportsExpression($this);
+        return $visitor->visit_supports_expression($this);
     }
-
     public function __toString(): string
     {
         return (string) $this->condition;

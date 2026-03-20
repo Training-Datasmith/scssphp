@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Importer;
+namespace Scss_Php\Scss_Php\Importer;
 
 /**
  * @internal
  */
-enum SpecialCacheValue
+enum Special_Cache_Value
 {
     case null;
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,43 +10,36 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Visitor\ModifiableCssVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Visitor\Modifiable_Css_Visitor;
+use Source_Span\File_Span;
 /**
  * A modifiable version of {@see CssComment} for use in the evaluation step.
  *
  * @internal
  */
-final class ModifiableCssComment extends ModifiableCssNode implements CssComment
+final class Modifiable_Css_Comment extends Modifiable_Css_Node implements Css_Comment
 {
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly string $text, FileSpan $span)
+    private readonly File_Span $span;
+    public function __construct(private readonly string $text, File_Span $span)
     {
         $this->span = $span;
     }
-
-    public function getText(): string
+    public function get_text(): string
     {
         return $this->text;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function isPreserved(): bool
+    public function is_preserved(): bool
     {
         return $this->text[2] === '!';
     }
-
-    public function accept(ModifiableCssVisitor $visitor)
+    public function accept(Modifiable_Css_Visitor $visitor)
     {
-        return $visitor->visitCssComment($this);
+        return $visitor->visit_css_comment($this);
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,23 +10,21 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
 /**
  * @internal
  */
-enum UnaryOperator
+enum Unary_Operator
 {
     case PLUS;
     case MINUS;
     case DIVIDE;
     case NOT;
-
     /**
      * The Sass syntax for this operator
      */
-    public function getOperator(): string
+    public function get_operator(): string
     {
         return match ($this) {
             self::PLUS => '+',

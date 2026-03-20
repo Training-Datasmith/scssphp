@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,34 +10,30 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use ScssPhp\ScssPhp\Value\Value;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Scss_Php\Scss_Php\Value\Value;
+use Source_Span\File_Span;
 /**
  * A plain CSS declaration (that is, a `name: value` pair).
  *
  * @internal
  */
-interface CssDeclaration extends CssNode
+interface Css_Declaration extends Css_Node
 {
     /**
      * The name of this declaration.
      *
      * @return CssValue<string>
      */
-    public function getName(): CssValue;
-
+    public function get_name(): Css_Value;
     /**
      * The value of this declaration.
      *
      * @return CssValue<Value>
      */
-    public function getValue(): CssValue;
-
+    public function get_value(): Css_Value;
     /**
      * A list of style rules that appeared before this declaration in the Sass
      * input but after it in the CSS output.
@@ -50,16 +45,14 @@ interface CssDeclaration extends CssNode
      *
      * @return list<CssStyleRule>
      */
-    public function getInterleavedRules(): array;
-
+    public function get_interleaved_rules(): array;
     /**
      * The stack trace indicating where this node was created.
      *
      * This is used to emit interleaved declaration warnings, and only needs to be set if
      * {@see getInterleavedRules} isn't empty.
      */
-    public function getTrace(): ?Trace;
-
+    public function get_trace(): ?Trace;
     /**
      * The span for {@see getValue} that should be emitted to the source map.
      *
@@ -67,13 +60,11 @@ interface CssDeclaration extends CssNode
      * where that variable was declared whereas `$this->getValue()->getSpan()` is the span where
      * the variable was used. Otherwise, this is identical to `$this->getValue()->getSpan()`.
      */
-    public function getValueSpanForMap(): FileSpan;
-
+    public function get_value_span_for_map(): File_Span;
     /**
      * Returns whether this is a CSS Custom Property declaration.
      */
-    public function isCustomProperty(): bool;
-
+    public function is_custom_property(): bool;
     /**
      * Whether this was originally parsed as a custom property declaration, as
      * opposed to using something like `#{--foo}: ...` to cause it to be parsed
@@ -82,5 +73,5 @@ interface CssDeclaration extends CssNode
      * If this is `true`, {@see isCustomProperty} will also be `true` and {@see getValue} will
      * contain a {@see SassString}.
      */
-    public function isParsedAsCustomProperty(): bool;
+    public function is_parsed_as_custom_property(): bool;
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,17 +10,15 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\SassDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Util;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Sass_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Util;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * A variable declaration.
  *
@@ -29,32 +26,27 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class VariableDeclaration implements Statement, SassDeclaration
+final class Variable_Declaration implements Statement, Sass_Declaration
 {
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly string $name, private readonly Expression $expression, FileSpan $span, private readonly ?string $namespace = null, private readonly bool $guarded = false, private readonly bool $global = false, private readonly ?SilentComment $comment = null)
+    private readonly File_Span $span;
+    public function __construct(private readonly string $name, private readonly Expression $expression, File_Span $span, private readonly ?string $namespace = null, private readonly bool $guarded = false, private readonly bool $global = false, private readonly ?Silent_Comment $comment = null)
     {
         $this->span = $span;
-
         if ($this->namespace !== null && $this->global) {
             throw new \InvalidArgumentException("Other modules' members can't be defined with !global.");
         }
     }
-
-    public function getNamespace(): ?string
+    public function get_namespace(): ?string
     {
         return $this->namespace;
     }
-
     /**
      * The name of the variable, with underscores converted to hyphens.
      */
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
     /**
      * The variable name as written in the document, without underscores
      * converted to hyphens and including the leading `$`.
@@ -62,68 +54,55 @@ final class VariableDeclaration implements Statement, SassDeclaration
      * This isn't particularly efficient, and should only be used for error
      * messages.
      */
-    public function getOriginalName(): string
+    public function get_original_name(): string
     {
-        return Util::declarationName($this->span);
+        return Util::declaration_name($this->span);
     }
-
-    public function getComment(): ?SilentComment
+    public function get_comment(): ?Silent_Comment
     {
         return $this->comment;
     }
-
-    public function getExpression(): Expression
+    public function get_expression(): Expression
     {
         return $this->expression;
     }
-
-    public function isGuarded(): bool
+    public function is_guarded(): bool
     {
         return $this->guarded;
     }
-
-    public function isGlobal(): bool
+    public function is_global(): bool
     {
         return $this->global;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function getNameSpan(): FileSpan
+    public function get_name_span(): File_Span
     {
         $span = $this->span;
-
         if ($this->namespace !== null) {
-            $span = SpanUtil::withoutNamespace($span);
+            $span = Span_Util::without_namespace($span);
         }
-
-        return SpanUtil::initialIdentifier($span, 1);
+        return Span_Util::initial_identifier($span, 1);
     }
-
-    public function getNamespaceSpan(): ?FileSpan
+    public function get_namespace_span(): ?File_Span
     {
         if ($this->namespace === null) {
             return null;
         }
-
-        return SpanUtil::initialIdentifier($this->span);
+        return Span_Util::initial_identifier($this->span);
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitVariableDeclaration($this);
+        return $visitor->visit_variable_declaration($this);
     }
-
     public function __toString(): string
     {
         $buffer = '';
         if ($this->namespace !== null) {
             $buffer .= $this->namespace . '.';
         }
-
-        return $buffer . "\$$this->name: $this->expression;";
+        return $buffer . "\${$this->name}: {$this->expression};";
     }
 }

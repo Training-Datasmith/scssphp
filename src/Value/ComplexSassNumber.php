@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,84 +10,71 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Value;
+namespace Scss_Php\Scss_Php\Value;
 
 /**
  * A specialized subclass of {@see SassNumber} for numbers that are neither {@see UnitlessSassNumber} nor {@see SingleUnitSassNumber}.
  *
  * @internal
  */
-final class ComplexSassNumber extends SassNumber
+final class Complex_Sass_Number extends Sass_Number
 {
     /**
      * @var list<string>
      */
-    private readonly array $numeratorUnits;
-
+    private readonly array $numerator_units;
     /**
      * @var list<string>
      */
-    private readonly array $denominatorUnits;
-
+    private readonly array $denominator_units;
     /**
      * @param list<string>                       $numeratorUnits
      * @param list<string>                       $denominatorUnits
      * @param array{SassNumber, SassNumber}|null $asSlash
      */
-    public function __construct(float $value, array $numeratorUnits, array $denominatorUnits, ?array $asSlash = null)
+    public function __construct(float $value, array $numerator_units, array $denominator_units, ?array $as_slash = null)
     {
-        assert(\count($numeratorUnits) > 1 || \count($denominatorUnits) > 0);
-
-        parent::__construct($value, $asSlash);
-        $this->numeratorUnits = $numeratorUnits;
-        $this->denominatorUnits = $denominatorUnits;
+        assert(\count($numerator_units) > 1 || \count($denominator_units) > 0);
+        parent::__construct($value, $as_slash);
+        $this->numerator_units = $numerator_units;
+        $this->denominator_units = $denominator_units;
     }
-
-    public function getNumeratorUnits(): array
+    public function get_numerator_units(): array
     {
-        return $this->numeratorUnits;
+        return $this->numerator_units;
     }
-
-    public function getDenominatorUnits(): array
+    public function get_denominator_units(): array
     {
-        return $this->denominatorUnits;
+        return $this->denominator_units;
     }
-
-    public function hasUnits(): bool
+    public function has_units(): bool
     {
         return true;
     }
-
-    public function hasComplexUnits(): bool
+    public function has_complex_units(): bool
     {
         return true;
     }
-
-    public function hasUnit(string $unit): bool
+    public function has_unit(string $unit): bool
     {
         return false;
     }
-
-    public function compatibleWithUnit(string $unit): bool
+    public function compatible_with_unit(string $unit): bool
     {
         return false;
     }
-
-    public function hasPossiblyCompatibleUnits(SassNumber $other): bool
+    public function has_possibly_compatible_units(Sass_Number $other): bool
     {
         // This logic is well-defined, and we could implement it in principle.
         // However, it would be fairly complex and there's no clear need for it yet.
         throw new \BadMethodCallException(__METHOD__ . 'is not implemented.');
     }
-
-    protected function withValue(float $value): \ScssPhp\ScssPhp\Value\ComplexSassNumber
+    protected function with_value(float $value): \Scss_Php\Scss_Php\Value\Complex_Sass_Number
     {
-        return new self($value, $this->numeratorUnits, $this->denominatorUnits);
+        return new self($value, $this->numerator_units, $this->denominator_units);
     }
-
-    public function withSlash(SassNumber $numerator, SassNumber $denominator): \ScssPhp\ScssPhp\Value\ComplexSassNumber
+    public function with_slash(Sass_Number $numerator, Sass_Number $denominator): \Scss_Php\Scss_Php\Value\Complex_Sass_Number
     {
-        return new self($this->getValue(), $this->numeratorUnits, $this->denominatorUnits, [$numerator, $denominator]);
+        return new self($this->get_value(), $this->numerator_units, $this->denominator_units, [$numerator, $denominator]);
     }
 }

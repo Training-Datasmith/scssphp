@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,22 +10,20 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Value;
 
-namespace ScssPhp\ScssPhp\Value;
-
-use JiriPudil\SealedClasses\Sealed;
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelector;
-use ScssPhp\ScssPhp\Ast\Selector\CompoundSelector;
-use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
-use ScssPhp\ScssPhp\Ast\Selector\SimpleSelector;
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Serializer\Serializer;
-use ScssPhp\ScssPhp\Util\Equatable;
-use ScssPhp\ScssPhp\Visitor\ValueVisitor;
-use ScssPhp\ScssPhp\Warn;
-
+use Jiri_Pudil\Sealed_Classes\Sealed;
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Compound_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Selector_List;
+use Scss_Php\Scss_Php\Ast\Selector\Simple_Selector;
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Serializer\Serializer;
+use Scss_Php\Scss_Php\Util\Equatable;
+use Scss_Php\Scss_Php\Visitor\Value_Visitor;
+use Scss_Php\Scss_Php\Warn;
 /**
  * A SassScript value.
  *
@@ -35,39 +32,36 @@ use ScssPhp\ScssPhp\Warn;
  * particular types using `assert*()` functions like {@see assertString}, which
  * throw user-friendly error messages if they fail.
  */
-#[Sealed(permits: [SassBoolean::class, SassCalculation::class, SassColor::class, SassFunction::class, SassList::class, SassMap::class, SassMixin::class, SassNull::class, SassNumber::class, SassString::class])]
+#[Sealed(permits: [Sass_Boolean::class, Sass_Calculation::class, Sass_Color::class, Sass_Function::class, Sass_List::class, Sass_Map::class, Sass_Mixin::class, Sass_Null::class, Sass_Number::class, Sass_String::class])]
 abstract class Value implements Equatable, \Stringable
 {
     /**
      * Whether the value counts as `true` in an `@if` statement and other contexts
      */
-    public function isTruthy(): bool
+    public function is_truthy(): bool
     {
         return true;
     }
-
     /**
      * The separator for this value as a list.
      *
      * All SassScript values can be used as lists. Maps count as lists of pairs,
      * and all other values count as single-value lists.
      */
-    public function getSeparator(): ListSeparator
+    public function get_separator(): List_Separator
     {
-        return ListSeparator::UNDECIDED;
+        return List_Separator::UNDECIDED;
     }
-
     /**
      * Whether this value as a list has brackets.
      *
      * All SassScript values can be used as lists. Maps count as lists of pairs,
      * and all other values count as single-value lists.
      */
-    public function hasBrackets(): bool
+    public function has_brackets(): bool
     {
         return false;
     }
-
     /**
      * This value as a list.
      *
@@ -76,22 +70,20 @@ abstract class Value implements Equatable, \Stringable
      *
      * @return list<Value>
      */
-    public function asList(): array
+    public function as_list(): array
     {
         return [$this];
     }
-
     /**
      * The length of {@see asList}.
      *
      * This is used to compute {@see sassIndexToListIndex} without allocating a new
      * list.
      */
-    protected function getLengthAsList(): int
+    protected function get_length_as_list(): int
     {
         return 1;
     }
-
     /**
      * Calls the appropriate visit method on $visitor.
      *
@@ -103,8 +95,7 @@ abstract class Value implements Equatable, \Stringable
      *
      * @internal
      */
-    abstract public function accept(ValueVisitor $visitor);
-
+    abstract public function accept(Value_Visitor $visitor);
     /**
      * Converts $sassIndex into a PHP-style index into the list returned by
      * {@see asList}.
@@ -117,37 +108,29 @@ abstract class Value implements Equatable, \Stringable
      * {@see asList}. If $sassIndex came from a function argument, $name is the
      * argument name (without the `$`). It's used for error reporting.
      */
-    public function sassIndexToListIndex(Value $sassIndex, ?string $name = null): int
+    public function sass_index_to_list_index(Value $sass_index, ?string $name = null): int
     {
-        $indexValue = $sassIndex->assertNumber($name);
-
-        if ($indexValue->hasUnits()) {
+        $index_value = $sass_index->assert_number($name);
+        if ($index_value->has_units()) {
             $message = <<<WARNING
-\$$name: Passing a number with unit {$indexValue->getUnitString()} is deprecated.
-
-To preserve current behavior: {$indexValue->unitSuggestion($name ?? 'index')}
-
-More info: https://sass-lang.com/d/function-units
-WARNING;
-
-            Warn::forDeprecation($message, Deprecation::functionUnits);
+            \${$name}: Passing a number with unit {$index_value->get_unit_string()} is deprecated.
+            
+            To preserve current behavior: {$index_value->unit_suggestion($name ?? 'index')}
+            
+            More info: https://sass-lang.com/d/function-units
+            WARNING;
+            Warn::for_deprecation($message, Deprecation::functionUnits);
         }
-
-        $index = $indexValue->assertInt($name);
-
+        $index = $index_value->assert_int($name);
         if ($index === 0) {
-            throw SassScriptException::forArgument('List index may not be 0.', $name);
+            throw Sass_Script_Exception::for_argument('List index may not be 0.', $name);
         }
-
-        $lengthAsList = $this->getLengthAsList();
-
-        if (abs($index) > $lengthAsList) {
-            throw SassScriptException::forArgument("Invalid index $sassIndex for a list with $lengthAsList elements.", $name);
+        $length_as_list = $this->get_length_as_list();
+        if (abs($index) > $length_as_list) {
+            throw Sass_Script_Exception::for_argument("Invalid index {$sass_index} for a list with {$length_as_list} elements.", $name);
         }
-
-        return $index < 0 ? $lengthAsList + $index : $index - 1;
+        return $index < 0 ? $length_as_list + $index : $index - 1;
     }
-
     /**
      * Throws a {@see SassScriptException} if $this isn't a boolean.
      *
@@ -159,11 +142,10 @@ WARNING;
      *
      * @throws SassScriptException
      */
-    public function assertBoolean(?string $name = null): SassBoolean
+    public function assert_boolean(?string $name = null): Sass_Boolean
     {
-        throw SassScriptException::forArgument("$this is not a boolean.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a boolean.", $name);
     }
-
     /**
      * Throws a {@see SassScriptException} if $this isn't a calculation.
      *
@@ -172,11 +154,10 @@ WARNING;
      *
      * @throws SassScriptException
      */
-    public function assertCalculation(?string $name = null): SassCalculation
+    public function assert_calculation(?string $name = null): Sass_Calculation
     {
-        throw SassScriptException::forArgument("$this is not a calculation.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a calculation.", $name);
     }
-
     /**
      * Throws a {@see SassScriptException} if $this isn't a color.
      *
@@ -185,11 +166,10 @@ WARNING;
      *
      * @throws SassScriptException
      */
-    public function assertColor(?string $name = null): SassColor
+    public function assert_color(?string $name = null): Sass_Color
     {
-        throw SassScriptException::forArgument("$this is not a color.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a color.", $name);
     }
-
     /**
      * Throws a {@see SassScriptException} if $this isn't a function reference.
      *
@@ -198,11 +178,10 @@ WARNING;
      *
      * @throws SassScriptException
      */
-    public function assertFunction(?string $name = null): SassFunction
+    public function assert_function(?string $name = null): Sass_Function
     {
-        throw SassScriptException::forArgument("$this is not a function reference.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a function reference.", $name);
     }
-
     /**
      * Throws a {@see SassScriptException} if $this isn't a mixin reference.
      *
@@ -211,11 +190,10 @@ WARNING;
      *
      * @throws SassScriptException
      */
-    public function assertMixin(?string $name = null): SassMixin
+    public function assert_mixin(?string $name = null): Sass_Mixin
     {
-        throw SassScriptException::forArgument("$this is not a mixin reference.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a mixin reference.", $name);
     }
-
     /**
      * Throws a {@see SassScriptException} if $this isn't a map.
      *
@@ -224,19 +202,17 @@ WARNING;
      *
      * @throws SassScriptException
      */
-    public function assertMap(?string $name = null): SassMap
+    public function assert_map(?string $name = null): Sass_Map
     {
-        throw SassScriptException::forArgument("$this is not a map.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a map.", $name);
     }
-
     /**
      * Return $this as a SassMap if it is one (including empty lists) or null otherwise.
      */
-    public function tryMap(): ?SassMap
+    public function try_map(): ?Sass_Map
     {
         return null;
     }
-
     /**
      * Throws a {@see SassScriptException} if $this isn't a number.
      *
@@ -245,11 +221,10 @@ WARNING;
      *
      * @throws SassScriptException
      */
-    public function assertNumber(?string $name = null): SassNumber
+    public function assert_number(?string $name = null): Sass_Number
     {
-        throw SassScriptException::forArgument("$this is not a number.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a number.", $name);
     }
-
     /**
      * Throws a {@see SassScriptException} if $this isn't a string.
      *
@@ -258,11 +233,10 @@ WARNING;
      *
      * @throws SassScriptException
      */
-    public function assertString(?string $name = null): SassString
+    public function assert_string(?string $name = null): Sass_String
     {
-        throw SassScriptException::forArgument("$this is not a string.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a string.", $name);
     }
-
     /**
      * Parses $this as a selector list, in the same manner as the
      * `selector-parse()` function.
@@ -276,17 +250,15 @@ WARNING;
      *
      * @internal
      */
-    public function assertSelector(?string $name = null, bool $allowParent = false): SelectorList
+    public function assert_selector(?string $name = null, bool $allow_parent = false): Selector_List
     {
-        $string = $this->selectorString($name);
-
+        $string = $this->selector_string($name);
         try {
-            return SelectorList::parse($string, null, null, null, $allowParent);
-        } catch (SassFormatException $e) {
-            throw SassScriptException::forArgument($e->getMessage(), $name, $e);
+            return Selector_List::parse($string, null, null, null, $allow_parent);
+        } catch (Sass_Format_Exception $e) {
+            throw Sass_Script_Exception::for_argument($e->get_message(), $name, $e);
         }
     }
-
     /**
      * Parses $this as a simple selector, in the same manner as the
      * `selector-parse()` function.
@@ -300,17 +272,15 @@ WARNING;
      *
      * @internal
      */
-    public function assertSimpleSelector(?string $name = null, bool $allowParent = false): SimpleSelector
+    public function assert_simple_selector(?string $name = null, bool $allow_parent = false): Simple_Selector
     {
-        $string = $this->selectorString($name);
-
+        $string = $this->selector_string($name);
         try {
-            return SimpleSelector::parse($string, null, null, $allowParent);
-        } catch (SassFormatException $e) {
-            throw SassScriptException::forArgument($e->getMessage(), $name, $e);
+            return Simple_Selector::parse($string, null, null, $allow_parent);
+        } catch (Sass_Format_Exception $e) {
+            throw Sass_Script_Exception::for_argument($e->get_message(), $name, $e);
         }
     }
-
     /**
      * Parses $this as a compound selector, in the same manner as the
      * `selector-parse()` function.
@@ -324,17 +294,15 @@ WARNING;
      *
      * @internal
      */
-    public function assertCompoundSelector(?string $name = null, bool $allowParent = false): CompoundSelector
+    public function assert_compound_selector(?string $name = null, bool $allow_parent = false): Compound_Selector
     {
-        $string = $this->selectorString($name);
-
+        $string = $this->selector_string($name);
         try {
-            return CompoundSelector::parse($string, null, null, $allowParent);
-        } catch (SassFormatException $e) {
-            throw SassScriptException::forArgument($e->getMessage(), $name, $e);
+            return Compound_Selector::parse($string, null, null, $allow_parent);
+        } catch (Sass_Format_Exception $e) {
+            throw Sass_Script_Exception::for_argument($e->get_message(), $name, $e);
         }
     }
-
     /**
      * Parses $this as a complex selector, in the same manner as the
      * `selector-parse()` function.
@@ -348,17 +316,15 @@ WARNING;
      *
      * @internal
      */
-    public function assertComplexSelector(?string $name = null, bool $allowParent = false): ComplexSelector
+    public function assert_complex_selector(?string $name = null, bool $allow_parent = false): Complex_Selector
     {
-        $string = $this->selectorString($name);
-
+        $string = $this->selector_string($name);
         try {
-            return ComplexSelector::parse($string, null, null, $allowParent);
-        } catch (SassFormatException $e) {
-            throw SassScriptException::forArgument($e->getMessage(), $name, $e);
+            return Complex_Selector::parse($string, null, null, $allow_parent);
+        } catch (Sass_Format_Exception $e) {
+            throw Sass_Script_Exception::for_argument($e->get_message(), $name, $e);
         }
     }
-
     /**
      * Converts a `selector-parse()`-style input into a string that can be
      * parsed.
@@ -366,17 +332,14 @@ WARNING;
      * @throws SassScriptException if $this isn't a type or a structure that
      * can be parsed as a selector.
      */
-    private function selectorString(?string $name): string
+    private function selector_string(?string $name): string
     {
-        $string = $this->selectorStringOrNull();
-
+        $string = $this->selector_string_or_null();
         if ($string !== null) {
             return $string;
         }
-
-        throw SassScriptException::forArgument("$this is not a valid selector: it must be a string,\na list of strings, or a list of lists of strings.", $name);
+        throw Sass_Script_Exception::for_argument("{$this} is not a valid selector: it must be a string,\na list of strings, or a list of lists of strings.", $name);
     }
-
     /**
      * Converts a `selector-parse()`-style input into a string that can be
      * parsed.
@@ -384,68 +347,58 @@ WARNING;
      * Returns `null` if $this isn't a type or a structure that can be parsed as
      * a selector.
      */
-    private function selectorStringOrNull(): ?string
+    private function selector_string_or_null(): ?string
     {
-        if ($this instanceof SassString) {
-            return $this->getText();
+        if ($this instanceof Sass_String) {
+            return $this->get_text();
         }
-
-        if (!$this instanceof SassList) {
+        if (!$this instanceof Sass_List) {
             return null;
         }
-
         $list = $this;
-        if (\count($list->asList()) === 0) {
+        if (\count($list->as_list()) === 0) {
             return null;
         }
-
         $result = [];
-        switch ($list->getSeparator()) {
-            case ListSeparator::COMMA:
-                foreach ($list->asList() as $complex) {
-                    if ($complex instanceof SassString) {
-                        $result[] = $complex->getText();
-                    } elseif ($complex instanceof SassList && $complex->getSeparator() === ListSeparator::SPACE) {
-                        $string = $complex->selectorStringOrNull();
-
+        switch ($list->get_separator()) {
+            case List_Separator::COMMA:
+                foreach ($list->as_list() as $complex) {
+                    if ($complex instanceof Sass_String) {
+                        $result[] = $complex->get_text();
+                    } elseif ($complex instanceof Sass_List && $complex->get_separator() === List_Separator::SPACE) {
+                        $string = $complex->selector_string_or_null();
                         if ($string === null) {
                             return null;
                         }
-
                         $result[] = $string;
                     } else {
                         return null;
                     }
                 }
                 break;
-
-            case ListSeparator::SLASH:
+            case List_Separator::SLASH:
                 return null;
-
             default:
-                foreach ($list->asList() as $compound) {
-                    if ($compound instanceof SassString) {
-                        $result[] = $compound->getText();
+                foreach ($list->as_list() as $compound) {
+                    if ($compound instanceof Sass_String) {
+                        $result[] = $compound->get_text();
                     } else {
                         return null;
                     }
                 }
                 break;
         }
-
-        return implode($list->getSeparator() === ListSeparator::COMMA ? ', ' : ' ', $result);
+        return implode($list->get_separator() === List_Separator::COMMA ? ', ' : ' ', $result);
     }
-
     /**
      * Whether the value will be represented in CSS as the empty string.
      *
      * @internal
      */
-    public function isBlank(): bool
+    public function is_blank(): bool
     {
         return false;
     }
-
     /**
      * Whether this is a value that CSS may treat as a number, such as `calc()` or `var()`.
      *
@@ -454,11 +407,10 @@ WARNING;
      *
      * @internal
      */
-    public function isSpecialNumber(): bool
+    public function is_special_number(): bool
     {
         return false;
     }
-
     /**
      * Whether this is a call to `var()`, which may be substituted in CSS for a custom property value.
      *
@@ -467,80 +419,72 @@ WARNING;
      *
      * @internal
      */
-    public function isVar(): bool
+    public function is_var(): bool
     {
         return false;
     }
-
     /**
      * Returns PHP's `null` value if this is Sass null, and returns `$this` otherwise
      */
-    public function realNull(): ?Value
+    public function real_null(): ?Value
     {
         return $this;
     }
-
     /**
      * Returns a new list containing $contents that defaults to this value's
      * separator and brackets.
      *
      * @param list<Value> $contents
      */
-    public function withListContents(array $contents, ?ListSeparator $separator = null, ?bool $brackets = null): SassList
+    public function with_list_contents(array $contents, ?List_Separator $separator = null, ?bool $brackets = null): Sass_List
     {
-        return new SassList($contents, $separator ?? $this->getSeparator(), $brackets ?? $this->hasBrackets());
+        return new Sass_List($contents, $separator ?? $this->get_separator(), $brackets ?? $this->has_brackets());
     }
-
     /**
      * The SassScript = operation
      *
      * @internal
      */
-    public function singleEquals(Value $other): Value
+    public function single_equals(Value $other): Value
     {
-        return new SassString(sprintf('%s=%s', $this->toCssString(), $other->toCssString()), false);
+        return new Sass_String(sprintf('%s=%s', $this->to_css_string(), $other->to_css_string()), false);
     }
-
     /**
      * The SassScript `>` operation.
      *
      * @internal
      */
-    public function greaterThan(Value $other): SassBoolean
+    public function greater_than(Value $other): Sass_Boolean
     {
-        throw new SassScriptException("Undefined operation \"$this > $other\".");
+        throw new Sass_Script_Exception("Undefined operation \"{$this} > {$other}\".");
     }
-
     /**
      * The SassScript `>=` operation.
      *
      * @internal
      */
-    public function greaterThanOrEquals(Value $other): SassBoolean
+    public function greater_than_or_equals(Value $other): Sass_Boolean
     {
-        throw new SassScriptException("Undefined operation \"$this >= $other\".");
+        throw new Sass_Script_Exception("Undefined operation \"{$this} >= {$other}\".");
     }
-
     /**
      * The SassScript `<` operation.
      *
      * @internal
      */
-    public function lessThan(Value $other): SassBoolean
+    public function less_than(Value $other): Sass_Boolean
     {
-        throw new SassScriptException("Undefined operation \"$this < $other\".");
+        throw new Sass_Script_Exception("Undefined operation \"{$this} < {$other}\".");
     }
-
     /**
      * The SassScript `<=` operation.
      *
      * @internal
      */
-    public function lessThanOrEquals(Value $other): SassBoolean
+    public function less_than_or_equals(Value $other): Sass_Boolean
     {
-        throw new SassScriptException("Undefined operation \"$this <= $other\".");
+        throw new Sass_Script_Exception("Undefined operation \"{$this} <= {$other}\".");
     }
-
     /**
      * The SassScript `*` operation.
      *
@@ -548,9 +492,8 @@ WARNING;
      */
     public function times(Value $other): Value
     {
-        throw new SassScriptException("Undefined operation \"$this * $other\".");
+        throw new Sass_Script_Exception("Undefined operation \"{$this} * {$other}\".");
     }
-
     /**
      * The SassScript `%` operation.
      *
@@ -558,9 +501,8 @@ WARNING;
      */
     public function modulo(Value $other): Value
     {
-        throw new SassScriptException("Undefined operation \"$this % $other\".");
+        throw new Sass_Script_Exception("Undefined operation \"{$this} % {$other}\".");
     }
-
     /**
      * The SassScript `+` operation.
      *
@@ -568,17 +510,14 @@ WARNING;
      */
     public function plus(Value $other): Value
     {
-        if ($other instanceof SassString) {
-            return new SassString($this->toCssString() . $other->getText(), $other->hasQuotes());
+        if ($other instanceof Sass_String) {
+            return new Sass_String($this->to_css_string() . $other->get_text(), $other->has_quotes());
         }
-
-        if ($other instanceof SassCalculation) {
-            throw new SassScriptException("Undefined operation \"$this + $other\".");
+        if ($other instanceof Sass_Calculation) {
+            throw new Sass_Script_Exception("Undefined operation \"{$this} + {$other}\".");
         }
-
-        return new SassString($this->toCssString() . $other->toCssString(), false);
+        return new Sass_String($this->to_css_string() . $other->to_css_string(), false);
     }
-
     /**
      * The SassScript `-` operation.
      *
@@ -586,63 +525,56 @@ WARNING;
      */
     public function minus(Value $other): Value
     {
-        if ($other instanceof SassCalculation) {
-            throw new SassScriptException("Undefined operation \"$this - $other\".");
+        if ($other instanceof Sass_Calculation) {
+            throw new Sass_Script_Exception("Undefined operation \"{$this} - {$other}\".");
         }
-
-        return new SassString(sprintf('%s-%s', $this->toCssString(), $other->toCssString()), false);
+        return new Sass_String(sprintf('%s-%s', $this->to_css_string(), $other->to_css_string()), false);
     }
-
     /**
      * The SassScript `/` operation.
      *
      * @internal
      */
-    public function dividedBy(Value $other): Value
+    public function divided_by(Value $other): Value
     {
-        return new SassString(sprintf('%s/%s', $this->toCssString(), $other->toCssString()), false);
+        return new Sass_String(sprintf('%s/%s', $this->to_css_string(), $other->to_css_string()), false);
     }
-
     /**
      * The SassScript unary `+` operation.
      *
      * @internal
      */
-    public function unaryPlus(): Value
+    public function unary_plus(): Value
     {
-        return new SassString(sprintf('+%s', $this->toCssString()), false);
+        return new Sass_String(sprintf('+%s', $this->to_css_string()), false);
     }
-
     /**
      * The SassScript unary `-` operation.
      *
      * @internal
      */
-    public function unaryMinus(): Value
+    public function unary_minus(): Value
     {
-        return new SassString(sprintf('-%s', $this->toCssString()), false);
+        return new Sass_String(sprintf('-%s', $this->to_css_string()), false);
     }
-
     /**
      * The SassScript unary `/` operation.
      *
      * @internal
      */
-    public function unaryDivide(): Value
+    public function unary_divide(): Value
     {
-        return new SassString(sprintf('/%s', $this->toCssString()), false);
+        return new Sass_String(sprintf('/%s', $this->to_css_string()), false);
     }
-
     /**
      * The SassScript unary `not` operation.
      *
      * @internal
      */
-    public function unaryNot(): Value
+    public function unary_not(): Value
     {
-        return SassBoolean::create(false);
+        return Sass_Boolean::create(false);
     }
-
     /**
      * Returns a copy of $this without {@see SassNumber::$asSlash} set.
      *
@@ -650,11 +582,10 @@ WARNING;
      *
      * @internal
      */
-    public function withoutSlash(): Value
+    public function without_slash(): Value
     {
         return $this;
     }
-
     /**
      * Returns a valid CSS representation of $this.
      *
@@ -666,11 +597,10 @@ WARNING;
      *
      * @throws SassScriptException if $this cannot be represented in plain CSS.
      */
-    final public function toCssString(bool $quote = true): string
+    final public function to_css_string(bool $quote = true): string
     {
-        return Serializer::serializeValue($this, false, $quote);
+        return Serializer::serialize_value($this, false, $quote);
     }
-
     /**
      * Returns a Sass representation of $this.
      *
@@ -680,6 +610,6 @@ WARNING;
      */
     final public function __toString(): string
     {
-        return Serializer::serializeValue($this, true);
+        return Serializer::serialize_value($this, true);
     }
 }

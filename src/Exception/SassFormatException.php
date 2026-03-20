@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,12 +10,11 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Exception;
+namespace Scss_Php\Scss_Php\Exception;
 
 /**
  * @internal
  */
-interface SassFormatException extends SassException
+interface Sass_Format_Exception extends Sass_Exception
 {
 }

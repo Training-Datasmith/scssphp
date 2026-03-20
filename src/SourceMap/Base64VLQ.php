@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\SourceMap;
+namespace Scss_Php\Scss_Php\Source_Map;
 
 /**
  * Base 64 VLQ
@@ -43,49 +41,39 @@ final class Base64VLQ
 {
     // A Base64 VLQ digit can represent 5 bits, so it is base-32.
     public const VLQ_BASE_SHIFT = 5;
-
     // A mask of bits for a VLQ digit (11111), 31 decimal.
     public const VLQ_BASE_MASK = 31;
-
     // The continuation bit is the 6th bit.
     public const VLQ_CONTINUATION_BIT = 32;
-
     /**
      * Returns the VLQ encoded value.
      */
     public static function encode(int $value): string
     {
         $encoded = '';
-        $vlq = self::toVLQSigned($value);
-
+        $vlq = self::to_vlq_signed($value);
         do {
             $digit = $vlq & self::VLQ_BASE_MASK;
-
             //$vlq >>>= self::VLQ_BASE_SHIFT; // unsigned right shift
-            $vlq = (($vlq >> 1) & PHP_INT_MAX) >> (self::VLQ_BASE_SHIFT - 1);
-
+            $vlq = ($vlq >> 1 & PHP_INT_MAX) >> self::VLQ_BASE_SHIFT - 1;
             if ($vlq > 0) {
                 $digit |= self::VLQ_CONTINUATION_BIT;
             }
-
             $encoded .= Base64::encode($digit);
         } while ($vlq > 0);
-
         return $encoded;
     }
-
     /**
      * Converts from a two-complement value to a value where the sign bit is
      * is placed in the least significant bit.  For example, as decimals:
      *   1 becomes 2 (10 binary), -1 becomes 3 (11 binary)
      *   2 becomes 4 (100 binary), -2 becomes 5 (101 binary)
      */
-    private static function toVLQSigned(int $value): int
+    private static function to_vlq_signed(int $value): int
     {
         if ($value < 0) {
-            return ((-$value) << 1) + 1;
+            return (-$value << 1) + 1;
         }
-
         return $value << 1;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,109 +10,94 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Compiler;
 
-namespace ScssPhp\ScssPhp\Compiler;
-
-use ScssPhp\ScssPhp\Compiler;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Node\Number;
-use ScssPhp\ScssPhp\Type;
-use ScssPhp\ScssPhp\Util\NumberUtil;
-use ScssPhp\ScssPhp\Value\SassArgumentList;
-use ScssPhp\ScssPhp\Value\SassBoolean;
-use ScssPhp\ScssPhp\Value\SassCalculation;
-use ScssPhp\ScssPhp\Value\SassColor;
-use ScssPhp\ScssPhp\Value\SassFunction;
-use ScssPhp\ScssPhp\Value\SassList;
-use ScssPhp\ScssPhp\Value\SassMap;
-use ScssPhp\ScssPhp\Value\SassMixin;
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Visitor\ValueVisitor;
-
+use Scss_Php\Scss_Php\Compiler;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Node\Number;
+use Scss_Php\Scss_Php\Type;
+use Scss_Php\Scss_Php\Util\Number_Util;
+use Scss_Php\Scss_Php\Value\Sass_Argument_List;
+use Scss_Php\Scss_Php\Value\Sass_Boolean;
+use Scss_Php\Scss_Php\Value\Sass_Calculation;
+use Scss_Php\Scss_Php\Value\Sass_Color;
+use Scss_Php\Scss_Php\Value\Sass_Function;
+use Scss_Php\Scss_Php\Value\Sass_List;
+use Scss_Php\Scss_Php\Value\Sass_Map;
+use Scss_Php\Scss_Php\Value\Sass_Mixin;
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Visitor\Value_Visitor;
 /**
  * Converts values to the legacy representation.
  *
  * @internal
  * @template-implements ValueVisitor<array|Number>
  */
-final class LegacyValueVisitor implements ValueVisitor
+final class Legacy_Value_Visitor implements Value_Visitor
 {
-    public function visitBoolean(SassBoolean $value)
+    public function visit_boolean(Sass_Boolean $value)
     {
-        return $value->getValue() ? Compiler::$true : Compiler::$false;
+        return $value->get_value() ? Compiler::$true : Compiler::$false;
     }
-
-    public function visitCalculation(SassCalculation $value): array
+    public function visit_calculation(Sass_Calculation $value): array
     {
-        return [Type::T_STRING, '', $value->toCssString()];
+        return [Type::T_STRING, '', $value->to_css_string()];
     }
-
-    public function visitColor(SassColor $value): array
+    public function visit_color(Sass_Color $value): array
     {
-        if (NumberUtil::fuzzyEquals($value->getAlpha(), 1)) {
-            return [Type::T_COLOR, $value->getRed(), $value->getGreen(), $value->getBlue()];
+        if (Number_Util::fuzzy_equals($value->get_alpha(), 1)) {
+            return [Type::T_COLOR, $value->get_red(), $value->get_green(), $value->get_blue()];
         }
-
-        return [Type::T_COLOR, $value->getRed(), $value->getGreen(), $value->getBlue(), $value->getAlpha()];
+        return [Type::T_COLOR, $value->get_red(), $value->get_green(), $value->get_blue(), $value->get_alpha()];
     }
-
-    public function visitFunction(SassFunction $value): never
+    public function visit_function(Sass_Function $value): never
     {
-        throw new SassScriptException('Functions are not supported by the legacy value API. Migrate your custom function to the new API to accept mixins as arguments.');
+        throw new Sass_Script_Exception('Functions are not supported by the legacy value API. Migrate your custom function to the new API to accept mixins as arguments.');
     }
-
-    public function visitMixin(SassMixin $value): never
+    public function visit_mixin(Sass_Mixin $value): never
     {
-        throw new SassScriptException('Mixins are not supported by the legacy value API. Migrate your custom function to the new API to accept mixins as arguments.');
+        throw new Sass_Script_Exception('Mixins are not supported by the legacy value API. Migrate your custom function to the new API to accept mixins as arguments.');
     }
-
-    public function visitList(SassList $value): array
+    public function visit_list(Sass_List $value): array
     {
         $items = [];
-        foreach ($value->asList() as $item) {
+        foreach ($value->as_list() as $item) {
             $items[] = $item->accept($this);
         }
-        $list = [Type::T_LIST, $value->getSeparator()->getSeparator() ?? '', $items];
-        if ($value->hasBrackets()) {
+        $list = [Type::T_LIST, $value->get_separator()->get_separator() ?? '', $items];
+        if ($value->has_brackets()) {
             $list['enclosing'] = 'bracket';
         }
-        if ($value instanceof SassArgumentList) {
+        if ($value instanceof Sass_Argument_List) {
             $keywords = [];
-            foreach ($value->getKeywords() as $keywordName => $keywordValue) {
-                $keywords[$keywordName] = $keywordValue->accept($this);
+            foreach ($value->get_keywords() as $keyword_name => $keyword_value) {
+                $keywords[$keyword_name] = $keyword_value->accept($this);
             }
             $list[3] = $keywords;
         }
-
         return $list;
     }
-
-    public function visitMap(SassMap $value): array
+    public function visit_map(Sass_Map $value): array
     {
         $keys = [];
         $values = [];
-
-        foreach ($value->getContents() as $key => $item) {
+        foreach ($value->get_contents() as $key => $item) {
             $keys[] = $key->accept($this);
             $values[] = $item->accept($this);
         }
-
         return [Type::T_MAP, $keys, $values];
     }
-
-    public function visitNull()
+    public function visit_null()
     {
         return Compiler::$null;
     }
-
-    public function visitNumber(SassNumber $value): \ScssPhp\ScssPhp\Node\Number
+    public function visit_number(Sass_Number $value): \Scss_Php\Scss_Php\Node\Number
     {
-        return new Number($value->getValue(), $value->getNumeratorUnits(), $value->getDenominatorUnits());
+        return new Number($value->get_value(), $value->get_numerator_units(), $value->get_denominator_units());
     }
-
-    public function visitString(SassString $value): array
+    public function visit_string(Sass_String $value): array
     {
-        return [Type::T_STRING, $value->hasQuotes() ? '"' : '', [$value->getText()]];
+        return [Type::T_STRING, $value->has_quotes() ? '"' : '', [$value->get_text()]];
     }
 }

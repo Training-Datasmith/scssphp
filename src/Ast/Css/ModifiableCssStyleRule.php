@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,75 +10,66 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
-use ScssPhp\ScssPhp\Util\Box;
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use ScssPhp\ScssPhp\Visitor\ModifiableCssVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Selector\Selector_List;
+use Scss_Php\Scss_Php\Util\Box;
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Scss_Php\Scss_Php\Visitor\Modifiable_Css_Visitor;
+use Source_Span\File_Span;
 /**
  * A modifiable version of {@see CssStyleRule} for use in the evaluation step.
  *
  * @internal
  */
-final class ModifiableCssStyleRule extends ModifiableCssParentNode implements CssStyleRule
+final class Modifiable_Css_Style_Rule extends Modifiable_Css_Parent_Node implements Css_Style_Rule
 {
-    private readonly SelectorList $originalSelector;
-
-    private readonly FileSpan $span;
-
+    private readonly Selector_List $original_selector;
+    private readonly File_Span $span;
     /**
      * @param Box<SelectorList> $selector
      */
-    public function __construct(/**
-     * A reference to the modifiable selector list provided by the extension
-     * store, which may update it over time as new extensions are applied.
-     */
+    public function __construct(
+        /**
+         * A reference to the modifiable selector list provided by the extension
+         * store, which may update it over time as new extensions are applied.
+         */
         private readonly Box $selector,
-        FileSpan $span,
-        ?SelectorList $originalSelector = null,
-        private readonly bool $fromPlainCss = false
-    ) {
+        File_Span $span,
+        ?Selector_List $original_selector = null,
+        private readonly bool $from_plain_css = false
+    )
+    {
         parent::__construct();
-        $this->originalSelector = $originalSelector ?? $this->selector->getValue();
+        $this->original_selector = $original_selector ?? $this->selector->get_value();
         $this->span = $span;
     }
-
-    public function getSelector(): SelectorList
+    public function get_selector(): Selector_List
     {
-        return $this->selector->getValue();
+        return $this->selector->get_value();
     }
-
-    public function getOriginalSelector(): SelectorList
+    public function get_original_selector(): Selector_List
     {
-        return $this->originalSelector;
+        return $this->original_selector;
     }
-
-    public function isFromPlainCss(): bool
+    public function is_from_plain_css(): bool
     {
-        return $this->fromPlainCss;
+        return $this->from_plain_css;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ModifiableCssVisitor $visitor)
+    public function accept(Modifiable_Css_Visitor $visitor)
     {
-        return $visitor->visitCssStyleRule($this);
+        return $visitor->visit_css_style_rule($this);
     }
-
-    public function equalsIgnoringChildren(ModifiableCssNode $other): bool
+    public function equals_ignoring_children(Modifiable_Css_Node $other): bool
     {
-        return $other instanceof ModifiableCssStyleRule && EquatableUtil::equals($this->selector, $other->selector);
+        return $other instanceof Modifiable_Css_Style_Rule && Equatable_Util::equals($this->selector, $other->selector);
     }
-
-    public function copyWithoutChildren(): ModifiableCssStyleRule
+    public function copy_without_children(): Modifiable_Css_Style_Rule
     {
-        return new ModifiableCssStyleRule($this->selector, $this->span, $this->originalSelector);
+        return new Modifiable_Css_Style_Rule($this->selector, $this->span, $this->original_selector);
     }
 }

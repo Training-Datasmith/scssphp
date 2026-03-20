@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,30 +10,26 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Ast\AstNode;
-use ScssPhp\ScssPhp\Visitor\CssVisitor;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
+use Scss_Php\Scss_Php\Visitor\Css_Visitor;
 /**
  * A statement in a plain CSS syntax tree.
  *
  * @internal
  */
-interface CssNode extends AstNode
+interface Css_Node extends Ast_Node
 {
     /**
      * The node that contains this, or `null` for the root {@see CssStylesheet} node.
      */
-    public function getParent(): ?CssParentNode;
-
+    public function get_parent(): ?Css_Parent_Node;
     /**
      * Whether this was generated from the last node in a nested Sass tree that
      * got flattened during evaluation.
      */
-    public function isGroupEnd(): bool;
-
+    public function is_group_end(): bool;
     /**
      * Calls the appropriate visit method on $visitor.
      *
@@ -44,16 +39,14 @@ interface CssNode extends AstNode
      *
      * @return T
      */
-    public function accept(CssVisitor $visitor);
-
+    public function accept(Css_Visitor $visitor);
     /**
      * Whether this is invisible and won't be emitted to the compiled stylesheet.
      *
      * Note that this doesn't consider nodes that contain loud comments to be
      * invisible even though they're omitted in compressed mode.
      */
-    public function isInvisible(): bool;
-
+    public function is_invisible(): bool;
     /**
      * Whether this node would be invisible even if style rule selectors within it
      * didn't have bogus combinators.
@@ -61,10 +54,9 @@ interface CssNode extends AstNode
      * Note that this doesn't consider nodes that contain loud comments to be
      * invisible even though they're omitted in compressed mode.
      */
-    public function isInvisibleOtherThanBogusCombinators(): bool;
-
+    public function is_invisible_other_than_bogus_combinators(): bool;
     /**
      * Whether this node will be invisible when loud comments are stripped.
      */
-    public function isInvisibleHidingComments(): bool;
+    public function is_invisible_hiding_comments(): bool;
 }

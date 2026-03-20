@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Extend;
+namespace Scss_Php\Scss_Php\Extend;
 
 /**
  * @template T of object
@@ -20,18 +18,16 @@ namespace ScssPhp\ScssPhp\Extend;
  *
  * @internal
  */
-final class ObjectSet implements \IteratorAggregate
+final class Object_Set implements \IteratorAggregate
 {
     /**
      * @var \SplObjectStorage<T, mixed>
      */
-    private readonly \SplObjectStorage $storage;
-
+    private readonly \Spl_Object_Storage $storage;
     public function __construct()
     {
-        $this->storage = new \SplObjectStorage();
+        $this->storage = new \Spl_Object_Storage();
     }
-
     /**
      * @param T $value
      */
@@ -39,7 +35,6 @@ final class ObjectSet implements \IteratorAggregate
     {
         return $this->storage->offsetExists($value);
     }
-
     /**
      * @param T $value
      */
@@ -47,15 +42,13 @@ final class ObjectSet implements \IteratorAggregate
     {
         $this->storage->offsetSet($value);
     }
-
     /**
      * @param ObjectSet<T> $set
      */
-    public function addAll(self $set): void
+    public function add_all(self $set): void
     {
-        $this->storage->addAll($set->storage);
+        $this->storage->add_all($set->storage);
     }
-
     public function getIterator(): \Traversable
     {
         return $this->storage;

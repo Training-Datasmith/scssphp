@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Util;
+namespace Scss_Php\Scss_Php\Util;
 
 /**
  * An unmodifiable reference to a value that may be mutated elsewhere.
@@ -29,18 +27,16 @@ final class Box implements Equatable
     /**
      * @param ModifiableBox<T> $inner
      */
-    public function __construct(private readonly ModifiableBox $inner)
+    public function __construct(private readonly Modifiable_Box $inner)
     {
     }
-
     /**
      * @return T
      */
-    public function getValue()
+    public function get_value()
     {
-        return $this->inner->getValue();
+        return $this->inner->get_value();
     }
-
     public function equals(object $other): bool
     {
         return $other instanceof Box && $this->inner === $other->inner;

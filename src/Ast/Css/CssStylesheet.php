@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * A plain CSS stylesheet.
@@ -21,6 +19,6 @@ namespace ScssPhp\ScssPhp\Ast\Css;
  *
  * @internal
  */
-interface CssStylesheet extends CssParentNode
+interface Css_Stylesheet extends Css_Parent_Node
 {
 }

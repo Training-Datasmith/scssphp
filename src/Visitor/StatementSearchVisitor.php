@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,40 +10,38 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Visitor;
 
-namespace ScssPhp\ScssPhp\Visitor;
-
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\CallableDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ContentBlock;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ContentRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\DebugRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\Declaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\EachRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ErrorRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ExtendRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ForRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\FunctionRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\IfClause;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\IfRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ImportRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\IncludeRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\LoudComment;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\MediaRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\MixinRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ParentStatement;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ReturnRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\SilentComment;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\StyleRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\Stylesheet;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\SupportsRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\VariableDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\WarnRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\WhileRule;
-use ScssPhp\ScssPhp\Util\IterableUtil;
-
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\At_Root_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\At_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Callable_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Content_Block;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Content_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Debug_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Each_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Error_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Extend_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\For_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Function_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\If_Clause;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\If_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Import_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Include_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Loud_Comment;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Media_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Mixin_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Parent_Statement;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Return_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Silent_Comment;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Style_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Stylesheet;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Supports_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Variable_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Warn_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\While_Rule;
+use Scss_Php\Scss_Php\Util\Iterable_Util;
 /**
  * A StatementVisitor whose `visit*` methods default to returning `null`, but
  * which returns the first non-`null` value returned by any method.
@@ -57,151 +54,121 @@ use ScssPhp\ScssPhp\Util\IterableUtil;
  * @template T
  * @template-implements StatementVisitor<T|null>
  */
-abstract class StatementSearchVisitor implements StatementVisitor
+abstract class Statement_Search_Visitor implements Statement_Visitor
 {
-    public function visitAtRootRule(AtRootRule $node)
+    public function visit_at_root_rule(At_Root_Rule $node)
     {
-        return $this->visitChildren($node->getChildren());
+        return $this->visit_children($node->get_children());
     }
-
-    public function visitAtRule(AtRule $node)
+    public function visit_at_rule(At_Rule $node)
     {
-        if ($node->getChildren() !== null) {
-            return $this->visitChildren($node->getChildren());
+        if ($node->get_children() !== null) {
+            return $this->visit_children($node->get_children());
         }
-
         return null;
     }
-
-    public function visitContentBlock(ContentBlock $node)
+    public function visit_content_block(Content_Block $node)
     {
-        return $this->visitCallableDeclaration($node);
+        return $this->visit_callable_declaration($node);
     }
-
-    public function visitContentRule(ContentRule $node)
+    public function visit_content_rule(Content_Rule $node)
     {
         return null;
     }
-
-    public function visitDebugRule(DebugRule $node)
+    public function visit_debug_rule(Debug_Rule $node)
     {
         return null;
     }
-
-    public function visitDeclaration(Declaration $node)
+    public function visit_declaration(Declaration $node)
     {
-        if ($node->getChildren() !== null) {
-            return $this->visitChildren($node->getChildren());
+        if ($node->get_children() !== null) {
+            return $this->visit_children($node->get_children());
         }
-
         return null;
     }
-
-    public function visitEachRule(EachRule $node)
+    public function visit_each_rule(Each_Rule $node)
     {
-        return $this->visitChildren($node->getChildren());
+        return $this->visit_children($node->get_children());
     }
-
-    public function visitErrorRule(ErrorRule $node)
+    public function visit_error_rule(Error_Rule $node)
     {
         return null;
     }
-
-    public function visitExtendRule(ExtendRule $node)
+    public function visit_extend_rule(Extend_Rule $node)
     {
         return null;
     }
-
-    public function visitForRule(ForRule $node)
+    public function visit_for_rule(For_Rule $node)
     {
-        return $this->visitChildren($node->getChildren());
+        return $this->visit_children($node->get_children());
     }
-
-    public function visitFunctionRule(FunctionRule $node)
+    public function visit_function_rule(Function_Rule $node)
     {
-        return $this->visitCallableDeclaration($node);
+        return $this->visit_callable_declaration($node);
     }
-
-    public function visitIfRule(IfRule $node)
+    public function visit_if_rule(If_Rule $node)
     {
-        $value = IterableUtil::search($node->getClauses(), fn (IfClause $clause) => IterableUtil::search($clause->getChildren(), fn (Statement $child) => $child->accept($this)));
-
-        if ($node->getLastClause() !== null) {
-            $value ??= IterableUtil::search($node->getLastClause()->getChildren(), fn (Statement $child) => $child->accept($this));
+        $value = Iterable_Util::search($node->get_clauses(), fn(If_Clause $clause) => Iterable_Util::search($clause->get_children(), fn(Statement $child) => $child->accept($this)));
+        if ($node->get_last_clause() !== null) {
+            $value ??= Iterable_Util::search($node->get_last_clause()->get_children(), fn(Statement $child) => $child->accept($this));
         }
-
         return $value;
     }
-
-    public function visitImportRule(ImportRule $node)
+    public function visit_import_rule(Import_Rule $node)
     {
         return null;
     }
-
-    public function visitIncludeRule(IncludeRule $node)
+    public function visit_include_rule(Include_Rule $node)
     {
-        if ($node->getContent() !== null) {
-            return $this->visitContentBlock($node->getContent());
+        if ($node->get_content() !== null) {
+            return $this->visit_content_block($node->get_content());
         }
-
         return null;
     }
-
-    public function visitLoudComment(LoudComment $node)
-    {
-        return null;
-    }
-
-    public function visitMediaRule(MediaRule $node)
-    {
-        return $this->visitChildren($node->getChildren());
-    }
-
-    public function visitMixinRule(MixinRule $node)
-    {
-        return $this->visitCallableDeclaration($node);
-    }
-
-    public function visitReturnRule(ReturnRule $node)
+    public function visit_loud_comment(Loud_Comment $node)
     {
         return null;
     }
-
-    public function visitSilentComment(SilentComment $node)
+    public function visit_media_rule(Media_Rule $node)
+    {
+        return $this->visit_children($node->get_children());
+    }
+    public function visit_mixin_rule(Mixin_Rule $node)
+    {
+        return $this->visit_callable_declaration($node);
+    }
+    public function visit_return_rule(Return_Rule $node)
     {
         return null;
     }
-
-    public function visitStyleRule(StyleRule $node)
-    {
-        return $this->visitChildren($node->getChildren());
-    }
-
-    public function visitStylesheet(Stylesheet $node)
-    {
-        return $this->visitChildren($node->getChildren());
-    }
-
-    public function visitSupportsRule(SupportsRule $node)
-    {
-        return $this->visitChildren($node->getChildren());
-    }
-
-    public function visitVariableDeclaration(VariableDeclaration $node)
+    public function visit_silent_comment(Silent_Comment $node)
     {
         return null;
     }
-
-    public function visitWarnRule(WarnRule $node)
+    public function visit_style_rule(Style_Rule $node)
+    {
+        return $this->visit_children($node->get_children());
+    }
+    public function visit_stylesheet(Stylesheet $node)
+    {
+        return $this->visit_children($node->get_children());
+    }
+    public function visit_supports_rule(Supports_Rule $node)
+    {
+        return $this->visit_children($node->get_children());
+    }
+    public function visit_variable_declaration(Variable_Declaration $node)
     {
         return null;
     }
-
-    public function visitWhileRule(WhileRule $node)
+    public function visit_warn_rule(Warn_Rule $node)
     {
-        return $this->visitChildren($node->getChildren());
+        return null;
     }
-
+    public function visit_while_rule(While_Rule $node)
+    {
+        return $this->visit_children($node->get_children());
+    }
     /**
      * Visits each of $node's expressions and children.
      *
@@ -210,11 +177,10 @@ abstract class StatementSearchVisitor implements StatementVisitor
      *
      * @return T|null
      */
-    protected function visitCallableDeclaration(CallableDeclaration $node)
+    protected function visit_callable_declaration(Callable_Declaration $node)
     {
-        return $this->visitChildren($node->getChildren());
+        return $this->visit_children($node->get_children());
     }
-
     /**
      * Visits each child in $children.
      *
@@ -225,8 +191,8 @@ abstract class StatementSearchVisitor implements StatementVisitor
      *
      * @return T|null
      */
-    protected function visitChildren(array $children)
+    protected function visit_children(array $children)
     {
-        return IterableUtil::search($children, fn (Statement $child) => $child->accept($this));
+        return Iterable_Util::search($children, fn(Statement $child) => $child->accept($this));
     }
 }

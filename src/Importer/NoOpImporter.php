@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,34 +10,29 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Importer;
 
-namespace ScssPhp\ScssPhp\Importer;
-
-use League\Uri\Contracts\UriInterface;
-
+use League\Uri\Contracts\Uri_Interface;
 /**
  * An importer that never imports any stylesheets.
  *
  * This is used for stylesheets which don't support relative imports, such as
  * those created from PHP code with plain strings.
  */
-final class NoOpImporter extends Importer
+final class No_Op_Importer extends Importer
 {
-    public function canonicalize(UriInterface $url): ?UriInterface
+    public function canonicalize(Uri_Interface $url): ?Uri_Interface
     {
         return null;
     }
-
-    public function load(UriInterface $url): ?ImporterResult
+    public function load(Uri_Interface $url): ?Importer_Result
     {
         return null;
     }
-
-    public function couldCanonicalize(UriInterface $url, UriInterface $canonicalUrl): bool
+    public function could_canonicalize(Uri_Interface $url, Uri_Interface $canonical_url): bool
     {
         return false;
     }
-
     public function __toString(): string
     {
         return '(unknown)';

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,104 +10,88 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass;
 
-namespace ScssPhp\ScssPhp\Ast\Sass;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ListExpression;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression\List_Expression;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Source_Span\File_Span;
 /**
  * A set of arguments passed in to a function or mixin.
  *
  * @internal
  */
-final class ArgumentInvocation implements SassNode
+final class Argument_Invocation implements Sass_Node
 {
     private readonly ?Expression $rest;
-
-    private readonly ?Expression $keywordRest;
-
-    private readonly FileSpan $span;
-
+    private readonly ?Expression $keyword_rest;
+    private readonly File_Span $span;
     /**
      * @param list<Expression>          $positional
      * @param array<string, Expression> $named
      */
-    public function __construct(private readonly array $positional, private readonly array $named, FileSpan $span, ?Expression $rest = null, ?Expression $keywordRest = null)
+    public function __construct(private readonly array $positional, private readonly array $named, File_Span $span, ?Expression $rest = null, ?Expression $keyword_rest = null)
     {
-        assert($keywordRest === null || $rest !== null);
+        assert($keyword_rest === null || $rest !== null);
         $this->rest = $rest;
-        $this->keywordRest = $keywordRest;
+        $this->keyword_rest = $keyword_rest;
         $this->span = $span;
     }
-
-    public static function createEmpty(FileSpan $span): ArgumentInvocation
+    public static function create_empty(File_Span $span): Argument_Invocation
     {
         return new self([], [], $span);
     }
-
-    public function isEmpty(): bool
+    public function is_empty(): bool
     {
         return \count($this->positional) === 0 && \count($this->named) === 0 && $this->rest === null;
     }
-
     /**
      * @return list<Expression>
      */
-    public function getPositional(): array
+    public function get_positional(): array
     {
         return $this->positional;
     }
-
     /**
      * @return array<string, Expression>
      */
-    public function getNamed(): array
+    public function get_named(): array
     {
         return $this->named;
     }
-
-    public function getRest(): ?Expression
+    public function get_rest(): ?Expression
     {
         return $this->rest;
     }
-
-    public function getKeywordRest(): ?Expression
+    public function get_keyword_rest(): ?Expression
     {
-        return $this->keywordRest;
+        return $this->keyword_rest;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
         $parts = [];
         foreach ($this->positional as $argument) {
-            $parts[] = $this->parenthesizeArgument($argument);
+            $parts[] = $this->parenthesize_argument($argument);
         }
         foreach ($this->named as $name => $arg) {
-            $parts[] = "\$$name: {$this->parenthesizeArgument($arg)}";
+            $parts[] = "\${$name}: {$this->parenthesize_argument($arg)}";
         }
         if ($this->rest !== null) {
-            $parts[] = "{$this->parenthesizeArgument($this->rest)}...";
+            $parts[] = "{$this->parenthesize_argument($this->rest)}...";
         }
-        if ($this->keywordRest !== null) {
-            $parts[] = "{$this->parenthesizeArgument($this->keywordRest)}...";
+        if ($this->keyword_rest !== null) {
+            $parts[] = "{$this->parenthesize_argument($this->keyword_rest)}...";
         }
-
         return '(' . implode(', ', $parts) . ')';
     }
-
-    private function parenthesizeArgument(Expression $argument): string
+    private function parenthesize_argument(Expression $argument): string
     {
-        if ($argument instanceof ListExpression && $argument->getSeparator() === ListSeparator::COMMA && !$argument->hasBrackets() && \count($argument->getContents()) > 1) {
-            return "($argument)";
+        if ($argument instanceof List_Expression && $argument->get_separator() === List_Separator::COMMA && !$argument->has_brackets() && \count($argument->get_contents()) > 1) {
+            return "({$argument})";
         }
-
         return (string) $argument;
     }
 }

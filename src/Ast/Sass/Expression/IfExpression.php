@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,16 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\CallableInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Callable_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * A ternary expression.
  *
@@ -30,48 +27,42 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class IfExpression implements Expression, CallableInvocation
+final class If_Expression implements Expression, Callable_Invocation
 {
-    private readonly FileSpan $span;
-
-    private static ?ArgumentDeclaration $declaration = null;
-
-    public function __construct(/**
-     * The arguments passed to `if()`.
-     */
-        private readonly ArgumentInvocation $arguments,
-        FileSpan $span
-    ) {
+    private readonly File_Span $span;
+    private static ?Argument_Declaration $declaration = null;
+    public function __construct(
+        /**
+         * The arguments passed to `if()`.
+         */
+        private readonly Argument_Invocation $arguments,
+        File_Span $span
+    )
+    {
         $this->span = $span;
     }
-
     /**
      * The declaration of `if()`, as though it were a normal function.
      */
-    public static function getDeclaration(): ArgumentDeclaration
+    public static function get_declaration(): Argument_Declaration
     {
         if (self::$declaration === null) {
-            self::$declaration = ArgumentDeclaration::parse('@function if($condition, $if-true, $if-false) {');
+            self::$declaration = Argument_Declaration::parse('@function if($condition, $if-true, $if-false) {');
         }
-
         return self::$declaration;
     }
-
-    public function getArguments(): ArgumentInvocation
+    public function get_arguments(): Argument_Invocation
     {
         return $this->arguments;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitIfExpression($this);
+        return $visitor->visit_if_expression($this);
     }
-
     public function __toString(): string
     {
         return 'if' . $this->arguments;

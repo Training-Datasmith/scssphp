@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,194 +10,150 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Function;
 
-namespace ScssPhp\ScssPhp\Function;
-
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelectorComponent;
-use ScssPhp\ScssPhp\Ast\Selector\CompoundSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ParentSelector;
-use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
-use ScssPhp\ScssPhp\Ast\Selector\SimpleSelector;
-use ScssPhp\ScssPhp\Ast\Selector\TypeSelector;
-use ScssPhp\ScssPhp\Ast\Selector\UniversalSelector;
-use ScssPhp\ScssPhp\Evaluation\EvaluationContext;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Extend\ConcreteExtensionStore;
-use ScssPhp\ScssPhp\Util\ArrayUtil;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Value\SassBoolean;
-use ScssPhp\ScssPhp\Value\SassList;
-use ScssPhp\ScssPhp\Value\SassNull;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Value\Value;
-
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector_Component;
+use Scss_Php\Scss_Php\Ast\Selector\Compound_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Parent_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Selector_List;
+use Scss_Php\Scss_Php\Ast\Selector\Simple_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Type_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Universal_Selector;
+use Scss_Php\Scss_Php\Evaluation\Evaluation_Context;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Extend\Concrete_Extension_Store;
+use Scss_Php\Scss_Php\Util\Array_Util;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Value\Sass_Boolean;
+use Scss_Php\Scss_Php\Value\Sass_List;
+use Scss_Php\Scss_Php\Value\Sass_Null;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Value\Value;
 /**
  * @internal
  */
-final class SelectorFunctions
+final class Selector_Functions
 {
     /**
      * @param list<Value> $arguments
      */
     public static function nest(array $arguments): Value
     {
-        $selectors = $arguments[0]->asList();
-
+        $selectors = $arguments[0]->as_list();
         if (\count($selectors) === 0) {
-            throw new SassScriptException('$selectors: At least one selector must be passed.');
+            throw new Sass_Script_Exception('$selectors: At least one selector must be passed.');
         }
-
         $first = true;
-
-        return ArrayUtil::reduce(array_map(function (Value $selector) use (&$first): \ScssPhp\ScssPhp\Ast\Selector\SelectorList {
-            $result = $selector->assertSelector(allowParent: !$first);
+        return Array_Util::reduce(array_map(function (Value $selector) use (&$first): \Scss_Php\Scss_Php\Ast\Selector\Selector_List {
+            $result = $selector->assert_selector(allowParent: !$first);
             $first = false;
-
             return $result;
-        }, $selectors), fn (SelectorList $parent, SelectorList $child): \ScssPhp\ScssPhp\Ast\Selector\SelectorList => $child->nestWithin($parent))->asSassList();
+        }, $selectors), fn(Selector_List $parent, Selector_List $child): \Scss_Php\Scss_Php\Ast\Selector\Selector_List => $child->nest_within($parent))->as_sass_list();
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function append(array $arguments): Value
     {
-        $selectors = $arguments[0]->asList();
-
+        $selectors = $arguments[0]->as_list();
         if (\count($selectors) === 0) {
-            throw new SassScriptException('$selectors: At least one selector must be passed.');
+            throw new Sass_Script_Exception('$selectors: At least one selector must be passed.');
         }
-
-        $span = EvaluationContext::getCurrent()->getCurrentCallableSpan();
-
-        return ArrayUtil::reduce(array_map(fn (Value $selector): \ScssPhp\ScssPhp\Ast\Selector\SelectorList => $selector->assertSelector(), $selectors), fn (SelectorList $parent, SelectorList $child) => (new SelectorList(array_map(function (ComplexSelector $complex) use ($span, $parent): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
-            if (\count($complex->getLeadingCombinators()) > 0) {
-                throw new SassScriptException("Can't append $complex to $parent.");
+        $span = Evaluation_Context::get_current()->get_current_callable_span();
+        return Array_Util::reduce(array_map(fn(Value $selector): \Scss_Php\Scss_Php\Ast\Selector\Selector_List => $selector->assert_selector(), $selectors), fn(Selector_List $parent, Selector_List $child) => (new Selector_List(array_map(function (Complex_Selector $complex) use ($span, $parent): \Scss_Php\Scss_Php\Ast\Selector\Complex_Selector {
+            if (\count($complex->get_leading_combinators()) > 0) {
+                throw new Sass_Script_Exception("Can't append {$complex} to {$parent}.");
             }
-
-            $component = $complex->getComponents()[0];
-            $rest = array_slice($complex->getComponents(), 1);
-            $newCompound = self::prependParent($component->getSelector());
-
-            if ($newCompound === null) {
-                throw new SassScriptException("Can't append $complex to $parent.");
+            $component = $complex->get_components()[0];
+            $rest = array_slice($complex->get_components(), 1);
+            $new_compound = self::prepend_parent($component->get_selector());
+            if ($new_compound === null) {
+                throw new Sass_Script_Exception("Can't append {$complex} to {$parent}.");
             }
-
-            return new ComplexSelector([], [
-                new ComplexSelectorComponent($newCompound, $component->getCombinators(), $span),
-                ...$rest,
-            ], $span);
-        }, $child->getComponents()), $span))->nestWithin($parent))->asSassList();
+            return new Complex_Selector([], [new Complex_Selector_Component($new_compound, $component->get_combinators(), $span), ...$rest], $span);
+        }, $child->get_components()), $span))->nest_within($parent))->as_sass_list();
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function extend(array $arguments): \ScssPhp\ScssPhp\Value\SassList
+    public static function extend(array $arguments): \Scss_Php\Scss_Php\Value\Sass_List
     {
-        $selector = $arguments[0]->assertSelector('selector');
-        $selector->assertNotBogus('selector');
-        $target = $arguments[1]->assertSelector('extendee');
-        $target->assertNotBogus('extendee');
-        $source = $arguments[2]->assertSelector('extender');
-        $source->assertNotBogus('extender');
-
-        return ConcreteExtensionStore::extend($selector, $source, $target, EvaluationContext::getCurrent()->getCurrentCallableSpan())->asSassList();
+        $selector = $arguments[0]->assert_selector('selector');
+        $selector->assert_not_bogus('selector');
+        $target = $arguments[1]->assert_selector('extendee');
+        $target->assert_not_bogus('extendee');
+        $source = $arguments[2]->assert_selector('extender');
+        $source->assert_not_bogus('extender');
+        return Concrete_Extension_Store::extend($selector, $source, $target, Evaluation_Context::get_current()->get_current_callable_span())->as_sass_list();
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function replace(array $arguments): \ScssPhp\ScssPhp\Value\SassList
+    public static function replace(array $arguments): \Scss_Php\Scss_Php\Value\Sass_List
     {
-        $selector = $arguments[0]->assertSelector('selector');
-        $selector->assertNotBogus('selector');
-        $target = $arguments[1]->assertSelector('original');
-        $target->assertNotBogus('original');
-        $source = $arguments[2]->assertSelector('replacement');
-        $source->assertNotBogus('replacement');
-
-        return ConcreteExtensionStore::replace($selector, $source, $target, EvaluationContext::getCurrent()->getCurrentCallableSpan())->asSassList();
+        $selector = $arguments[0]->assert_selector('selector');
+        $selector->assert_not_bogus('selector');
+        $target = $arguments[1]->assert_selector('original');
+        $target->assert_not_bogus('original');
+        $source = $arguments[2]->assert_selector('replacement');
+        $source->assert_not_bogus('replacement');
+        return Concrete_Extension_Store::replace($selector, $source, $target, Evaluation_Context::get_current()->get_current_callable_span())->as_sass_list();
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function unify(array $arguments): Value
     {
-        $selector1 = $arguments[0]->assertSelector('selector1');
-        $selector1->assertNotBogus('selector1');
-
-        $selector2 = $arguments[1]->assertSelector('selector2');
-        $selector2->assertNotBogus('selector2');
-
-        return $selector1->unify($selector2)?->asSassList() ?? SassNull::create();
+        $selector1 = $arguments[0]->assert_selector('selector1');
+        $selector1->assert_not_bogus('selector1');
+        $selector2 = $arguments[1]->assert_selector('selector2');
+        $selector2->assert_not_bogus('selector2');
+        return $selector1->unify($selector2)?->as_sass_list() ?? Sass_Null::create();
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function isSuperselector(array $arguments): \ScssPhp\ScssPhp\Value\SassBoolean
+    public static function is_superselector(array $arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean
     {
-        $selector1 = $arguments[0]->assertSelector('super');
-        $selector1->assertNotBogus('super');
-
-        $selector2 = $arguments[1]->assertSelector('sub');
-        $selector2->assertNotBogus('sub');
-
-        return SassBoolean::create($selector1->isSuperselector($selector2));
+        $selector1 = $arguments[0]->assert_selector('super');
+        $selector1->assert_not_bogus('super');
+        $selector2 = $arguments[1]->assert_selector('sub');
+        $selector2->assert_not_bogus('sub');
+        return Sass_Boolean::create($selector1->is_superselector($selector2));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function simpleSelectors(array $arguments): \ScssPhp\ScssPhp\Value\SassList
+    public static function simple_selectors(array $arguments): \Scss_Php\Scss_Php\Value\Sass_List
     {
-        $selector = $arguments[0]->assertCompoundSelector('selector');
-
-        return new SassList(
-            array_map(fn (SimpleSelector $simple): \ScssPhp\ScssPhp\Value\SassString => new SassString((string) $simple, false), $selector->getComponents()),
-            ListSeparator::COMMA
-        );
+        $selector = $arguments[0]->assert_compound_selector('selector');
+        return new Sass_List(array_map(fn(Simple_Selector $simple): \Scss_Php\Scss_Php\Value\Sass_String => new Sass_String((string) $simple, false), $selector->get_components()), List_Separator::COMMA);
     }
-
     /**
      * @param list<Value> $arguments
      */
     public static function parse(array $arguments): Value
     {
-        return $arguments[0]->assertSelector('selector')->asSassList();
+        return $arguments[0]->assert_selector('selector')->as_sass_list();
     }
-
     /**
      * Adds a {@see ParentSelector} to the beginning of $compound, or returns `null` if
      * that wouldn't produce a valid selector.
      */
-    private static function prependParent(CompoundSelector $compound): ?CompoundSelector
+    private static function prepend_parent(Compound_Selector $compound): ?Compound_Selector
     {
-        $span = EvaluationContext::getCurrent()->getCurrentCallableSpan();
-
-        $firstComponent = $compound->getComponents()[0];
-
-        if ($firstComponent instanceof UniversalSelector) {
+        $span = Evaluation_Context::get_current()->get_current_callable_span();
+        $first_component = $compound->get_components()[0];
+        if ($first_component instanceof Universal_Selector) {
             return null;
         }
-
-        if ($firstComponent instanceof TypeSelector && $firstComponent->getName()->getNamespace() !== null) {
+        if ($first_component instanceof Type_Selector && $first_component->get_name()->get_namespace() !== null) {
             return null;
         }
-
-        if ($firstComponent instanceof TypeSelector) {
-            return new CompoundSelector([
-                new ParentSelector($span, $firstComponent->getName()->getName()),
-                ...array_slice($compound->getComponents(), 1),
-            ], $span);
+        if ($first_component instanceof Type_Selector) {
+            return new Compound_Selector([new Parent_Selector($span, $first_component->get_name()->get_name()), ...array_slice($compound->get_components(), 1)], $span);
         }
-
-        return new CompoundSelector([
-            new ParentSelector($span),
-            ...$compound->getComponents(),
-        ], $span);
+        return new Compound_Selector([new Parent_Selector($span), ...$compound->get_components()], $span);
     }
 }

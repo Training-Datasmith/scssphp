@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,70 +10,68 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Serializer;
 
-namespace ScssPhp\ScssPhp\Serializer;
-
-use ScssPhp\ScssPhp\Ast\AstNode;
-use ScssPhp\ScssPhp\Ast\Css\CssAtRule;
-use ScssPhp\ScssPhp\Ast\Css\CssComment;
-use ScssPhp\ScssPhp\Ast\Css\CssDeclaration;
-use ScssPhp\ScssPhp\Ast\Css\CssImport;
-use ScssPhp\ScssPhp\Ast\Css\CssKeyframeBlock;
-use ScssPhp\ScssPhp\Ast\Css\CssMediaQuery;
-use ScssPhp\ScssPhp\Ast\Css\CssMediaRule;
-use ScssPhp\ScssPhp\Ast\Css\CssNode;
-use ScssPhp\ScssPhp\Ast\Css\CssParentNode;
-use ScssPhp\ScssPhp\Ast\Css\CssStyleRule;
-use ScssPhp\ScssPhp\Ast\Css\CssStylesheet;
-use ScssPhp\ScssPhp\Ast\Css\CssSupportsRule;
-use ScssPhp\ScssPhp\Ast\Css\CssValue;
-use ScssPhp\ScssPhp\Ast\Selector\AttributeSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ClassSelector;
-use ScssPhp\ScssPhp\Ast\Selector\Combinator;
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelector;
-use ScssPhp\ScssPhp\Ast\Selector\CompoundSelector;
-use ScssPhp\ScssPhp\Ast\Selector\IDSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ParentSelector;
-use ScssPhp\ScssPhp\Ast\Selector\PlaceholderSelector;
-use ScssPhp\ScssPhp\Ast\Selector\PseudoSelector;
-use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
-use ScssPhp\ScssPhp\Ast\Selector\TypeSelector;
-use ScssPhp\ScssPhp\Ast\Selector\UniversalSelector;
-use ScssPhp\ScssPhp\Colors;
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
-use ScssPhp\ScssPhp\Logger\QuietLogger;
-use ScssPhp\ScssPhp\OutputStyle;
-use ScssPhp\ScssPhp\Parser\LineScanner;
-use ScssPhp\ScssPhp\Parser\Parser;
-use ScssPhp\ScssPhp\Parser\StringScanner;
-use ScssPhp\ScssPhp\SourceSpan\MultiSpan;
-use ScssPhp\ScssPhp\Util\Character;
-use ScssPhp\ScssPhp\Util\IterableUtil;
-use ScssPhp\ScssPhp\Util\LoggerUtil;
-use ScssPhp\ScssPhp\Util\NumberUtil;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use ScssPhp\ScssPhp\Util\StringUtil;
-use ScssPhp\ScssPhp\Value\CalculationOperation;
-use ScssPhp\ScssPhp\Value\CalculationOperator;
-use ScssPhp\ScssPhp\Value\ColorFormatEnum;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Value\SassBoolean;
-use ScssPhp\ScssPhp\Value\SassCalculation;
-use ScssPhp\ScssPhp\Value\SassColor;
-use ScssPhp\ScssPhp\Value\SassFunction;
-use ScssPhp\ScssPhp\Value\SassList;
-use ScssPhp\ScssPhp\Value\SassMap;
-use ScssPhp\ScssPhp\Value\SassMixin;
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Value\SpanColorFormat;
-use ScssPhp\ScssPhp\Value\Value;
-use ScssPhp\ScssPhp\Visitor\CssVisitor;
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use ScssPhp\ScssPhp\Visitor\ValueVisitor;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
+use Scss_Php\Scss_Php\Ast\Css\Css_At_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Comment;
+use Scss_Php\Scss_Php\Ast\Css\Css_Declaration;
+use Scss_Php\Scss_Php\Ast\Css\Css_Import;
+use Scss_Php\Scss_Php\Ast\Css\Css_Keyframe_Block;
+use Scss_Php\Scss_Php\Ast\Css\Css_Media_Query;
+use Scss_Php\Scss_Php\Ast\Css\Css_Media_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Node;
+use Scss_Php\Scss_Php\Ast\Css\Css_Parent_Node;
+use Scss_Php\Scss_Php\Ast\Css\Css_Style_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Stylesheet;
+use Scss_Php\Scss_Php\Ast\Css\Css_Supports_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Value;
+use Scss_Php\Scss_Php\Ast\Selector\Attribute_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Class_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Combinator;
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Compound_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Id_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Parent_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Placeholder_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Pseudo_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Selector_List;
+use Scss_Php\Scss_Php\Ast\Selector\Type_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Universal_Selector;
+use Scss_Php\Scss_Php\Colors;
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Logger\Logger_Interface;
+use Scss_Php\Scss_Php\Logger\Quiet_Logger;
+use Scss_Php\Scss_Php\Output_Style;
+use Scss_Php\Scss_Php\Parser\Line_Scanner;
+use Scss_Php\Scss_Php\Parser\Parser;
+use Scss_Php\Scss_Php\Parser\String_Scanner;
+use Scss_Php\Scss_Php\Source_Span\Multi_Span;
+use Scss_Php\Scss_Php\Util\Character;
+use Scss_Php\Scss_Php\Util\Iterable_Util;
+use Scss_Php\Scss_Php\Util\Logger_Util;
+use Scss_Php\Scss_Php\Util\Number_Util;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Scss_Php\Scss_Php\Util\String_Util;
+use Scss_Php\Scss_Php\Value\Calculation_Operation;
+use Scss_Php\Scss_Php\Value\Calculation_Operator;
+use Scss_Php\Scss_Php\Value\Color_Format_Enum;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Value\Sass_Boolean;
+use Scss_Php\Scss_Php\Value\Sass_Calculation;
+use Scss_Php\Scss_Php\Value\Sass_Color;
+use Scss_Php\Scss_Php\Value\Sass_Function;
+use Scss_Php\Scss_Php\Value\Sass_List;
+use Scss_Php\Scss_Php\Value\Sass_Map;
+use Scss_Php\Scss_Php\Value\Sass_Mixin;
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Value\Span_Color_Format;
+use Scss_Php\Scss_Php\Value\Value;
+use Scss_Php\Scss_Php\Visitor\Css_Visitor;
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Scss_Php\Scss_Php\Visitor\Value_Visitor;
 /**
  * @internal
  *
@@ -82,384 +79,314 @@ use ScssPhp\ScssPhp\Visitor\ValueVisitor;
  * @template-implements ValueVisitor<void>
  * @template-implements SelectorVisitor<void>
  */
-final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisitor
+final class Serialize_Visitor implements Css_Visitor, Value_Visitor, Selector_Visitor
 {
-    private readonly SourceMapBuffer $buffer;
-
+    private readonly Source_Map_Buffer $buffer;
     /**
      * The current indentation of the CSS output.
      */
     private int $indentation = 0;
-
     private readonly bool $compressed;
-
-    public function __construct(/**
-     * Whether we're emitting an unambiguous representation of the source
-     * structure, as opposed to valid CSS.
-     */
-        private readonly bool $inspect = false, /**
-     * Whether quoted strings should be emitted with quotes.
-     */
+    public function __construct(
+        /**
+         * Whether we're emitting an unambiguous representation of the source
+         * structure, as opposed to valid CSS.
+         */
+        private readonly bool $inspect = false,
+        /**
+         * Whether quoted strings should be emitted with quotes.
+         */
         private readonly bool $quote = true,
-        OutputStyle $style = OutputStyle::EXPANDED,
-        bool $sourceMap = false,
-        private readonly ?LoggerInterface $logger = new QuietLogger()
-    ) {
-        $this->buffer = $sourceMap ? new TrackingSourceMapBuffer() : new SimpleStringBuffer();
-        $this->compressed = $style === OutputStyle::COMPRESSED;
+        Output_Style $style = Output_Style::EXPANDED,
+        bool $source_map = false,
+        private readonly ?Logger_Interface $logger = new Quiet_Logger()
+    )
+    {
+        $this->buffer = $source_map ? new Tracking_Source_Map_Buffer() : new Simple_String_Buffer();
+        $this->compressed = $style === Output_Style::COMPRESSED;
     }
-
-    public function getBuffer(): SourceMapBuffer
+    public function get_buffer(): Source_Map_Buffer
     {
         return $this->buffer;
     }
-
-    public function visitCssStylesheet(CssStylesheet $node): void
+    public function visit_css_stylesheet(Css_Stylesheet $node): void
     {
         $previous = null;
-
-        foreach ($node->getChildren() as $child) {
-            if ($this->isInvisible($child)) {
+        foreach ($node->get_children() as $child) {
+            if ($this->is_invisible($child)) {
                 continue;
             }
-
             if ($previous !== null) {
-                if ($this->requiresSemicolon($previous)) {
-                    $this->buffer->writeChar(';');
+                if ($this->requires_semicolon($previous)) {
+                    $this->buffer->write_char(';');
                 }
-
-                if ($this->isTrailingComment($child, $previous)) {
-                    $this->writeOptionalSpace();
+                if ($this->is_trailing_comment($child, $previous)) {
+                    $this->write_optional_space();
                 } else {
-                    $this->writeLineFeed();
-
-                    if ($previous->isGroupEnd()) {
-                        $this->writeLineFeed();
+                    $this->write_line_feed();
+                    if ($previous->is_group_end()) {
+                        $this->write_line_feed();
                     }
                 }
             }
-
             $previous = $child;
             $child->accept($this);
         }
-
-        if ($previous !== null && $this->requiresSemicolon($previous) && !$this->compressed) {
-            $this->buffer->writeChar(';');
+        if ($previous !== null && $this->requires_semicolon($previous) && !$this->compressed) {
+            $this->buffer->write_char(';');
         }
     }
-
-    public function visitCssComment(CssComment $node): void
+    public function visit_css_comment(Css_Comment $node): void
     {
         $this->for($node, function () use ($node): void {
             // Preserve comments that start with `/*!`.
-            if ($this->compressed && !$node->isPreserved()) {
+            if ($this->compressed && !$node->is_preserved()) {
                 return;
             }
-
             // Ignore sourceMappingURL and sourceURL comments.
-            if (preg_match('{^/\*# source(Mapping)?URL=}', $node->getText())) {
+            if (preg_match('{^/\*# source(Mapping)?URL=}', $node->get_text())) {
                 return;
             }
-
-            $minimumIndentation = $this->minimumIndentation($node->getText());
-            assert($minimumIndentation !== -1);
-
-            if ($minimumIndentation === null) {
-                $this->writeIndentation();
-                $this->buffer->write($node->getText());
+            $minimum_indentation = $this->minimum_indentation($node->get_text());
+            assert($minimum_indentation !== -1);
+            if ($minimum_indentation === null) {
+                $this->write_indentation();
+                $this->buffer->write($node->get_text());
                 return;
             }
-
-            $minimumIndentation = min($minimumIndentation, $node->getSpan()->getStart()->getColumn());
-            $this->writeIndentation();
-            $this->writeWithIndent($node->getText(), $minimumIndentation);
+            $minimum_indentation = min($minimum_indentation, $node->get_span()->get_start()->get_column());
+            $this->write_indentation();
+            $this->write_with_indent($node->get_text(), $minimum_indentation);
         });
     }
-
-    public function visitCssAtRule(CssAtRule $node): void
+    public function visit_css_at_rule(Css_At_Rule $node): void
     {
-        $this->writeIndentation();
-
+        $this->write_indentation();
         $this->for($node, function () use ($node): void {
-            $this->buffer->writeChar('@');
-            $this->write($node->getName());
-
-            $value = $node->getValue();
-
+            $this->buffer->write_char('@');
+            $this->write($node->get_name());
+            $value = $node->get_value();
             if ($value !== null) {
-                $this->buffer->writeChar(' ');
+                $this->buffer->write_char(' ');
                 $this->write($value);
             }
-
-            if (!$node->isChildless()) {
-                $this->writeOptionalSpace();
-                $this->visitChildren($node);
+            if (!$node->is_childless()) {
+                $this->write_optional_space();
+                $this->visit_children($node);
             }
         });
     }
-
-    public function visitCssMediaRule(CssMediaRule $node): void
+    public function visit_css_media_rule(Css_Media_Rule $node): void
     {
-        $this->writeIndentation();
-
+        $this->write_indentation();
         $this->for($node, function () use ($node): void {
             $this->buffer->write('@media');
-
-            $firstQuery = $node->getQueries()[0];
-
-            if (!$this->compressed || $firstQuery->getModifier() !== null || $firstQuery->getType() !== null || (\count($firstQuery->getConditions()) === 1) && str_starts_with($firstQuery->getConditions()[0], '(not ')) {
-                $this->buffer->writeChar(' ');
+            $first_query = $node->get_queries()[0];
+            if (!$this->compressed || $first_query->get_modifier() !== null || $first_query->get_type() !== null || \count($first_query->get_conditions()) === 1 && str_starts_with($first_query->get_conditions()[0], '(not ')) {
+                $this->buffer->write_char(' ');
             }
-
-            $this->writeBetween($node->getQueries(), $this->getCommaSeparator(), $this->visitMediaQuery(...));
+            $this->write_between($node->get_queries(), $this->get_comma_separator(), $this->visit_media_query(...));
         });
-
-        $this->writeOptionalSpace();
-        $this->visitChildren($node);
+        $this->write_optional_space();
+        $this->visit_children($node);
     }
-
-    public function visitCssImport(CssImport $node): void
+    public function visit_css_import(Css_Import $node): void
     {
-        $this->writeIndentation();
-
+        $this->write_indentation();
         $this->for($node, function () use ($node): void {
             $this->buffer->write('@import');
-            $this->writeOptionalSpace();
-            $this->for($node->getUrl(), function () use ($node): void {
-                $this->writeImportUrl($node->getUrl()->getValue());
+            $this->write_optional_space();
+            $this->for($node->get_url(), function () use ($node): void {
+                $this->write_import_url($node->get_url()->get_value());
             });
-
-            if ($node->getModifiers() !== null) {
-                $this->writeOptionalSpace();
-                $this->write($node->getModifiers());
+            if ($node->get_modifiers() !== null) {
+                $this->write_optional_space();
+                $this->write($node->get_modifiers());
             }
         });
     }
-
     /**
      * Writes $url, which is an import's URL, to the buffer.
      */
-    private function writeImportUrl(string $url): void
+    private function write_import_url(string $url): void
     {
         if (!$this->compressed || $url[0] !== 'u') {
             $this->buffer->write($url);
             return;
         }
-
         // If this is url(...), remove the surrounding function. This is terser and
         // it allows us to remove whitespace between `@import` and the URL.
-        $urlContents = substr($url, 4, \strlen($url) - 5);
-
-        $maybeQuote = $urlContents[0];
-        if ($maybeQuote === "'" || $maybeQuote === '"') {
-            $this->buffer->write($urlContents);
+        $url_contents = substr($url, 4, \strlen($url) - 5);
+        $maybe_quote = $url_contents[0];
+        if ($maybe_quote === "'" || $maybe_quote === '"') {
+            $this->buffer->write($url_contents);
         } else {
             // If the URL didn't contain quotes, write them manually.
-            $this->visitQuotedString($urlContents);
+            $this->visit_quoted_string($url_contents);
         }
     }
-
-    public function visitCssKeyframeBlock(CssKeyframeBlock $node): void
+    public function visit_css_keyframe_block(Css_Keyframe_Block $node): void
     {
-        $this->writeIndentation();
-
-        $this->for($node->getSelector(), function () use ($node): void {
-            $this->writeBetween($node->getSelector()->getValue(), $this->getCommaSeparator(), $this->buffer->write(...));
+        $this->write_indentation();
+        $this->for($node->get_selector(), function () use ($node): void {
+            $this->write_between($node->get_selector()->get_value(), $this->get_comma_separator(), $this->buffer->write(...));
         });
-        $this->writeOptionalSpace();
-        $this->visitChildren($node);
+        $this->write_optional_space();
+        $this->visit_children($node);
     }
-
-    private function visitMediaQuery(CssMediaQuery $query): void
+    private function visit_media_query(Css_Media_Query $query): void
     {
-        if ($query->getModifier() !== null) {
-            $this->buffer->write($query->getModifier());
-            $this->buffer->writeChar(' ');
+        if ($query->get_modifier() !== null) {
+            $this->buffer->write($query->get_modifier());
+            $this->buffer->write_char(' ');
         }
-
-        if ($query->getType() !== null) {
-            $this->buffer->write($query->getType());
-
-            if (\count($query->getConditions())) {
+        if ($query->get_type() !== null) {
+            $this->buffer->write($query->get_type());
+            if (\count($query->get_conditions())) {
                 $this->buffer->write(' and ');
             }
         }
-
-        if (\count($query->getConditions()) === 1 && str_starts_with($query->getConditions()[0], '(not ')) {
+        if (\count($query->get_conditions()) === 1 && str_starts_with($query->get_conditions()[0], '(not ')) {
             $this->buffer->write('not ');
-            $condition = $query->getConditions()[0];
+            $condition = $query->get_conditions()[0];
             $this->buffer->write(substr($condition, \strlen('(not '), \strlen($condition) - (\strlen('(not ') + 1)));
         } else {
-            $operator = $query->isConjunction() ? 'and' : 'or';
-
-            $this->writeBetween($query->getConditions(), $this->compressed ? "$operator " : " $operator ", $this->buffer->write(...));
+            $operator = $query->is_conjunction() ? 'and' : 'or';
+            $this->write_between($query->get_conditions(), $this->compressed ? "{$operator} " : " {$operator} ", $this->buffer->write(...));
         }
     }
-
-    public function visitCssStyleRule(CssStyleRule $node): void
+    public function visit_css_style_rule(Css_Style_Rule $node): void
     {
-        $this->writeIndentation();
-
-        $this->for($node->getSelector(), function () use ($node): void {
-            $node->getSelector()->accept($this);
+        $this->write_indentation();
+        $this->for($node->get_selector(), function () use ($node): void {
+            $node->get_selector()->accept($this);
         });
-        $this->writeOptionalSpace();
-        $this->visitChildren($node);
+        $this->write_optional_space();
+        $this->visit_children($node);
     }
-
-    public function visitCssSupportsRule(CssSupportsRule $node): void
+    public function visit_css_supports_rule(Css_Supports_Rule $node): void
     {
-        $this->writeIndentation();
-
+        $this->write_indentation();
         $this->for($node, function () use ($node): void {
             $this->buffer->write('@supports');
-
-            if (!($this->compressed && $node->getCondition()->getValue()[0] === '(')) {
-                $this->buffer->writeChar(' ');
+            if (!($this->compressed && $node->get_condition()->get_value()[0] === '(')) {
+                $this->buffer->write_char(' ');
             }
-
-            $this->write($node->getCondition());
+            $this->write($node->get_condition());
         });
-        $this->writeOptionalSpace();
-        $this->visitChildren($node);
+        $this->write_optional_space();
+        $this->visit_children($node);
     }
-
-    public function visitCssDeclaration(CssDeclaration $node): void
+    public function visit_css_declaration(Css_Declaration $node): void
     {
-        if ($node->getInterleavedRules() !== []) {
-            \assert($node->getParent() !== null);
-            $declSpecificities = $this->specificities($node->getParent());
-
-            foreach ($node->getInterleavedRules() as $rule) {
-                $ruleSpecificities = $this->specificities($rule);
-
+        if ($node->get_interleaved_rules() !== []) {
+            \assert($node->get_parent() !== null);
+            $decl_specificities = $this->specificities($node->get_parent());
+            foreach ($node->get_interleaved_rules() as $rule) {
+                $rule_specificities = $this->specificities($rule);
                 // If the declaration can never match with the same specificity as one
                 // of its sibling rules, then ordering will never matter and there's no
                 // need to warn about the declaration being re-ordered.
-                if (!IterableUtil::any($declSpecificities, fn ($s): bool => \in_array($s, $ruleSpecificities, true))) {
+                if (!Iterable_Util::any($decl_specificities, fn($s): bool => \in_array($s, $rule_specificities, true))) {
                     continue;
                 }
-
-                LoggerUtil::warnForDeprecation(
-                    $this->logger,
-                    Deprecation::mixedDecls,
-                    <<<'MESSAGE'
-                    Sass's behavior for declarations that appear after nested
-                    rules will be changing to match the behavior specified by CSS in an upcoming
-                    version. To keep the existing behavior, move the declaration above the nested
-                    rule. To opt into the new behavior, wrap the declaration in `& {}`.
-
-                    More info: https://sass-lang.com/d/mixed-decls
-                    MESSAGE,
-                    new MultiSpan($node->getSpan(), 'declaration', [
-                        'nested rule' => $rule->getSpan(),
-                    ]),
-                    $node->getTrace()
-                );
+                Logger_Util::warn_for_deprecation($this->logger, Deprecation::mixedDecls, <<<'MESSAGE'
+                Sass's behavior for declarations that appear after nested
+                rules will be changing to match the behavior specified by CSS in an upcoming
+                version. To keep the existing behavior, move the declaration above the nested
+                rule. To opt into the new behavior, wrap the declaration in `& {}`.
+                
+                More info: https://sass-lang.com/d/mixed-decls
+                MESSAGE, new Multi_Span($node->get_span(), 'declaration', ['nested rule' => $rule->get_span()]), $node->get_trace());
             }
         }
-
-        $this->writeIndentation();
-        $this->write($node->getName());
-        $this->buffer->writeChar(':');
-
+        $this->write_indentation();
+        $this->write($node->get_name());
+        $this->buffer->write_char(':');
         // If `node` is a custom property that was parsed as a normal Sass-syntax
         // property (such as `#{--foo}: ...`), we serialize its value using the
         // normal Sass property logic as well.
-        if ($node->isCustomProperty() && $node->isParsedAsCustomProperty()) {
-            $this->for($node->getValue(), function () use ($node): void {
+        if ($node->is_custom_property() && $node->is_parsed_as_custom_property()) {
+            $this->for($node->get_value(), function () use ($node): void {
                 if ($this->compressed) {
-                    $this->writeFoldedValue($node);
+                    $this->write_folded_value($node);
                 } else {
-                    $this->writeReindentedValue($node);
+                    $this->write_reindented_value($node);
                 }
             });
         } else {
-            $this->writeOptionalSpace();
-
+            $this->write_optional_space();
             try {
-                $this->buffer->forSpan($node->getValueSpanForMap(), fn () => $node->getValue()->getValue()->accept($this));
-            } catch (SassScriptException $error) {
-                throw $error->withSpan($node->getValue()->getSpan());
+                $this->buffer->for_span($node->get_value_span_for_map(), fn() => $node->get_value()->get_value()->accept($this));
+            } catch (Sass_Script_Exception $error) {
+                throw $error->with_span($node->get_value()->get_span());
             }
         }
     }
-
     /**
      * Returns the set of possible specificities with which $node might match.
      *
      * @return non-empty-array<int>
      */
-    private function specificities(CssParentNode $node): array
+    private function specificities(Css_Parent_Node $node): array
     {
-        if ($node instanceof CssStyleRule) {
+        if ($node instanceof Css_Style_Rule) {
             // Plain CSS style rule nesting implicitly wraps parent selectors in
             // `:is()`, so they all match with the highest specificity among any of
             // them.
-            if ($node->getParent() !== null) {
-                $parent = max($this->specificities($node->getParent()));
+            if ($node->get_parent() !== null) {
+                $parent = max($this->specificities($node->get_parent()));
             } else {
                 $parent = 0;
             }
-
-            return array_map(fn (ComplexSelector $selector): float|int => $parent + $selector->getSpecificity(), $node->getSelector()->getComponents());
+            return array_map(fn(Complex_Selector $selector): float|int => $parent + $selector->get_specificity(), $node->get_selector()->get_components());
         }
-
-        if ($node->getParent() !== null) {
-            return $this->specificities($node->getParent());
+        if ($node->get_parent() !== null) {
+            return $this->specificities($node->get_parent());
         }
-
         return [0];
     }
-
     /**
      * Emits the value of $node, with all newlines followed by whitespace
      */
-    private function writeFoldedValue(CssDeclaration $node): void
+    private function write_folded_value(Css_Declaration $node): void
     {
-        $value = $node->getValue()->getValue();
-        assert($value instanceof SassString);
-        $scannner = new StringScanner($value->getText());
-
-        while (!$scannner->isDone()) {
-            $next = $scannner->readUtf8Char();
+        $value = $node->get_value()->get_value();
+        assert($value instanceof Sass_String);
+        $scannner = new String_Scanner($value->get_text());
+        while (!$scannner->is_done()) {
+            $next = $scannner->read_utf8char();
             if ($next !== "\n") {
-                $this->buffer->writeChar($next);
+                $this->buffer->write_char($next);
                 continue;
             }
-
-            $this->buffer->writeChar(' ');
-            while (Character::isWhitespace($scannner->peekChar())) {
-                $scannner->readChar();
+            $this->buffer->write_char(' ');
+            while (Character::is_whitespace($scannner->peek_char())) {
+                $scannner->read_char();
             }
         }
     }
-
     /**
      * Emits the value of $node, re-indented relative to the current indentation.
      */
-    private function writeReindentedValue(CssDeclaration $node): void
+    private function write_reindented_value(Css_Declaration $node): void
     {
-        $nodeValue = $node->getValue()->getValue();
-        assert($nodeValue instanceof SassString);
-        $value = $nodeValue->getText();
-
-        $minimumIndentation = $this->minimumIndentation($value);
-        if ($minimumIndentation === null) {
+        $node_value = $node->get_value()->get_value();
+        assert($node_value instanceof Sass_String);
+        $value = $node_value->get_text();
+        $minimum_indentation = $this->minimum_indentation($value);
+        if ($minimum_indentation === null) {
             $this->buffer->write($value);
             return;
         }
-
-        if ($minimumIndentation === -1) {
-            $this->buffer->write(StringUtil::trimAsciiRight($value, true));
-            $this->buffer->writeChar(' ');
+        if ($minimum_indentation === -1) {
+            $this->buffer->write(String_Util::trim_ascii_right($value, true));
+            $this->buffer->write_char(' ');
             return;
         }
-
-        $minimumIndentation = min($minimumIndentation, $node->getName()->getSpan()->getStart()->getColumn());
-        $this->writeWithIndent($value, $minimumIndentation);
+        $minimum_indentation = min($minimum_indentation, $node->get_name()->get_span()->get_start()->get_column());
+        $this->write_with_indent($value, $minimum_indentation);
     }
-
     /**
      * Returns the indentation level of the least-indented non-empty line in
      * $text after the first.
@@ -467,197 +394,166 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      * Returns `null` if $text contains no newlines, and -1 if it contains
      * newlines but no lines are indented.
      */
-    private function minimumIndentation(string $text): ?int
+    private function minimum_indentation(string $text): ?int
     {
-        $scanner = new LineScanner($text);
-        while (!$scanner->isDone() && $scanner->readChar() !== "\n") {
+        $scanner = new Line_Scanner($text);
+        while (!$scanner->is_done() && $scanner->read_char() !== "\n") {
         }
-
-        if ($scanner->isDone()) {
-            return $scanner->peekChar(-1) === "\n" ? -1 : null;
+        if ($scanner->is_done()) {
+            return $scanner->peek_char(-1) === "\n" ? -1 : null;
         }
-
         $min = null;
-        while (!$scanner->isDone()) {
-            while (!$scanner->isDone()) {
-                $next = $scanner->peekChar();
+        while (!$scanner->is_done()) {
+            while (!$scanner->is_done()) {
+                $next = $scanner->peek_char();
                 if ($next !== ' ' && $next !== "\t") {
                     break;
                 }
-                $scanner->readChar();
+                $scanner->read_char();
             }
-            if ($scanner->isDone()) {
+            if ($scanner->is_done()) {
                 continue;
             }
-            if ($scanner->scanChar("\n")) {
+            if ($scanner->scan_char("\n")) {
                 continue;
             }
-
-            $min = $min === null ? $scanner->getColumn() : min($min, $scanner->getColumn());
-
-            while (!$scanner->isDone() && $scanner->readChar() !== "\n") {
+            $min = $min === null ? $scanner->get_column() : min($min, $scanner->get_column());
+            while (!$scanner->is_done() && $scanner->read_char() !== "\n") {
             }
         }
-
         return $min ?? -1;
     }
-
     /**
      * Writes $text to {@see buffer}, replacing $minimumIndentation with
      * {@see indentation} for each non-empty line after the first.
      *
      * Compresses trailing empty lines of $text into a single trailing space.
      */
-    private function writeWithIndent(string $text, int $minimumIndentation): void
+    private function write_with_indent(string $text, int $minimum_indentation): void
     {
-        $scanner = new LineScanner($text);
-
-        while (!$scanner->isDone()) {
-            $next = $scanner->readChar();
-
+        $scanner = new Line_Scanner($text);
+        while (!$scanner->is_done()) {
+            $next = $scanner->read_char();
             if ($next === "\n") {
                 break;
             }
-            $this->buffer->writeChar($next);
+            $this->buffer->write_char($next);
         }
-
         while (true) {
-            assert(Character::isWhitespace($scanner->peekChar(-1)));
+            assert(Character::is_whitespace($scanner->peek_char(-1)));
             // Scan forward until we hit non-whitespace or the end of [text].
-            $lineStart = $scanner->getPosition();
+            $line_start = $scanner->get_position();
             $newlines = 1;
-
             while (true) {
                 // If we hit the end of $text, we still need to preserve the fact that
                 // whitespace exists because it could matter for custom properties.
-                if ($scanner->isDone()) {
-                    $this->buffer->writeChar(' ');
+                if ($scanner->is_done()) {
+                    $this->buffer->write_char(' ');
                     return;
                 }
-
-                $next = $scanner->readChar();
+                $next = $scanner->read_char();
                 if ($next === ' ') {
                     continue;
                 }
                 if ($next === "\t") {
                     continue;
                 }
-
                 if ($next !== "\n") {
                     break;
                 }
-
-                $lineStart = $scanner->getPosition();
+                $line_start = $scanner->get_position();
                 $newlines++;
             }
-
-            $this->writeTimes("\n", $newlines);
-            $this->writeIndentation();
-            $this->buffer->write($scanner->substring($lineStart + $minimumIndentation));
-
+            $this->write_times("\n", $newlines);
+            $this->write_indentation();
+            $this->buffer->write($scanner->substring($line_start + $minimum_indentation));
             // Scan and write until we hit a newline or the end of $text.
             while (true) {
-                if ($scanner->isDone()) {
+                if ($scanner->is_done()) {
                     return;
                 }
-                $next = $scanner->readChar();
+                $next = $scanner->read_char();
                 if ($next === "\n") {
                     break;
                 }
-                $this->buffer->writeChar($next);
+                $this->buffer->write_char($next);
             }
         }
     }
-
     // ## Values
-
-    public function visitBoolean(SassBoolean $value): void
+    public function visit_boolean(Sass_Boolean $value): void
     {
-        $this->buffer->write($value->getValue() ? 'true' : 'false');
+        $this->buffer->write($value->get_value() ? 'true' : 'false');
     }
-
-    public function visitCalculation(SassCalculation $value): void
+    public function visit_calculation(Sass_Calculation $value): void
     {
-        $this->buffer->write($value->getName());
-        $this->buffer->writeChar('(');
-
-        $isFirst = true;
-
-        foreach ($value->getArguments() as $argument) {
-            if ($isFirst) {
-                $isFirst = false;
+        $this->buffer->write($value->get_name());
+        $this->buffer->write_char('(');
+        $is_first = true;
+        foreach ($value->get_arguments() as $argument) {
+            if ($is_first) {
+                $is_first = false;
             } else {
-                $this->buffer->write($this->getCommaSeparator());
+                $this->buffer->write($this->get_comma_separator());
             }
-
-            $this->writeCalculationValue($argument);
+            $this->write_calculation_value($argument);
         }
-        $this->buffer->writeChar(')');
+        $this->buffer->write_char(')');
     }
-
-    private function writeCalculationValue(object $value): void
+    private function write_calculation_value(object $value): void
     {
-        if ($value instanceof SassNumber && $value->hasComplexUnits() && !$this->inspect) {
-            throw new SassScriptException("$value isn't a valid CSS value.");
+        if ($value instanceof Sass_Number && $value->has_complex_units() && !$this->inspect) {
+            throw new Sass_Script_Exception("{$value} isn't a valid CSS value.");
         }
-        if ($value instanceof SassNumber && !is_finite($value->getValue())) {
-            if (is_nan($value->getValue())) {
+        if ($value instanceof Sass_Number && !is_finite($value->get_value())) {
+            if (is_nan($value->get_value())) {
                 $this->buffer->write('NaN');
-            } elseif ($value->getValue() > 0) {
+            } elseif ($value->get_value() > 0) {
                 $this->buffer->write('infinity');
             } else {
                 $this->buffer->write('-infinity');
             }
-
-            $this->writeCalculationUnits($value->getNumeratorUnits(), $value->getDenominatorUnits());
-        } elseif ($value instanceof SassNumber && $value->hasComplexUnits()) {
-            $this->writeNumber($value->getValue());
-
-            $firstUnit = $value->getNumeratorUnits()[0] ?? null;
-
-            if ($firstUnit !== null) {
-                $this->buffer->write($firstUnit);
-                $this->writeCalculationUnits(array_slice($value->getNumeratorUnits(), 1), $value->getDenominatorUnits());
+            $this->write_calculation_units($value->get_numerator_units(), $value->get_denominator_units());
+        } elseif ($value instanceof Sass_Number && $value->has_complex_units()) {
+            $this->write_number($value->get_value());
+            $first_unit = $value->get_numerator_units()[0] ?? null;
+            if ($first_unit !== null) {
+                $this->buffer->write($first_unit);
+                $this->write_calculation_units(array_slice($value->get_numerator_units(), 1), $value->get_denominator_units());
             } else {
-                $this->writeCalculationUnits([], $value->getDenominatorUnits());
+                $this->write_calculation_units([], $value->get_denominator_units());
             }
         } elseif ($value instanceof Value) {
             $value->accept($this);
-        } elseif ($value instanceof CalculationOperation) {
-            $left = $value->getLeft();
-            $parenthesizeLeft = $left instanceof CalculationOperation && $left->getOperator()->getPrecedence() < $value->getOperator()->getPrecedence();
-
-            if ($parenthesizeLeft) {
-                $this->buffer->writeChar('(');
+        } elseif ($value instanceof Calculation_Operation) {
+            $left = $value->get_left();
+            $parenthesize_left = $left instanceof Calculation_Operation && $left->get_operator()->get_precedence() < $value->get_operator()->get_precedence();
+            if ($parenthesize_left) {
+                $this->buffer->write_char('(');
             }
-            $this->writeCalculationValue($left);
-            if ($parenthesizeLeft) {
-                $this->buffer->writeChar(')');
+            $this->write_calculation_value($left);
+            if ($parenthesize_left) {
+                $this->buffer->write_char(')');
             }
-
-            $operatorWhitespace = !$this->compressed || $value->getOperator()->getPrecedence() === 1;
-            if ($operatorWhitespace) {
-                $this->buffer->writeChar(' ');
+            $operator_whitespace = !$this->compressed || $value->get_operator()->get_precedence() === 1;
+            if ($operator_whitespace) {
+                $this->buffer->write_char(' ');
             }
-            $this->buffer->write($value->getOperator()->getOperator());
-            if ($operatorWhitespace) {
-                $this->buffer->writeChar(' ');
+            $this->buffer->write($value->get_operator()->get_operator());
+            if ($operator_whitespace) {
+                $this->buffer->write_char(' ');
             }
-
-            $right = $value->getRight();
-            $parenthesizeRight = ($right instanceof CalculationOperation && $this->parenthesizeCalculationRhs($value->getOperator(), $right->getOperator()))
-                || ($value->getOperator() === CalculationOperator::DIVIDED_BY && $right instanceof SassNumber && (is_finite($right->getValue()) ? $right->hasComplexUnits() : $right->hasUnits()));
-
-            if ($parenthesizeRight) {
-                $this->buffer->writeChar('(');
+            $right = $value->get_right();
+            $parenthesize_right = $right instanceof Calculation_Operation && $this->parenthesize_calculation_rhs($value->get_operator(), $right->get_operator()) || $value->get_operator() === Calculation_Operator::DIVIDED_BY && $right instanceof Sass_Number && (is_finite($right->get_value()) ? $right->has_complex_units() : $right->has_units());
+            if ($parenthesize_right) {
+                $this->buffer->write_char('(');
             }
-            $this->writeCalculationValue($right);
-            if ($parenthesizeRight) {
-                $this->buffer->writeChar(')');
+            $this->write_calculation_value($right);
+            if ($parenthesize_right) {
+                $this->buffer->write_char(')');
             }
         }
     }
-
     /**
      * Writes the complex numerator and denominator units beyond the first
      * numerator unit for a number as they appear in a calculation.
@@ -665,262 +561,218 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      * @param list<string> $numeratorUnits
      * @param list<string> $denominatorUnits
      */
-    private function writeCalculationUnits(array $numeratorUnits, array $denominatorUnits): void
+    private function write_calculation_units(array $numerator_units, array $denominator_units): void
     {
-        foreach ($numeratorUnits as $unit) {
-            $this->writeOptionalSpace();
-            $this->buffer->writeChar('*');
-            $this->writeOptionalSpace();
-            $this->buffer->writeChar('1');
+        foreach ($numerator_units as $unit) {
+            $this->write_optional_space();
+            $this->buffer->write_char('*');
+            $this->write_optional_space();
+            $this->buffer->write_char('1');
             $this->buffer->write($unit);
         }
-
-        foreach ($denominatorUnits as $unit) {
-            $this->writeOptionalSpace();
-            $this->buffer->writeChar('/');
-            $this->writeOptionalSpace();
-            $this->buffer->writeChar('1');
+        foreach ($denominator_units as $unit) {
+            $this->write_optional_space();
+            $this->buffer->write_char('/');
+            $this->write_optional_space();
+            $this->buffer->write_char('1');
             $this->buffer->write($unit);
         }
     }
-
     /**
      * Returns whether the right-hand operation of a calculation should be
      * parenthesized.
      *
      * In `a ? (b # c)`, `outer` is `?` and `right` is `#`.
      */
-    private function parenthesizeCalculationRhs(CalculationOperator $outer, CalculationOperator $right): bool
+    private function parenthesize_calculation_rhs(Calculation_Operator $outer, Calculation_Operator $right): bool
     {
-        if ($outer === CalculationOperator::DIVIDED_BY) {
+        if ($outer === Calculation_Operator::DIVIDED_BY) {
             return true;
         }
-
-        if ($outer === CalculationOperator::PLUS) {
+        if ($outer === Calculation_Operator::PLUS) {
             return false;
         }
-
-        return $right === CalculationOperator::PLUS || $right === CalculationOperator::MINUS;
+        return $right === Calculation_Operator::PLUS || $right === Calculation_Operator::MINUS;
     }
-
-    public function visitColor(SassColor $value): void
+    public function visit_color(Sass_Color $value): void
     {
-        $name = Colors::RGBaToColorName($value->getRed(), $value->getGreen(), $value->getBlue(), $value->getAlpha());
-
+        $name = Colors::rg_ba_to_color_name($value->get_red(), $value->get_green(), $value->get_blue(), $value->get_alpha());
         // In compressed mode, emit colors in the shortest representation possible.
         if ($this->compressed) {
-            if (!NumberUtil::fuzzyEquals($value->getAlpha(), 1)) {
-                $this->writeRgb($value);
+            if (!Number_Util::fuzzy_equals($value->get_alpha(), 1)) {
+                $this->write_rgb($value);
             } else {
-                $canUseShortHex = $this->canUseShortHex($value);
-                $hexLength = $canUseShortHex ? 4 : 7;
-
-                if ($name !== null && \strlen($name) <= $hexLength) {
+                $can_use_short_hex = $this->can_use_short_hex($value);
+                $hex_length = $can_use_short_hex ? 4 : 7;
+                if ($name !== null && \strlen($name) <= $hex_length) {
                     $this->buffer->write($name);
-                } elseif ($canUseShortHex) {
-                    $this->buffer->writeChar('#');
-                    $this->buffer->writeChar(dechex($value->getRed() & 0xF));
-                    $this->buffer->writeChar(dechex($value->getGreen() & 0xF));
-                    $this->buffer->writeChar(dechex($value->getBlue() & 0xF));
+                } elseif ($can_use_short_hex) {
+                    $this->buffer->write_char('#');
+                    $this->buffer->write_char(dechex($value->get_red() & 0xf));
+                    $this->buffer->write_char(dechex($value->get_green() & 0xf));
+                    $this->buffer->write_char(dechex($value->get_blue() & 0xf));
                 } else {
-                    $this->buffer->writeChar('#');
-                    $this->writeHexComponent($value->getRed());
-                    $this->writeHexComponent($value->getGreen());
-                    $this->writeHexComponent($value->getBlue());
+                    $this->buffer->write_char('#');
+                    $this->write_hex_component($value->get_red());
+                    $this->write_hex_component($value->get_green());
+                    $this->write_hex_component($value->get_blue());
                 }
             }
-
             return;
         }
-
-        $format = $value->getFormat();
-
+        $format = $value->get_format();
         if ($format !== null) {
-            if ($format === ColorFormatEnum::rgbFunction) {
-                $this->writeRgb($value);
-            } elseif ($format === ColorFormatEnum::hslFunction) {
-                $this->writeHsl($value);
-            } elseif ($format instanceof SpanColorFormat) {
-                $this->buffer->write($format->getOriginal());
+            if ($format === Color_Format_Enum::rgbFunction) {
+                $this->write_rgb($value);
+            } elseif ($format === Color_Format_Enum::hslFunction) {
+                $this->write_hsl($value);
+            } elseif ($format instanceof Span_Color_Format) {
+                $this->buffer->write($format->get_original());
             } else {
                 // should not happen as our interface is sealed.
                 \assert(false, 'unknown format');
             }
-        } elseif (
-            $name !== null &&
-            // Always emit generated transparent colors in rgba format. This works
-            // around an IE bug. See https://github.com/sass/sass/issues/1782.
-            !NumberUtil::fuzzyEquals($value->getAlpha(), 0)
-        ) {
+        } elseif ($name !== null && !Number_Util::fuzzy_equals($value->get_alpha(), 0)) {
             $this->buffer->write($name);
-        } elseif (NumberUtil::fuzzyEquals($value->getAlpha(), 1)) {
-            $this->buffer->writeChar('#');
-            $this->writeHexComponent($value->getRed());
-            $this->writeHexComponent($value->getGreen());
-            $this->writeHexComponent($value->getBlue());
+        } elseif (Number_Util::fuzzy_equals($value->get_alpha(), 1)) {
+            $this->buffer->write_char('#');
+            $this->write_hex_component($value->get_red());
+            $this->write_hex_component($value->get_green());
+            $this->write_hex_component($value->get_blue());
         } else {
-            $this->writeRgb($value);
+            $this->write_rgb($value);
         }
     }
-
     /**
      * Writes $value as an `rgb` or `rgba` function.
      */
-    private function writeRgb(SassColor $value): void
+    private function write_rgb(Sass_Color $value): void
     {
-        $opaque = NumberUtil::fuzzyEquals($value->getAlpha(), 1);
+        $opaque = Number_Util::fuzzy_equals($value->get_alpha(), 1);
         $this->buffer->write($opaque ? 'rgb(' : 'rgba(');
-        $this->buffer->write((string) $value->getRed());
-        $this->buffer->write($this->getCommaSeparator());
-        $this->buffer->write((string) $value->getGreen());
-        $this->buffer->write($this->getCommaSeparator());
-        $this->buffer->write((string) $value->getBlue());
-
+        $this->buffer->write((string) $value->get_red());
+        $this->buffer->write($this->get_comma_separator());
+        $this->buffer->write((string) $value->get_green());
+        $this->buffer->write($this->get_comma_separator());
+        $this->buffer->write((string) $value->get_blue());
         if (!$opaque) {
-            $this->buffer->write($this->getCommaSeparator());
-            $this->writeNumber($value->getAlpha());
+            $this->buffer->write($this->get_comma_separator());
+            $this->write_number($value->get_alpha());
         }
-
-        $this->buffer->writeChar(')');
+        $this->buffer->write_char(')');
     }
-
     /**
      * Writes $value as an `hsl` or `hsla` function.
      */
-    private function writeHsl(SassColor $value): void
+    private function write_hsl(Sass_Color $value): void
     {
-        $opaque = NumberUtil::fuzzyEquals($value->getAlpha(), 1);
+        $opaque = Number_Util::fuzzy_equals($value->get_alpha(), 1);
         $this->buffer->write($opaque ? 'hsl(' : 'hsla(');
-        $this->writeNumber($value->getHue());
-        $this->buffer->write($this->getCommaSeparator());
-        $this->writeNumber($value->getSaturation());
-        $this->buffer->writeChar('%');
-        $this->buffer->write($this->getCommaSeparator());
-        $this->writeNumber($value->getLightness());
-        $this->buffer->writeChar('%');
-
+        $this->write_number($value->get_hue());
+        $this->buffer->write($this->get_comma_separator());
+        $this->write_number($value->get_saturation());
+        $this->buffer->write_char('%');
+        $this->buffer->write($this->get_comma_separator());
+        $this->write_number($value->get_lightness());
+        $this->buffer->write_char('%');
         if (!$opaque) {
-            $this->buffer->write($this->getCommaSeparator());
-            $this->writeNumber($value->getAlpha());
+            $this->buffer->write($this->get_comma_separator());
+            $this->write_number($value->get_alpha());
         }
-
-        $this->buffer->writeChar(')');
+        $this->buffer->write_char(')');
     }
-
     /**
      * Returns whether $color's hex pair representation is symmetrical (e.g. `FF`).
      */
-    private function isSymmetricalHex(int $color): bool
+    private function is_symmetrical_hex(int $color): bool
     {
-        return ($color & 0xF) === $color >> 4;
+        return ($color & 0xf) === $color >> 4;
     }
-
     /**
      * Returns whether $color can be represented as a short hexadecimal color
      * (e.g. `#fff`).
      */
-    private function canUseShortHex(SassColor $color): bool
+    private function can_use_short_hex(Sass_Color $color): bool
     {
-        return $this->isSymmetricalHex($color->getRed()) && $this->isSymmetricalHex($color->getGreen()) && $this->isSymmetricalHex($color->getBlue());
+        return $this->is_symmetrical_hex($color->get_red()) && $this->is_symmetrical_hex($color->get_green()) && $this->is_symmetrical_hex($color->get_blue());
     }
-
     /**
      * Emits $color as a hex character pair.
      */
-    private function writeHexComponent(int $color): void
+    private function write_hex_component(int $color): void
     {
         $this->buffer->write(str_pad(dechex($color), 2, '0', STR_PAD_LEFT));
     }
-
-    public function visitFunction(SassFunction $value): void
+    public function visit_function(Sass_Function $value): void
     {
         if (!$this->inspect) {
-            throw new SassScriptException("$value isn't a valid CSS value.");
+            throw new Sass_Script_Exception("{$value} isn't a valid CSS value.");
         }
-
         $this->buffer->write('get-function(');
-        $this->visitQuotedString($value->getCallable()->getName());
-        $this->buffer->writeChar(')');
+        $this->visit_quoted_string($value->get_callable()->get_name());
+        $this->buffer->write_char(')');
     }
-
-    public function visitMixin(SassMixin $value): void
+    public function visit_mixin(Sass_Mixin $value): void
     {
         if (!$this->inspect) {
-            throw new SassScriptException("$value isn't a valid CSS value.");
+            throw new Sass_Script_Exception("{$value} isn't a valid CSS value.");
         }
-
         $this->buffer->write('get-mixin(');
-        $this->visitQuotedString($value->getCallable()->getName());
-        $this->buffer->writeChar(')');
+        $this->visit_quoted_string($value->get_callable()->get_name());
+        $this->buffer->write_char(')');
     }
-
-    public function visitList(SassList $value): void
+    public function visit_list(Sass_List $value): void
     {
-        if ($value->hasBrackets()) {
-            $this->buffer->writeChar('[');
-        } elseif (\count($value->asList()) === 0) {
+        if ($value->has_brackets()) {
+            $this->buffer->write_char('[');
+        } elseif (\count($value->as_list()) === 0) {
             if (!$this->inspect) {
-                throw new SassScriptException("() isn't a valid CSS value.");
+                throw new Sass_Script_Exception("() isn't a valid CSS value.");
             }
-
             $this->buffer->write('()');
             return;
         }
-
-        $singleton = $this->inspect && \count($value->asList()) === 1 && ($value->getSeparator() === ListSeparator::COMMA || $value->getSeparator() === ListSeparator::SLASH);
-
-        if ($singleton && !$value->hasBrackets()) {
-            $this->buffer->writeChar('(');
+        $singleton = $this->inspect && \count($value->as_list()) === 1 && ($value->get_separator() === List_Separator::COMMA || $value->get_separator() === List_Separator::SLASH);
+        if ($singleton && !$value->has_brackets()) {
+            $this->buffer->write_char('(');
         }
-
-        $separator = $this->separatorString($value->getSeparator());
-
-        $isFirst = true;
-
-        foreach ($value->asList() as $element) {
-            if (!$this->inspect && $element->isBlank()) {
+        $separator = $this->separator_string($value->get_separator());
+        $is_first = true;
+        foreach ($value->as_list() as $element) {
+            if (!$this->inspect && $element->is_blank()) {
                 continue;
             }
-
-            if ($isFirst) {
-                $isFirst = false;
+            if ($is_first) {
+                $is_first = false;
             } else {
                 $this->buffer->write($separator);
             }
-
-            $needsParens = $this->inspect && self::elementNeedsParens($value->getSeparator(), $element);
-
-            if ($needsParens) {
-                $this->buffer->writeChar('(');
+            $needs_parens = $this->inspect && self::element_needs_parens($value->get_separator(), $element);
+            if ($needs_parens) {
+                $this->buffer->write_char('(');
             }
-
             $element->accept($this);
-
-            if ($needsParens) {
-                $this->buffer->writeChar(')');
+            if ($needs_parens) {
+                $this->buffer->write_char(')');
             }
         }
-
         if ($singleton) {
-            \assert($value->getSeparator()->getSeparator() !== null, 'The list separator is not undecided at that point.');
-            $this->buffer->write($value->getSeparator()->getSeparator());
-
-            if (!$value->hasBrackets()) {
-                $this->buffer->writeChar(')');
+            \assert($value->get_separator()->get_separator() !== null, 'The list separator is not undecided at that point.');
+            $this->buffer->write($value->get_separator()->get_separator());
+            if (!$value->has_brackets()) {
+                $this->buffer->write_char(')');
             }
         }
-
-        if ($value->hasBrackets()) {
-            $this->buffer->writeChar(']');
+        if ($value->has_brackets()) {
+            $this->buffer->write_char(']');
         }
     }
-
-    private function separatorString(ListSeparator $separator): string
+    private function separator_string(List_Separator $separator): string
     {
         return match ($separator) {
-            ListSeparator::COMMA => $this->getCommaSeparator(),
-            ListSeparator::SLASH => $this->compressed ? '/' : ' / ',
-            ListSeparator::SPACE => ' ',
+            List_Separator::COMMA => $this->get_comma_separator(),
+            List_Separator::SLASH => $this->compressed ? '/' : ' / ',
+            List_Separator::SPACE => ' ',
             /**
              * This should never be used, but it may still be returned since
              * {@see separatorString} is invoked eagerly by {@see writeList} even for lists
@@ -929,201 +781,158 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
             default => '',
         };
     }
-
     /**
      * Returns whether the value needs parentheses as an element in a list with the given separator.
      */
-    private static function elementNeedsParens(ListSeparator $separator, Value $value): bool
+    private static function element_needs_parens(List_Separator $separator, Value $value): bool
     {
-        if (!$value instanceof SassList) {
+        if (!$value instanceof Sass_List) {
             return false;
         }
-
-        if (count($value->asList()) < 2) {
+        if (count($value->as_list()) < 2) {
             return false;
         }
-
-        if ($value->hasBrackets()) {
+        if ($value->has_brackets()) {
             return false;
         }
-
         return match ($separator) {
-            ListSeparator::COMMA => $value->getSeparator() === ListSeparator::COMMA,
-            ListSeparator::SLASH => $value->getSeparator() === ListSeparator::COMMA || $value->getSeparator() === ListSeparator::SLASH,
-            default => $value->getSeparator() !== ListSeparator::UNDECIDED,
+            List_Separator::COMMA => $value->get_separator() === List_Separator::COMMA,
+            List_Separator::SLASH => $value->get_separator() === List_Separator::COMMA || $value->get_separator() === List_Separator::SLASH,
+            default => $value->get_separator() !== List_Separator::UNDECIDED,
         };
     }
-
-    public function visitMap(SassMap $value): void
+    public function visit_map(Sass_Map $value): void
     {
         if (!$this->inspect) {
-            throw new SassScriptException("$value isn't a valid CSS value.");
+            throw new Sass_Script_Exception("{$value} isn't a valid CSS value.");
         }
-
-        $this->buffer->writeChar('(');
-
-        $isFirst = true;
-
-        foreach ($value->getContents() as $key => $element) {
-            if ($isFirst) {
-                $isFirst = false;
+        $this->buffer->write_char('(');
+        $is_first = true;
+        foreach ($value->get_contents() as $key => $element) {
+            if ($is_first) {
+                $is_first = false;
             } else {
                 $this->buffer->write(', ');
             }
-
-            $this->writeMapElement($key);
+            $this->write_map_element($key);
             $this->buffer->write(': ');
-            $this->writeMapElement($element);
+            $this->write_map_element($element);
         }
-        $this->buffer->writeChar(')');
+        $this->buffer->write_char(')');
     }
-
-    private function writeMapElement(Value $value): void
+    private function write_map_element(Value $value): void
     {
-        $needsParens = $value instanceof SassList
-            && ListSeparator::COMMA === $value->getSeparator()
-            && !$value->hasBrackets();
-
-        if ($needsParens) {
-            $this->buffer->writeChar('(');
+        $needs_parens = $value instanceof Sass_List && List_Separator::COMMA === $value->get_separator() && !$value->has_brackets();
+        if ($needs_parens) {
+            $this->buffer->write_char('(');
         }
-
         $value->accept($this);
-
-        if ($needsParens) {
-            $this->buffer->writeChar(')');
+        if ($needs_parens) {
+            $this->buffer->write_char(')');
         }
     }
-
-    public function visitNull(): void
+    public function visit_null(): void
     {
         if ($this->inspect) {
             $this->buffer->write('null');
         }
     }
-
-    public function visitNumber(SassNumber $value): void
+    public function visit_number(Sass_Number $value): void
     {
-        $asSlash = $value->getAsSlash();
-
-        if ($asSlash !== null) {
-            $this->visitNumber($asSlash[0]);
-            $this->buffer->writeChar('/');
-            $this->visitNumber($asSlash[1]);
-
+        $as_slash = $value->get_as_slash();
+        if ($as_slash !== null) {
+            $this->visit_number($as_slash[0]);
+            $this->buffer->write_char('/');
+            $this->visit_number($as_slash[1]);
             return;
         }
-
-        if (!is_finite($value->getValue())) {
-            $this->visitCalculation(SassCalculation::unsimplified('calc', [$value]));
+        if (!is_finite($value->get_value())) {
+            $this->visit_calculation(Sass_Calculation::unsimplified('calc', [$value]));
             return;
         }
-
-        if ($value->hasComplexUnits()) {
+        if ($value->has_complex_units()) {
             if (!$this->inspect) {
-                throw new SassScriptException("$value isn't a valid CSS value.");
+                throw new Sass_Script_Exception("{$value} isn't a valid CSS value.");
             }
-
-            $this->visitCalculation(SassCalculation::unsimplified('calc', [$value]));
+            $this->visit_calculation(Sass_Calculation::unsimplified('calc', [$value]));
         } else {
-            $this->writeNumber($value->getValue());
-
-            if (\count($value->getNumeratorUnits()) > 0) {
-                $this->buffer->write($value->getNumeratorUnits()[0]);
+            $this->write_number($value->get_value());
+            if (\count($value->get_numerator_units()) > 0) {
+                $this->buffer->write($value->get_numerator_units()[0]);
             }
         }
     }
-
     /**
      * Writes $number without exponent notation and with at most
      * {@see SassNumber::PRECISION} digits after the decimal point.
      */
-    private function writeNumber(float $number): void
+    private function write_number(float $number): void
     {
         if (is_nan($number)) {
             $this->buffer->write('NaN');
             return;
         }
-
         if ($number === INF) {
             $this->buffer->write('Infinity');
             return;
         }
-
         if ($number === -INF) {
             $this->buffer->write('-Infinity');
             return;
         }
-
-        $int = NumberUtil::fuzzyAsInt($number);
-
+        $int = Number_Util::fuzzy_as_int($number);
         if ($int !== null) {
             $this->buffer->write((string) $int);
             return;
         }
-
-        $text = $this->removeExponent((string) $number);
-
+        $text = $this->remove_exponent((string) $number);
         // Any double that's less than `SassNumber.precision + 2` digits long is
         // guaranteed to be safe to emit directly, since it'll contain at most `0.`
         // followed by [SassNumber.precision] digits.
-        $canWriteDirectly = \strlen($text) < SassNumber::PRECISION + 2;
-
-        if ($canWriteDirectly) {
+        $can_write_directly = \strlen($text) < Sass_Number::PRECISION + 2;
+        if ($can_write_directly) {
             if ($this->compressed && $text[0] === '0') {
                 $text = substr($text, 1);
             }
-
             $this->buffer->write($text);
             return;
         }
-
-        $this->writeRounded($text);
+        $this->write_rounded($text);
     }
-
     /**
      * If $text is written in exponent notation, returns a string representation
      * of it without exponent notation.
      *
      * Otherwise, returns $text as-is.
      */
-    private function removeExponent(string $text): string
+    private function remove_exponent(string $text): string
     {
-        $exponentDelimiterPosition = strpos($text, 'E');
-
-        if ($exponentDelimiterPosition === false) {
+        $exponent_delimiter_position = strpos($text, 'E');
+        if ($exponent_delimiter_position === false) {
             return $text;
         }
-
         $negative = $text[0] === '-';
-
         $buffer = $text[0];
-
         // If the number has more than one significant digit, the second
         // character will be a decimal point that we don't want to include in
         // the generated number.
         if ($negative) {
             $buffer .= $text[1];
-
-            if ($exponentDelimiterPosition > 3) {
-                $buffer .= substr($text, 3, $exponentDelimiterPosition - 3);
+            if ($exponent_delimiter_position > 3) {
+                $buffer .= substr($text, 3, $exponent_delimiter_position - 3);
             }
-        } elseif ($exponentDelimiterPosition > 2) {
-            $buffer .= substr($text, 2, $exponentDelimiterPosition - 2);
+        } elseif ($exponent_delimiter_position > 2) {
+            $buffer .= substr($text, 2, $exponent_delimiter_position - 2);
         }
-
-        $exponent = intval(substr($text, $exponentDelimiterPosition + 1));
-
+        $exponent = intval(substr($text, $exponent_delimiter_position + 1));
         if ($exponent > 0) {
             // Write an additional zero for each exponent digits other than those
             // already written to the buffer. We subtract 1 from `buffer.length`
             // because the first digit doesn't count towards the exponent. Subtract 1
             // more for negative numbers because of the `-` written to the buffer.
-            $additionalZeroes = $exponent - (\strlen($buffer) - 1 - ($negative ? 1 : 0));
-
-            return $buffer . str_repeat('0', $additionalZeroes);
+            $additional_zeroes = $exponent - (\strlen($buffer) - 1 - ($negative ? 1 : 0));
+            return $buffer . str_repeat('0', $additional_zeroes);
         }
-
         $result = '';
         if ($negative) {
             $result .= '-';
@@ -1132,21 +941,17 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
         for ($i = -1; $i > $exponent; --$i) {
             $result .= '0';
         }
-
         $result .= $negative ? substr($buffer, 1) : $buffer;
-
         return $result;
     }
-
     /**
      * Assuming $text is a number written without exponent notation, rounds it
      * to {@see SassNumber::PRECISION} digits after the decimal and writes the result
      * to {@see $buffer}.
      */
-    private function writeRounded(string $text): void
+    private function write_rounded(string $text): void
     {
-        \assert(preg_match('/^-?\d+(\.\d+)?$/D', $text) === 1, "\"$text\" should be a number written without exponent notation.");
-
+        \assert(preg_match('/^-?\d+(\.\d+)?$/D', $text) === 1, "\"{$text}\" should be a number written without exponent notation.");
         // We need to ensure that we write at most [SassNumber.precision] digits
         // after the decimal point, and that we round appropriately if necessary. To
         // do this, we maintain an intermediate buffer of digits (both before and
@@ -1154,162 +959,138 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
         // start writing after the first digit to give us room to round up to a
         // higher decimal place than was represented in the original number.
         $digits = array_fill(0, \strlen($text) + 1, 0);
-        $digitsIndex = 1;
-
+        $digits_index = 1;
         // Write the digits before the decimal to $digits.
-        $textIndex = 0;
+        $text_index = 0;
         $negative = $text[0] === '-';
         if ($negative) {
-            $textIndex++;
+            $text_index++;
         }
-
         while (true) {
-            if ($textIndex === \strlen($text)) {
+            if ($text_index === \strlen($text)) {
                 // If we get here, $text has no decimal point. It definitely doesn't
                 // need to be rounded; we can write it as-is.
                 $this->buffer->write($text);
                 return;
             }
-
-            $codeUnit = $text[$textIndex++];
-            if ($codeUnit === '.') {
+            $code_unit = $text[$text_index++];
+            if ($code_unit === '.') {
                 break;
             }
-
-            $digits[$digitsIndex++] = intval($codeUnit);
+            $digits[$digits_index++] = intval($code_unit);
         }
-
-        $firstFractionalDigit = $digitsIndex;
-
+        $first_fractional_digit = $digits_index;
         // Only write at most PRECISION digits after the decimal. If there aren't
         // that many digits left in the number, write it as-is since no rounding or
         // truncation is needed.
-        $indexAfterPrecision = $textIndex + SassNumber::PRECISION;
-        if ($indexAfterPrecision >= \strlen($text)) {
+        $index_after_precision = $text_index + Sass_Number::PRECISION;
+        if ($index_after_precision >= \strlen($text)) {
             $this->buffer->write($text);
             return;
         }
-
         // Write the digits after the decimal to $digits.
-        while ($textIndex < $indexAfterPrecision) {
-            $digits[$digitsIndex++] = intval($text[$textIndex++]);
+        while ($text_index < $index_after_precision) {
+            $digits[$digits_index++] = intval($text[$text_index++]);
         }
-
         // Round the trailing digits in $digits up if necessary.
-        if (intval($text[$textIndex]) >= 5) {
+        if (intval($text[$text_index]) >= 5) {
             while (true) {
                 // $digitsIndex is guaranteed to be >0 here because we added a leading
                 // 0 to $digits when we constructed it, so even if we round everything
                 // up $newDigit will always be 1 when $digitsIndex is 1.
-                $newDigit = ++$digits[$digitsIndex - 1];
-
-                if ($newDigit !== 10) {
+                $new_digit = ++$digits[$digits_index - 1];
+                if ($new_digit !== 10) {
                     break;
                 }
-                $digitsIndex--;
+                $digits_index--;
             }
         }
-
         // At most one of the following loops will actually execute. If we rounded
         // digits up before the decimal point, the first loop will set those digits
         // to 0 (rather than 10, which is not a valid decimal digit). On the other
         // hand, if we have trailing zeros left after the decimal point, the second
         // loop will move $digitsIndex before them and cause them not to be
         // written. Either way, $digitsIndex will end up >= $firstFractionalDigit.
-        for (; $digitsIndex < $firstFractionalDigit; $digitsIndex++) {
-            $digits[$digitsIndex] = 0;
+        for (; $digits_index < $first_fractional_digit; $digits_index++) {
+            $digits[$digits_index] = 0;
         }
-        while ($digitsIndex > $firstFractionalDigit && $digits[$digitsIndex - 1] === 0) {
-            $digitsIndex--;
+        while ($digits_index > $first_fractional_digit && $digits[$digits_index - 1] === 0) {
+            $digits_index--;
         }
-
         // Omit the minus sign if the number ended up being rounded to exactly zero,
         // write "0" explicit to avoid adding a minus sign or omitting the number
         // entirely in compressed mode.
-        if ($digitsIndex === 2 && $digits[0] === 0 && $digits[1] == 0) {
-            $this->buffer->writeChar('0');
+        if ($digits_index === 2 && $digits[0] === 0 && $digits[1] == 0) {
+            $this->buffer->write_char('0');
             return;
         }
-
         if ($negative) {
-            $this->buffer->writeChar('-');
+            $this->buffer->write_char('-');
         }
-
         // Write the digits before the decimal point to $buffer. Omit the leading
         // 0 that's added to $digits to accommodate rounding, and in compressed
         // mode omit the 0 before the decimal point as well.
-        $writtenIndex = 0;
-
+        $written_index = 0;
         if ($digits[0] === 0) {
-            $writtenIndex++;
+            $written_index++;
             if ($this->compressed && $digits[1] === 0) {
-                $writtenIndex++;
+                $written_index++;
             }
         }
-
-        for (; $writtenIndex < $firstFractionalDigit; $writtenIndex++) {
-            $this->buffer->writeChar((string) $digits[$writtenIndex]);
+        for (; $written_index < $first_fractional_digit; $written_index++) {
+            $this->buffer->write_char((string) $digits[$written_index]);
         }
-
-        if ($digitsIndex > $firstFractionalDigit) {
-            $this->buffer->writeChar('.');
-
-            for (; $writtenIndex < $digitsIndex; $writtenIndex++) {
-                $this->buffer->writeChar((string) $digits[$writtenIndex]);
+        if ($digits_index > $first_fractional_digit) {
+            $this->buffer->write_char('.');
+            for (; $written_index < $digits_index; $written_index++) {
+                $this->buffer->write_char((string) $digits[$written_index]);
             }
         }
     }
-
-    public function visitString(SassString $value): void
+    public function visit_string(Sass_String $value): void
     {
-        if ($this->quote && $value->hasQuotes()) {
-            $this->visitQuotedString($value->getText());
+        if ($this->quote && $value->has_quotes()) {
+            $this->visit_quoted_string($value->get_text());
         } else {
-            $this->visitUnquotedString($value->getText());
+            $this->visit_unquoted_string($value->get_text());
         }
     }
-
-    private function visitQuotedString(string $string): void
+    private function visit_quoted_string(string $string): void
     {
-        $includesDoubleQuote = str_contains($string, '"');
-        $includesSingleQuote = str_contains($string, '\'');
-        $forceDoubleQuotes = $includesSingleQuote && $includesDoubleQuote;
-        $quote = $forceDoubleQuotes || !$includesDoubleQuote ? '"' : "'";
-
-        $this->buffer->writeChar($quote);
-
+        $includes_double_quote = str_contains($string, '"');
+        $includes_single_quote = str_contains($string, '\'');
+        $force_double_quotes = $includes_single_quote && $includes_double_quote;
+        $quote = $force_double_quotes || !$includes_double_quote ? '"' : "'";
+        $this->buffer->write_char($quote);
         $length = \strlen($string);
-
         for ($i = 0; $i < $length; $i++) {
             $char = $string[$i];
-
             switch ($char) {
                 case "'":
-                    $this->buffer->writeChar("'"); // such string is always rendered double-quoted
+                    $this->buffer->write_char("'");
+                    // such string is always rendered double-quoted
                     break;
-
                 case '"':
-                    if ($forceDoubleQuotes) {
-                        $this->buffer->writeChar('\\');
+                    if ($force_double_quotes) {
+                        $this->buffer->write_char('\\');
                     }
-                    $this->buffer->writeChar('"');
+                    $this->buffer->write_char('"');
                     break;
-
-                case "\0":
-                case "\x1":
-                case "\x2":
-                case "\x3":
-                case "\x4":
-                case "\x5":
-                case "\x6":
-                case "\x7":
-                case "\x8":
-                case "\xA":
-                case "\xB":
-                case "\xC":
-                case "\xD":
-                case "\xE":
-                case "\xF":
+                case "\x00":
+                case "\x01":
+                case "\x02":
+                case "\x03":
+                case "\x04":
+                case "\x05":
+                case "\x06":
+                case "\x07":
+                case "\x08":
+                case "\n":
+                case "\v":
+                case "\f":
+                case "\r":
+                case "\x0e":
+                case "\x0f":
                 case "\x10":
                 case "\x11":
                 case "\x12":
@@ -1320,72 +1101,59 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
                 case "\x17":
                 case "\x18":
                 case "\x19":
-                case "\x1A":
-                case "\x1B":
-                case "\x1C":
-                case "\x1D":
-                case "\x1E":
-                case "\x1F":
-                case "\x7F":
-                    $this->writeEscape($this->buffer, $char, $string, $i);
+                case "\x1a":
+                case "\x1b":
+                case "\x1c":
+                case "\x1d":
+                case "\x1e":
+                case "\x1f":
+                case "":
+                    $this->write_escape($this->buffer, $char, $string, $i);
                     break;
-
                 case '\\':
-                    $this->buffer->writeChar('\\');
-                    $this->buffer->writeChar('\\');
+                    $this->buffer->write_char('\\');
+                    $this->buffer->write_char('\\');
                     break;
-
                 default:
-                    $newIndex = $this->tryPrivateUseCharacter($this->buffer, $char, $string, $i);
-
-                    if ($newIndex !== null) {
-                        $i = $newIndex;
+                    $new_index = $this->try_private_use_character($this->buffer, $char, $string, $i);
+                    if ($new_index !== null) {
+                        $i = $new_index;
                         break;
                     }
-
-                    $this->buffer->writeChar($char);
+                    $this->buffer->write_char($char);
                     break;
             }
         }
-
-        $this->buffer->writeChar($quote);
+        $this->buffer->write_char($quote);
     }
-
-    private function visitUnquotedString(string $string): void
+    private function visit_unquoted_string(string $string): void
     {
-        $afterNewline = false;
+        $after_newline = false;
         $length = \strlen($string);
-
         for ($i = 0; $i < $length; ++$i) {
             $char = $string[$i];
-
             switch ($char) {
                 case "\n":
-                    $this->buffer->writeChar(' ');
-                    $afterNewline = true;
+                    $this->buffer->write_char(' ');
+                    $after_newline = true;
                     break;
-
                 case ' ':
-                    if (!$afterNewline) {
-                        $this->buffer->writeChar(' ');
+                    if (!$after_newline) {
+                        $this->buffer->write_char(' ');
                     }
                     break;
-
                 default:
-                    $afterNewline = false;
-                    $newIndex = $this->tryPrivateUseCharacter($this->buffer, $char, $string, $i);
-
-                    if ($newIndex !== null) {
-                        $i = $newIndex;
+                    $after_newline = false;
+                    $new_index = $this->try_private_use_character($this->buffer, $char, $string, $i);
+                    if ($new_index !== null) {
+                        $i = $new_index;
                         break;
                     }
-
-                    $this->buffer->writeChar($char);
+                    $this->buffer->write_char($char);
                     break;
             }
         }
     }
-
     /**
      * If $char is the beginning of a private-use character and Sass isn't
      * emitting compressed CSS, writes that character as an escape to $buffer.
@@ -1400,49 +1168,44 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      * characters are often used for glyph fonts, where it's useful for readers
      * to be able to distinguish between them in the rendered stylesheet.
      */
-    private function tryPrivateUseCharacter(SourceMapBuffer $buffer, string $char, string $string, int $i): ?int
+    private function try_private_use_character(Source_Map_Buffer $buffer, string $char, string $string, int $i): ?int
     {
         if ($this->compressed) {
             return null;
         }
-
-        $firstByteCode = \ord($char);
-        if ($firstByteCode >= 0xF0) {
-            $extraBytes = 3; // 4-bytes chars
-        } elseif ($firstByteCode >= 0xE0) {
-            $extraBytes = 2; // 3-bytes chars
-        } elseif ($firstByteCode >= 0xC2) {
-            $extraBytes = 1; // 2-bytes chars
-        } elseif ($firstByteCode >= 0x80 && $firstByteCode <= 0x8F) {
-            return null; // Continuation of a UTF-8 char started in a previous byte
+        $first_byte_code = \ord($char);
+        if ($first_byte_code >= 0xf0) {
+            $extra_bytes = 3;
+            // 4-bytes chars
+        } elseif ($first_byte_code >= 0xe0) {
+            $extra_bytes = 2;
+            // 3-bytes chars
+        } elseif ($first_byte_code >= 0xc2) {
+            $extra_bytes = 1;
+            // 2-bytes chars
+        } elseif ($first_byte_code >= 0x80 && $first_byte_code <= 0x8f) {
+            return null;
+            // Continuation of a UTF-8 char started in a previous byte
         } else {
-            $extraBytes = 0;
+            $extra_bytes = 0;
         }
-
-        if (\strlen($string) <= $i + $extraBytes) {
-            return null; // Invalid UTF-8 chars
+        if (\strlen($string) <= $i + $extra_bytes) {
+            return null;
+            // Invalid UTF-8 chars
         }
-
-        if ($extraBytes) {
-            $fullChar = substr($string, $i, $extraBytes + 1);
-            $charCode = mb_ord($fullChar, 'UTF-8');
+        if ($extra_bytes) {
+            $full_char = substr($string, $i, $extra_bytes + 1);
+            $char_code = mb_ord($full_char, 'UTF-8');
         } else {
-            $fullChar = $char;
-            $charCode = $firstByteCode;
+            $full_char = $char;
+            $char_code = $first_byte_code;
         }
-
-        if (
-            $charCode >= 0xE000 && $charCode <= 0xF8FF || // PUA of the BMP
-            $charCode >= 0xF0000 && $charCode <= 0x10FFFF // Supplementary PUAs of the planes 15 and 16
-        ) {
-            $this->writeEscape($buffer, $fullChar, $string, $i + $extraBytes);
-
-            return $i + $extraBytes;
+        if ($char_code >= 0xe000 && $char_code <= 0xf8ff || $char_code >= 0xf0000 && $char_code <= 0x10ffff) {
+            $this->write_escape($buffer, $full_char, $string, $i + $extra_bytes);
+            return $i + $extra_bytes;
         }
-
         return null;
     }
-
     /**
      * Writes $character as a hexadecimal escape sequence to $buffer.
      *
@@ -1451,216 +1214,171 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      * are used to write a trailing space after the escape if necessary to
      * disambiguate it from the next character.
      */
-    private function writeEscape(SourceMapBuffer $buffer, string $character, string $string, int $i): void
+    private function write_escape(Source_Map_Buffer $buffer, string $character, string $string, int $i): void
     {
-        $buffer->writeChar('\\');
+        $buffer->write_char('\\');
         $buffer->write(dechex(mb_ord($character, 'UTF-8')));
-
         if (\strlen($string) === $i + 1) {
             return;
         }
-
         $next = $string[$i + 1];
-
-        if ($next === ' ' || $next === "\t" || Character::isHex($next)) {
-            $buffer->writeChar(' ');
+        if ($next === ' ' || $next === "\t" || Character::is_hex($next)) {
+            $buffer->write_char(' ');
         }
     }
-
     // ## Selectors
-
-    public function visitAttributeSelector(AttributeSelector $attribute): void
+    public function visit_attribute_selector(Attribute_Selector $attribute): void
     {
-        $this->buffer->writeChar('[');
-        $this->buffer->write($attribute->getName());
-
-        $value = $attribute->getValue();
-
+        $this->buffer->write_char('[');
+        $this->buffer->write($attribute->get_name());
+        $value = $attribute->get_value();
         if ($value !== null) {
-            assert($attribute->getOp() !== null);
-            $this->buffer->write($attribute->getOp()->getText());
-
+            assert($attribute->get_op() !== null);
+            $this->buffer->write($attribute->get_op()->get_text());
             // Emit identifiers that start with `--` with quotes, because IE11
             // doesn't consider them to be valid identifiers.
-            if (Parser::isIdentifier($value) && !str_starts_with($value, '--')) {
+            if (Parser::is_identifier($value) && !str_starts_with($value, '--')) {
                 $this->buffer->write($value);
-
-                if ($attribute->getModifier() !== null) {
-                    $this->buffer->writeChar(' ');
+                if ($attribute->get_modifier() !== null) {
+                    $this->buffer->write_char(' ');
                 }
             } else {
-                $this->visitQuotedString($value);
-
-                if ($attribute->getModifier() !== null) {
-                    $this->writeOptionalSpace();
+                $this->visit_quoted_string($value);
+                if ($attribute->get_modifier() !== null) {
+                    $this->write_optional_space();
                 }
             }
-
-            if ($attribute->getModifier() !== null) {
-                $this->buffer->write($attribute->getModifier());
+            if ($attribute->get_modifier() !== null) {
+                $this->buffer->write($attribute->get_modifier());
             }
         }
-
-        $this->buffer->writeChar(']');
+        $this->buffer->write_char(']');
     }
-
-    public function visitClassSelector(ClassSelector $klass): void
+    public function visit_class_selector(Class_Selector $klass): void
     {
-        $this->buffer->writeChar('.');
-        $this->buffer->write($klass->getName());
+        $this->buffer->write_char('.');
+        $this->buffer->write($klass->get_name());
     }
-
-    public function visitComplexSelector(ComplexSelector $complex): void
+    public function visit_complex_selector(Complex_Selector $complex): void
     {
-        $this->writeCombinators($complex->getLeadingCombinators());
-
-        if (\count($complex->getLeadingCombinators()) !== 0 && \count($complex->getComponents()) !== 0) {
-            $this->writeOptionalSpace();
+        $this->write_combinators($complex->get_leading_combinators());
+        if (\count($complex->get_leading_combinators()) !== 0 && \count($complex->get_components()) !== 0) {
+            $this->write_optional_space();
         }
-
-        foreach ($complex->getComponents() as $i => $component) {
-            $this->visitCompoundSelector($component->getSelector());
-
-            if (\count($component->getCombinators()) !== 0) {
-                $this->writeOptionalSpace();
+        foreach ($complex->get_components() as $i => $component) {
+            $this->visit_compound_selector($component->get_selector());
+            if (\count($component->get_combinators()) !== 0) {
+                $this->write_optional_space();
             }
-
-            $this->writeCombinators($component->getCombinators());
-
-            if ($i !== \count($complex->getComponents()) - 1 && (!$this->compressed || \count($component->getCombinators()) === 0)) {
-                $this->buffer->writeChar(' ');
+            $this->write_combinators($component->get_combinators());
+            if ($i !== \count($complex->get_components()) - 1 && (!$this->compressed || \count($component->get_combinators()) === 0)) {
+                $this->buffer->write_char(' ');
             }
         }
     }
-
     /**
      * Writes $combinators to {@see buffer}, with spaces in between in expanded
      * mode.
      *
      * @param list<CssValue<Combinator>> $combinators
      */
-    private function writeCombinators(array $combinators): void
+    private function write_combinators(array $combinators): void
     {
-        $this->writeBetween($combinators, $this->compressed ? '' : ' ', function ($text): void {
+        $this->write_between($combinators, $this->compressed ? '' : ' ', function ($text): void {
             $this->buffer->write($text);
         });
     }
-
-    public function visitCompoundSelector(CompoundSelector $compound): void
+    public function visit_compound_selector(Compound_Selector $compound): void
     {
-        $start = $this->buffer->getLength();
-
-        foreach ($compound->getComponents() as $simple) {
+        $start = $this->buffer->get_length();
+        foreach ($compound->get_components() as $simple) {
             $simple->accept($this);
         }
-
         // If we emit an empty compound, it's because all of the components got
         // optimized out because they match all selectors, so we just emit the
         // universal selector.
-        if ($this->buffer->getLength() === $start) {
-            $this->buffer->writeChar('*');
+        if ($this->buffer->get_length() === $start) {
+            $this->buffer->write_char('*');
         }
     }
-
-    public function visitIDSelector(IDSelector $id): void
+    public function visit_id_selector(Id_Selector $id): void
     {
-        $this->buffer->writeChar('#');
-        $this->buffer->write($id->getName());
+        $this->buffer->write_char('#');
+        $this->buffer->write($id->get_name());
     }
-
-    public function visitSelectorList(SelectorList $list): void
+    public function visit_selector_list(Selector_List $list): void
     {
         $first = true;
-
-        foreach ($list->getComponents() as $complex) {
-            if (!$this->inspect && $complex->isInvisible()) {
+        foreach ($list->get_components() as $complex) {
+            if (!$this->inspect && $complex->is_invisible()) {
                 continue;
             }
-
             if ($first) {
                 $first = false;
             } else {
-                $this->buffer->writeChar(',');
-
-                if ($complex->getLineBreak()) {
-                    $this->writeLineFeed();
-                    $this->writeIndentation();
+                $this->buffer->write_char(',');
+                if ($complex->get_line_break()) {
+                    $this->write_line_feed();
+                    $this->write_indentation();
                 } else {
-                    $this->writeOptionalSpace();
+                    $this->write_optional_space();
                 }
             }
-
-            $this->visitComplexSelector($complex);
+            $this->visit_complex_selector($complex);
         }
     }
-
-    public function visitParentSelector(ParentSelector $parent): void
+    public function visit_parent_selector(Parent_Selector $parent): void
     {
-        $this->buffer->writeChar('&');
-
-        if ($parent->getSuffix() !== null) {
-            $this->buffer->write($parent->getSuffix());
+        $this->buffer->write_char('&');
+        if ($parent->get_suffix() !== null) {
+            $this->buffer->write($parent->get_suffix());
         }
     }
-
-    public function visitPlaceholderSelector(PlaceholderSelector $placeholder): void
+    public function visit_placeholder_selector(Placeholder_Selector $placeholder): void
     {
-        $this->buffer->writeChar('%');
-        $this->buffer->write($placeholder->getName());
+        $this->buffer->write_char('%');
+        $this->buffer->write($placeholder->get_name());
     }
-
-    public function visitPseudoSelector(PseudoSelector $pseudo): void
+    public function visit_pseudo_selector(Pseudo_Selector $pseudo): void
     {
-        $innerSelector = $pseudo->getSelector();
-
+        $inner_selector = $pseudo->get_selector();
         // `:not(%a)` is semantically identical to `*`.
-        if ($innerSelector !== null && $pseudo->getName() === 'not' && $innerSelector->isInvisible()) {
+        if ($inner_selector !== null && $pseudo->get_name() === 'not' && $inner_selector->is_invisible()) {
             return;
         }
-
-        $this->buffer->writeChar(':');
-        if ($pseudo->isSyntacticElement()) {
-            $this->buffer->writeChar(':');
+        $this->buffer->write_char(':');
+        if ($pseudo->is_syntactic_element()) {
+            $this->buffer->write_char(':');
         }
-        $this->buffer->write($pseudo->getName());
-
-        if ($pseudo->getArgument() === null && $pseudo->getSelector() === null) {
+        $this->buffer->write($pseudo->get_name());
+        if ($pseudo->get_argument() === null && $pseudo->get_selector() === null) {
             return;
         }
-
-        $this->buffer->writeChar('(');
-
-        if ($pseudo->getArgument() !== null) {
-            $this->buffer->write($pseudo->getArgument());
-
-            if ($pseudo->getSelector() !== null) {
-                $this->buffer->writeChar(' ');
+        $this->buffer->write_char('(');
+        if ($pseudo->get_argument() !== null) {
+            $this->buffer->write($pseudo->get_argument());
+            if ($pseudo->get_selector() !== null) {
+                $this->buffer->write_char(' ');
             }
         }
-
-        if ($innerSelector !== null) {
-            $this->visitSelectorList($innerSelector);
+        if ($inner_selector !== null) {
+            $this->visit_selector_list($inner_selector);
         }
-
-        $this->buffer->writeChar(')');
+        $this->buffer->write_char(')');
     }
-
-    public function visitTypeSelector(TypeSelector $type): void
+    public function visit_type_selector(Type_Selector $type): void
     {
-        $this->buffer->write($type->getName());
+        $this->buffer->write($type->get_name());
     }
-
-    public function visitUniversalSelector(UniversalSelector $universal): void
+    public function visit_universal_selector(Universal_Selector $universal): void
     {
-        if ($universal->getNamespace() !== null) {
-            $this->buffer->write($universal->getNamespace());
-            $this->buffer->writeChar('|');
+        if ($universal->get_namespace() !== null) {
+            $this->buffer->write($universal->get_namespace());
+            $this->buffer->write_char('|');
         }
-        $this->buffer->writeChar('*');
+        $this->buffer->write_char('*');
     }
-
     // ## Utilities
-
     /**
      * Runs $callback and associates all text written within it with the span of $node
      *
@@ -1672,161 +1390,135 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function for(AstNode $node, callable $callback)
+    private function for(Ast_Node $node, callable $callback)
     {
-        return $this->buffer->forSpan($node->getSpan(), $callback);
+        return $this->buffer->for_span($node->get_span(), $callback);
     }
-
     /**
      * @param CssValue<string> $value
      */
-    private function write(CssValue $value): void
+    private function write(Css_Value $value): void
     {
         $this->for($value, function () use ($value): void {
-            $this->buffer->write($value->getValue());
+            $this->buffer->write($value->get_value());
         });
     }
-
     /**
      * Emits `$parent->getChildren()` in a block
      */
-    private function visitChildren(CssParentNode $parent): void
+    private function visit_children(Css_Parent_Node $parent): void
     {
-        $this->buffer->writeChar('{');
-
-        $prePrevious = null;
+        $this->buffer->write_char('{');
+        $pre_previous = null;
         $previous = null;
-
-        foreach ($parent->getChildren() as $child) {
-            if ($this->isInvisible($child)) {
+        foreach ($parent->get_children() as $child) {
+            if ($this->is_invisible($child)) {
                 continue;
             }
-
-            if ($previous !== null && $this->requiresSemicolon($previous)) {
-                $this->buffer->writeChar(';');
+            if ($previous !== null && $this->requires_semicolon($previous)) {
+                $this->buffer->write_char(';');
             }
-
-            if ($this->isTrailingComment($child, $previous ?? $parent)) {
-                $this->writeOptionalSpace();
-                $this->withoutIndentation(function () use ($child): void {
+            if ($this->is_trailing_comment($child, $previous ?? $parent)) {
+                $this->write_optional_space();
+                $this->without_indentation(function () use ($child): void {
                     $child->accept($this);
                 });
             } else {
-                $this->writeLineFeed();
+                $this->write_line_feed();
                 $this->indent(function () use ($child): void {
                     $child->accept($this);
                 });
             }
-
-            $prePrevious = $previous;
+            $pre_previous = $previous;
             $previous = $child;
         }
-
         if ($previous !== null) {
-            if ($this->requiresSemicolon($previous) && !$this->compressed) {
-                $this->buffer->writeChar(';');
+            if ($this->requires_semicolon($previous) && !$this->compressed) {
+                $this->buffer->write_char(';');
             }
-
-            if ($prePrevious === null && $this->isTrailingComment($previous, $parent)) {
-                $this->writeOptionalSpace();
+            if ($pre_previous === null && $this->is_trailing_comment($previous, $parent)) {
+                $this->write_optional_space();
             } else {
-                $this->writeLineFeed();
-                $this->writeIndentation();
+                $this->write_line_feed();
+                $this->write_indentation();
             }
         }
-
-        $this->buffer->writeChar('}');
+        $this->buffer->write_char('}');
     }
-
     /**
      * Whether $node requires a semicolon to be written after it.
      */
-    private function requiresSemicolon(CssNode $node): bool
+    private function requires_semicolon(Css_Node $node): bool
     {
-        if ($node instanceof CssParentNode) {
-            return $node->isChildless();
+        if ($node instanceof Css_Parent_Node) {
+            return $node->is_childless();
         }
-
-        return !$node instanceof CssComment;
+        return !$node instanceof Css_Comment;
     }
-
-    private function isTrailingComment(CssNode $node, CssNode $previous): bool
+    private function is_trailing_comment(Css_Node $node, Css_Node $previous): bool
     {
         // Short-circuit in compressed mode to avoid expensive span shenanigans
         // (shespanigans?), since we're compressing all whitespace anyway.
         if ($this->compressed) {
             return false;
         }
-
-        if (!$node instanceof CssComment) {
+        if (!$node instanceof Css_Comment) {
             return false;
         }
-
-        if ($node->getSpan()->getSourceUrl() !== $previous->getSpan()->getSourceUrl()) {
+        if ($node->get_span()->get_source_url() !== $previous->get_span()->get_source_url()) {
             return false;
         }
-
-        if (!SpanUtil::contains($previous->getSpan(), $node->getSpan())) {
-            return $node->getSpan()->getStart()->getLine() === $previous->getSpan()->getEnd()->getLine();
+        if (!Span_Util::contains($previous->get_span(), $node->get_span())) {
+            return $node->get_span()->get_start()->get_line() === $previous->get_span()->get_end()->get_line();
         }
-
         // Walk back from just before the current node starts looking for the
         // parent's left brace (to open the child block). This is safer than a
         // simple forward search of the previous.span.text as that might contain
         // other left braces.
-        $searchFrom = $node->getSpan()->getStart()->getOffset() - $previous->getSpan()->getStart()->getOffset() - 1;
-
+        $search_from = $node->get_span()->get_start()->get_offset() - $previous->get_span()->get_start()->get_offset() - 1;
         // Imports can cause a node to be "contained" by another node when they are
         // actually the same node twice in a row.
-        if ($searchFrom < 0) {
+        if ($search_from < 0) {
             return false;
         }
-
-        $previousSpanText = $previous->getSpan()->getText();
-        $endOffset = strrpos($previousSpanText, '{', $searchFrom - \strlen($previousSpanText));
-        if ($endOffset === false) {
-            $endOffset = 0;
+        $previous_span_text = $previous->get_span()->get_text();
+        $end_offset = strrpos($previous_span_text, '{', $search_from - \strlen($previous_span_text));
+        if ($end_offset === false) {
+            $end_offset = 0;
         }
-
-        $span = $previous->getSpan()->getFile()->span($previous->getSpan()->getStart()->getOffset(), $previous->getSpan()->getStart()->getOffset() + $endOffset);
-
-        return $node->getSpan()->getStart()->getLine() === $span->getEnd()->getLine();
+        $span = $previous->get_span()->get_file()->span($previous->get_span()->get_start()->get_offset(), $previous->get_span()->get_start()->get_offset() + $end_offset);
+        return $node->get_span()->get_start()->get_line() === $span->get_end()->get_line();
     }
-
     /**
      * Writes a line feed, unless this emitting compressed CSS.
      */
-    private function writeLineFeed(): void
+    private function write_line_feed(): void
     {
         if (!$this->compressed) {
-            $this->buffer->writeChar("\n");
+            $this->buffer->write_char("\n");
         }
     }
-
-    private function writeOptionalSpace(): void
+    private function write_optional_space(): void
     {
         if (!$this->compressed) {
-            $this->buffer->writeChar(' ');
+            $this->buffer->write_char(' ');
         }
     }
-
-    private function writeIndentation(): void
+    private function write_indentation(): void
     {
         if (!$this->compressed) {
-            $this->writeTimes(' ', $this->indentation * 2);
+            $this->write_times(' ', $this->indentation * 2);
         }
     }
-
     /**
      * Writes $char to {@see buffer} with $times repetitions.
      */
-    private function writeTimes(string $char, int $times): void
+    private function write_times(string $char, int $times): void
     {
         for ($i = 0; $i < $times; $i++) {
-            $this->buffer->writeChar($char);
+            $this->buffer->write_char($char);
         }
     }
-
     /**
      * Calls $callback to write each value in $iterable, and writes $text
      * between each one.
@@ -1838,29 +1530,25 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function writeBetween(iterable $iterable, string $text, callable $callback): void
+    private function write_between(iterable $iterable, string $text, callable $callback): void
     {
         $first = true;
-
         foreach ($iterable as $value) {
             if ($first) {
                 $first = false;
             } else {
                 $this->buffer->write($text);
             }
-
             $callback($value);
         }
     }
-
     /**
      * Returns a comma used to separate values in lists.
      */
-    private function getCommaSeparator(): string
+    private function get_comma_separator(): string
     {
         return $this->compressed ? ',' : ', ';
     }
-
     /**
      * Runs $callback with indentation increased one level.
      *
@@ -1874,7 +1562,6 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
         $callback();
         $this->indentation--;
     }
-
     /**
      * Runs $callback without any indentation.
      *
@@ -1882,19 +1569,18 @@ final class SerializeVisitor implements CssVisitor, ValueVisitor, SelectorVisito
      *
      * @param-immediately-invoked-callable $callback
      */
-    private function withoutIndentation(callable $callback): void
+    private function without_indentation(callable $callback): void
     {
-        $savedIndentation = $this->indentation;
+        $saved_indentation = $this->indentation;
         $this->indentation = 0;
         $callback();
-        $this->indentation = $savedIndentation;
+        $this->indentation = $saved_indentation;
     }
-
     /**
      * Returns whether $node is invisible.
      */
-    private function isInvisible(CssNode $node): bool
+    private function is_invisible(Css_Node $node): bool
     {
-        return !$this->inspect && ($this->compressed ? $node->isInvisibleHidingComments() : $node->isInvisible());
+        return !$this->inspect && ($this->compressed ? $node->is_invisible_hiding_comments() : $node->is_invisible());
     }
 }

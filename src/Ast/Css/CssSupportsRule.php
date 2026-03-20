@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,20 +10,19 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * A plain CSS `@supports` rule.
  *
  * @internal
  */
-interface CssSupportsRule extends CssParentNode
+interface Css_Supports_Rule extends Css_Parent_Node
 {
     /**
      * The supports condition.
      *
      * @return CssValue<string>
      */
-    public function getCondition(): CssValue;
+    public function get_condition(): Css_Value;
 }

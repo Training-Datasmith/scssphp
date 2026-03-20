@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,20 +10,15 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Importer;
 
-namespace ScssPhp\ScssPhp\Importer;
-
-use League\Uri\Contracts\UriInterface;
-
+use League\Uri\Contracts\Uri_Interface;
 /**
  * @internal
  */
-final class CanonicalizeResult
+final class Canonicalize_Result
 {
-    public function __construct(
-        public readonly Importer $importer,
-        public readonly UriInterface $canonicalUrl,
-        public readonly UriInterface $originalUrl,
-    ) {
+    public function __construct(public readonly Importer $importer, public readonly Uri_Interface $canonical_url, public readonly Uri_Interface $original_url)
+    {
     }
 }

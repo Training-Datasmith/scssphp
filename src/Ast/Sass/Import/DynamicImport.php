@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,52 +10,47 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Import;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Import;
-
-use League\Uri\Contracts\UriInterface;
+use League\Uri\Contracts\Uri_Interface;
 use League\Uri\Uri;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\StringExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Import;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression\String_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Import;
+use Source_Span\File_Span;
 /**
  * An import that will load a Sass file at runtime.
  *
  * @internal
  */
-final class DynamicImport implements Import
+final class Dynamic_Import implements Import
 {
-    private readonly FileSpan $span;
-
-    public function __construct(/**
-     * The URI of the file to import.
-     *
-     * If this is relative, it's relative to the containing file.
-     */
-        private readonly string $urlString,
-        FileSpan $span
-    ) {
+    private readonly File_Span $span;
+    public function __construct(
+        /**
+         * The URI of the file to import.
+         *
+         * If this is relative, it's relative to the containing file.
+         */
+        private readonly string $url_string,
+        File_Span $span
+    )
+    {
         $this->span = $span;
     }
-
-    public function getUrl(): UriInterface
+    public function get_url(): Uri_Interface
     {
-        return Uri::new($this->urlString);
+        return Uri::new($this->url_string);
     }
-
-    public function getUrlString(): string
+    public function get_url_string(): string
     {
-        return $this->urlString;
+        return $this->url_string;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
-        return StringExpression::quoteText($this->urlString);
+        return String_Expression::quote_text($this->url_string);
     }
 }

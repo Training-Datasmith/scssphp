@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,18 +10,16 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use ScssPhp\ScssPhp\Ast\Css\CssMediaQuery;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-
+use Scss_Php\Scss_Php\Ast\Css\Css_Media_Query;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
 /**
  * A parser for `@media` queries.
  *
  * @internal
  */
-final class MediaQueryParser extends Parser
+final class Media_Query_Parser extends Parser
 {
     /**
      * @return list<CssMediaQuery>
@@ -31,125 +28,104 @@ final class MediaQueryParser extends Parser
      */
     public function parse(): array
     {
-        return $this->wrapSpanFormatException(function (): array {
+        return $this->wrap_span_format_exception(function (): array {
             $queries = [];
-
             do {
                 $this->whitespace();
-                $queries[] = $this->mediaQuery();
+                $queries[] = $this->media_query();
                 $this->whitespace();
-            } while ($this->scanner->scanChar(','));
-            $this->scanner->expectDone();
-
+            } while ($this->scanner->scan_char(','));
+            $this->scanner->expect_done();
             return $queries;
         });
     }
-
     /**
      * Consumes a single media query.
      */
-    private function mediaQuery(): CssMediaQuery
+    private function media_query(): Css_Media_Query
     {
-        if ($this->scanner->peekChar() === '(') {
-            $conditions = [$this->mediaInParens()];
+        if ($this->scanner->peek_char() === '(') {
+            $conditions = [$this->media_in_parens()];
             $this->whitespace();
-
             $conjunction = true;
-
-            if ($this->scanIdentifier('and')) {
-                $this->expectWhitespace();
-                $conditions = array_merge($conditions, $this->mediaLogicSequence('and'));
-            } elseif ($this->scanIdentifier('or')) {
-                $this->expectWhitespace();
+            if ($this->scan_identifier('and')) {
+                $this->expect_whitespace();
+                $conditions = array_merge($conditions, $this->media_logic_sequence('and'));
+            } elseif ($this->scan_identifier('or')) {
+                $this->expect_whitespace();
                 $conjunction = false;
-                $conditions = array_merge($conditions, $this->mediaLogicSequence('or'));
+                $conditions = array_merge($conditions, $this->media_logic_sequence('or'));
             }
-
-            return CssMediaQuery::condition($conditions, $conjunction);
+            return Css_Media_Query::condition($conditions, $conjunction);
         }
         $modifier = null;
         $type = null;
-
         $identifier1 = $this->identifier();
-
         if (strtolower($identifier1) === 'not') {
-            $this->expectWhitespace();
-
-            if (!$this->lookingAtIdentifier()) {
+            $this->expect_whitespace();
+            if (!$this->looking_at_identifier()) {
                 // For example, "@media not (...) {"
-                return CssMediaQuery::condition(['(not ' . $this->mediaInParens() . ')']);
+                return Css_Media_Query::condition(['(not ' . $this->media_in_parens() . ')']);
             }
         }
-
         $this->whitespace();
-
-        if (!$this->lookingAtIdentifier()) {
+        if (!$this->looking_at_identifier()) {
             // For example, "@media screen {"
-            return CssMediaQuery::type($identifier1);
+            return Css_Media_Query::type($identifier1);
         }
-
         $identifier2 = $this->identifier();
-
         if (strtolower($identifier2) === 'and') {
-            $this->expectWhitespace();
+            $this->expect_whitespace();
             // For example, "@media screen and ..."
             $type = $identifier1;
         } else {
             $this->whitespace();
             $modifier = $identifier1;
             $type = $identifier2;
-
-            if ($this->scanIdentifier('and')) {
+            if ($this->scan_identifier('and')) {
                 // For example, "@media only screen and ..."
-                $this->expectWhitespace();
+                $this->expect_whitespace();
             } else {
                 // For example, "@media only screen {"
-                return CssMediaQuery::type($type, $modifier);
+                return Css_Media_Query::type($type, $modifier);
             }
         }
-
         // We've consumed either `IDENTIFIER "and"` or
         // `IDENTIFIER IDENTIFIER "and"`.
-
-        if ($this->scanIdentifier('not')) {
-            $this->expectWhitespace();
+        if ($this->scan_identifier('not')) {
+            $this->expect_whitespace();
             // For example, "@media screen and not (...) {"
-            return CssMediaQuery::type($type, $modifier, ['(not ' . $this->mediaInParens() . ')']);
+            return Css_Media_Query::type($type, $modifier, ['(not ' . $this->media_in_parens() . ')']);
         }
-
-        return CssMediaQuery::type($type, $modifier, $this->mediaLogicSequence('and'));
+        return Css_Media_Query::type($type, $modifier, $this->media_logic_sequence('and'));
     }
-
     /**
      * Consumes one or more `<media-in-parens>` expressions separated by
      * $operator and returns them.
      *
      * @return list<string>
      */
-    private function mediaLogicSequence(string $operator): array
+    private function media_logic_sequence(string $operator): array
     {
         $result = [];
         while (true) {
-            $result[] = $this->mediaInParens();
+            $result[] = $this->media_in_parens();
             $this->whitespace();
-
-            if (!$this->scanIdentifier($operator)) {
+            if (!$this->scan_identifier($operator)) {
                 return $result;
             }
-            $this->expectWhitespace();
+            $this->expect_whitespace();
         }
     }
-
     /**
      * Consumes a `<media-in-parens>` expression and returns it, parentheses
      * included.
      */
-    private function mediaInParens(): string
+    private function media_in_parens(): string
     {
-        $this->scanner->expectChar('(', 'media condition in parentheses');
-        $result = '(' . $this->declarationValue() . ')';
-        $this->scanner->expectChar(')');
-
+        $this->scanner->expect_char('(', 'media condition in parentheses');
+        $result = '(' . $this->declaration_value() . ')';
+        $this->scanner->expect_char(')');
         return $result;
     }
 }

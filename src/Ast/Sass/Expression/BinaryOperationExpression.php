@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,129 +10,105 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * A binary operator, as in `1 + 2` or `$this and $other`.
  *
  * @internal
  */
-final class BinaryOperationExpression implements Expression
+final class Binary_Operation_Expression implements Expression
 {
     /**
      * Whether this is a dividedBy operation that may be interpreted as slash-separated numbers.
      */
-    private bool $allowsSlash = false;
-
-    public function __construct(private readonly BinaryOperator $operator, private readonly Expression $left, private readonly Expression $right)
+    private bool $allows_slash = false;
+    public function __construct(private readonly Binary_Operator $operator, private readonly Expression $left, private readonly Expression $right)
     {
     }
-
     /**
      * Creates a dividedBy operation that may be interpreted as slash-separated numbers.
      */
     public static function slash(Expression $left, Expression $right): self
     {
-        $operation = new self(BinaryOperator::DIVIDED_BY, $left, $right);
-        $operation->allowsSlash = true;
-
+        $operation = new self(Binary_Operator::DIVIDED_BY, $left, $right);
+        $operation->allows_slash = true;
         return $operation;
     }
-
-    public function getOperator(): BinaryOperator
+    public function get_operator(): Binary_Operator
     {
         return $this->operator;
     }
-
-    public function getLeft(): Expression
+    public function get_left(): Expression
     {
         return $this->left;
     }
-
-    public function getRight(): Expression
+    public function get_right(): Expression
     {
         return $this->right;
     }
-
-    public function allowsSlash(): bool
+    public function allows_slash(): bool
     {
-        return $this->allowsSlash;
+        return $this->allows_slash;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         $left = $this->left;
-
-        while ($left instanceof BinaryOperationExpression) {
+        while ($left instanceof Binary_Operation_Expression) {
             $left = $left->left;
         }
-
         $right = $this->right;
-
-        while ($right instanceof BinaryOperationExpression) {
+        while ($right instanceof Binary_Operation_Expression) {
             $right = $right->right;
         }
-
-        $leftSpan = $left->getSpan();
-        $rightSpan = $right->getSpan();
-
-        return $leftSpan->expand($rightSpan);
+        $left_span = $left->get_span();
+        $right_span = $right->get_span();
+        return $left_span->expand($right_span);
     }
-
     /**
      * Returns the span that covers only {@see $operator}.
      *
      * @internal
      */
-    public function getOperatorSpan(): FileSpan
+    public function get_operator_span(): File_Span
     {
-        $leftSpan = $this->left->getSpan();
-        $rightSpan = $this->right->getSpan();
-
-        if ($leftSpan->getFile() === $rightSpan->getFile() && $leftSpan->getEnd()->getOffset() < $rightSpan->getStart()->getOffset()) {
-            return SpanUtil::trim($leftSpan->getFile()->span($leftSpan->getEnd()->getOffset(), $rightSpan->getStart()->getOffset()));
+        $left_span = $this->left->get_span();
+        $right_span = $this->right->get_span();
+        if ($left_span->get_file() === $right_span->get_file() && $left_span->get_end()->get_offset() < $right_span->get_start()->get_offset()) {
+            return Span_Util::trim($left_span->get_file()->span($left_span->get_end()->get_offset(), $right_span->get_start()->get_offset()));
         }
-
-        return $this->getSpan();
+        return $this->get_span();
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitBinaryOperationExpression($this);
+        return $visitor->visit_binary_operation_expression($this);
     }
-
     public function __toString(): string
     {
         $buffer = '';
-
-        $leftNeedsParens = ($this->left instanceof BinaryOperationExpression && $this->left->getOperator()->getPrecedence() < $this->operator->getPrecedence()) || ($this->left instanceof ListExpression && !$this->left->hasBrackets() && \count($this->left->getContents()) > 1);
-        if ($leftNeedsParens) {
+        $left_needs_parens = $this->left instanceof Binary_Operation_Expression && $this->left->get_operator()->get_precedence() < $this->operator->get_precedence() || $this->left instanceof List_Expression && !$this->left->has_brackets() && \count($this->left->get_contents()) > 1;
+        if ($left_needs_parens) {
             $buffer .= '(';
         }
         $buffer .= $this->left;
-        if ($leftNeedsParens) {
+        if ($left_needs_parens) {
             $buffer .= ')';
         }
-
         $buffer .= ' ';
-        $buffer .= $this->operator->getOperator();
+        $buffer .= $this->operator->get_operator();
         $buffer .= ' ';
-
-        $rightNeedsParens = ($this->right instanceof BinaryOperationExpression && $this->right->getOperator()->getPrecedence() <= $this->operator->getPrecedence() && !($this->right->operator === $this->operator && $this->operator->isAssociative())) || ($this->right instanceof ListExpression && !$this->right->hasBrackets() && \count($this->right->getContents()) > 1);
-        if ($rightNeedsParens) {
+        $right_needs_parens = $this->right instanceof Binary_Operation_Expression && $this->right->get_operator()->get_precedence() <= $this->operator->get_precedence() && !($this->right->operator === $this->operator && $this->operator->is_associative()) || $this->right instanceof List_Expression && !$this->right->has_brackets() && \count($this->right->get_contents()) > 1;
+        if ($right_needs_parens) {
             $buffer .= '(';
         }
         $buffer .= $this->right;
-        if ($rightNeedsParens) {
+        if ($right_needs_parens) {
             $buffer .= ')';
         }
-
         return $buffer;
     }
 }

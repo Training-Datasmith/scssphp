@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,59 +10,50 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Util;
 
-namespace ScssPhp\ScssPhp\Util;
-
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class ErrorUtil
+final class Error_Util
 {
     /**
      * @throws \OutOfRangeException
      */
-    public static function checkIntInInterval(int $value, int $minValue, int $maxValue, ?string $name = null): void
+    public static function check_int_in_interval(int $value, int $min_value, int $max_value, ?string $name = null): void
     {
-        if ($value < $minValue || $value > $maxValue) {
-            $nameDisplay = $name ? " $name" : '';
-
-            throw new \OutOfRangeException("Invalid value:$nameDisplay must be between $minValue and $maxValue: $value.");
+        if ($value < $min_value || $value > $max_value) {
+            $name_display = $name ? " {$name}" : '';
+            throw new \OutOfRangeException("Invalid value:{$name_display} must be between {$min_value} and {$max_value}: {$value}.");
         }
     }
-
-    public static function formatErrorMessage(string $message, FileSpan $span, Trace $sassTrace): string
+    public static function format_error_message(string $message, File_Span $span, Trace $sass_trace): string
     {
-        $formattedMessage = $message . "\n" . $span->highlight();
-
-        foreach (explode("\n", $sassTrace->getFormattedTrace()) as $frame) {
+        $formatted_message = $message . "\n" . $span->highlight();
+        foreach (explode("\n", $sass_trace->get_formatted_trace()) as $frame) {
             if ($frame === '') {
                 continue;
             }
-            $formattedMessage .= "\n";
-            $formattedMessage .= '  ' . $frame;
+            $formatted_message .= "\n";
+            $formatted_message .= '  ' . $frame;
         }
-
-        return $formattedMessage;
+        return $formatted_message;
     }
-
     /**
      * @param array<string, FileSpan> $secondarySpans
      */
-    public static function formatErrorMessageMultiple(string $message, FileSpan $span, string $primaryLabel, array $secondarySpans, Trace $sassTrace): string
+    public static function format_error_message_multiple(string $message, File_Span $span, string $primary_label, array $secondary_spans, Trace $sass_trace): string
     {
-        $formattedMessage = $message . "\n" . $span->highlightMultiple($primaryLabel, $secondarySpans);
-
-        foreach (explode("\n", $sassTrace->getFormattedTrace()) as $frame) {
+        $formatted_message = $message . "\n" . $span->highlight_multiple($primary_label, $secondary_spans);
+        foreach (explode("\n", $sass_trace->get_formatted_trace()) as $frame) {
             if ($frame === '') {
                 continue;
             }
-            $formattedMessage .= "\n";
-            $formattedMessage .= '  ' . $frame;
+            $formatted_message .= "\n";
+            $formatted_message .= '  ' . $frame;
         }
-
-        return $formattedMessage;
+        return $formatted_message;
     }
 }

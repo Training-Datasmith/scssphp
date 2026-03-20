@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Sass;
+namespace Scss_Php\Scss_Php\Ast\Sass;
 
 /**
  * @internal
  */
-interface CallableInvocation extends SassNode
+interface Callable_Invocation extends Sass_Node
 {
-    public function getArguments(): ArgumentInvocation;
+    public function get_arguments(): Argument_Invocation;
 }

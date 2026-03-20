@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,48 +10,42 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Value;
 
-namespace ScssPhp\ScssPhp\Value;
-
-use ScssPhp\ScssPhp\SassCallable\SassCallable;
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use ScssPhp\ScssPhp\Visitor\ValueVisitor;
-
+use Scss_Php\Scss_Php\Sass_Callable\Sass_Callable;
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Scss_Php\Scss_Php\Visitor\Value_Visitor;
 /**
  * A SassScript function reference.
  *
  * A function reference captures a function from the local environment so that
  * it may be passed between modules.
  */
-final class SassFunction extends Value
+final class Sass_Function extends Value
 {
     /**
      * @internal
      */
-    public function __construct(private readonly SassCallable $callable)
+    public function __construct(private readonly Sass_Callable $callable)
     {
     }
-
     /**
      * @internal
      */
-    public function getCallable(): SassCallable
+    public function get_callable(): Sass_Callable
     {
         return $this->callable;
     }
-
-    public function accept(ValueVisitor $visitor)
+    public function accept(Value_Visitor $visitor)
     {
-        return $visitor->visitFunction($this);
+        return $visitor->visit_function($this);
     }
-
-    public function assertFunction(?string $name = null): SassFunction
+    public function assert_function(?string $name = null): Sass_Function
     {
         return $this;
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof SassFunction && EquatableUtil::equals($this->callable, $other->callable);
+        return $other instanceof Sass_Function && Equatable_Util::equals($this->callable, $other->callable);
     }
 }

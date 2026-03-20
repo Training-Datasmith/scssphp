@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,121 +10,95 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\CallableInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\SassReference;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Callable_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Sass_Reference;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * A mixin invocation.
  *
  * @internal
  */
-final class IncludeRule implements Statement, CallableInvocation, SassReference
+final class Include_Rule implements Statement, Callable_Invocation, Sass_Reference
 {
     private readonly string $name;
-
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly string $originalName, private readonly ArgumentInvocation $arguments, FileSpan $span, private readonly ?string $namespace = null, private readonly ?ContentBlock $content = null)
+    private readonly File_Span $span;
+    public function __construct(private readonly string $original_name, private readonly Argument_Invocation $arguments, File_Span $span, private readonly ?string $namespace = null, private readonly ?Content_Block $content = null)
     {
-        $this->name = str_replace('_', '-', $this->originalName);
+        $this->name = str_replace('_', '-', $this->original_name);
         $this->span = $span;
     }
-
-    public function getNamespace(): ?string
+    public function get_namespace(): ?string
     {
         return $this->namespace;
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
     /**
      * The original name of the mixin being invoked, without underscores
      * converted to hyphens.
      */
-    public function getOriginalName(): string
+    public function get_original_name(): string
     {
-        return $this->originalName;
+        return $this->original_name;
     }
-
-    public function getArguments(): ArgumentInvocation
+    public function get_arguments(): Argument_Invocation
     {
         return $this->arguments;
     }
-
-    public function getContent(): ?ContentBlock
+    public function get_content(): ?Content_Block
     {
         return $this->content;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function getSpanWithoutContent(): FileSpan
+    public function get_span_without_content(): File_Span
     {
         if ($this->content === null) {
             return $this->span;
         }
-
-        return SpanUtil::trim($this->span->getFile()->span($this->span->getStart()->getOffset(), $this->arguments->getSpan()->getEnd()->getOffset()));
+        return Span_Util::trim($this->span->get_file()->span($this->span->get_start()->get_offset(), $this->arguments->get_span()->get_end()->get_offset()));
     }
-
-    public function getNameSpan(): FileSpan
+    public function get_name_span(): File_Span
     {
-        $startSpan = $this->span->getText()[0] === '+' ? SpanUtil::trimLeft($this->span->subspan(1)) : SpanUtil::withoutInitialAtRule($this->span);
-
+        $start_span = $this->span->get_text()[0] === '+' ? Span_Util::trim_left($this->span->subspan(1)) : Span_Util::without_initial_at_rule($this->span);
         if ($this->namespace !== null) {
-            $startSpan = SpanUtil::withoutNamespace($startSpan);
+            $start_span = Span_Util::without_namespace($start_span);
         }
-
-        return SpanUtil::initialIdentifier($startSpan);
+        return Span_Util::initial_identifier($start_span);
     }
-
-    public function getNamespaceSpan(): ?FileSpan
+    public function get_namespace_span(): ?File_Span
     {
         if ($this->namespace === null) {
             return null;
         }
-
-        $startSpan = $this->span->getText()[0] === '+'
-            ? SpanUtil::trimLeft($this->span->subspan(1))
-            : SpanUtil::withoutInitialAtRule($this->span);
-
-        return SpanUtil::initialIdentifier($startSpan);
+        $start_span = $this->span->get_text()[0] === '+' ? Span_Util::trim_left($this->span->subspan(1)) : Span_Util::without_initial_at_rule($this->span);
+        return Span_Util::initial_identifier($start_span);
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitIncludeRule($this);
+        return $visitor->visit_include_rule($this);
     }
-
     public function __toString(): string
     {
         $buffer = '@include ';
-
         if ($this->namespace !== null) {
             $buffer .= $this->namespace . '.';
         }
         $buffer .= $this->name;
-
-        if (!$this->arguments->isEmpty()) {
-            $buffer .= "($this->arguments)";
+        if (!$this->arguments->is_empty()) {
+            $buffer .= "({$this->arguments})";
         }
-
         $buffer .= $this->content === null ? ';' : ' ' . $this->content;
-
         return $buffer;
     }
 }

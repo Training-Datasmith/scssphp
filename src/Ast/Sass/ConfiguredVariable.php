@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,51 +10,42 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass;
 
-namespace ScssPhp\ScssPhp\Ast\Sass;
-
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Source_Span\File_Span;
 /**
  * A variable configured by a `with` clause in a `@use` or `@forward` rule.
  *
  * @internal
  */
-final class ConfiguredVariable implements SassNode, SassDeclaration
+final class Configured_Variable implements Sass_Node, Sass_Declaration
 {
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly string $name, private readonly Expression $expression, FileSpan $span, private readonly bool $guarded = false)
+    private readonly File_Span $span;
+    public function __construct(private readonly string $name, private readonly Expression $expression, File_Span $span, private readonly bool $guarded = false)
     {
         $this->span = $span;
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
-    public function getExpression(): Expression
+    public function get_expression(): Expression
     {
         return $this->expression;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function isGuarded(): bool
+    public function is_guarded(): bool
     {
         return $this->guarded;
     }
-
-    public function getNameSpan(): FileSpan
+    public function get_name_span(): File_Span
     {
-        return SpanUtil::initialIdentifier($this->span, 1);
+        return Span_Util::initial_identifier($this->span, 1);
     }
-
     public function __toString(): string
     {
         return '$' . $this->name . ': ' . $this->expression . ($this->guarded ? ' !default' : '');

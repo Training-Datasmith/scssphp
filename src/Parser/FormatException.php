@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,27 +10,23 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use JiriPudil\SealedClasses\Sealed;
-use SourceSpan\FileSpan;
-
+use Jiri_Pudil\Sealed_Classes\Sealed;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-#[Sealed([MultiSourceFormatException::class])]
-class FormatException extends \Exception
+#[Sealed([Multi_Source_Format_Exception::class])]
+class Format_Exception extends \Exception
 {
-    private readonly FileSpan $span;
-
-    public function __construct(string $message, FileSpan $span, ?\Throwable $previous = null)
+    private readonly File_Span $span;
+    public function __construct(string $message, File_Span $span, ?\Throwable $previous = null)
     {
         $this->span = $span;
         parent::__construct($message, 0, $previous);
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }

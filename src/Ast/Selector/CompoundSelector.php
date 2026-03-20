@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,19 +10,17 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use League\Uri\Contracts\UriInterface;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Extend\ExtendUtil;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
-use ScssPhp\ScssPhp\Parser\SelectorParser;
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use ScssPhp\ScssPhp\Util\IterableUtil;
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use SourceSpan\FileSpan;
-
+use League\Uri\Contracts\Uri_Interface;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
+use Scss_Php\Scss_Php\Extend\Extend_Util;
+use Scss_Php\Scss_Php\Logger\Logger_Interface;
+use Scss_Php\Scss_Php\Parser\Selector_Parser;
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Scss_Php\Scss_Php\Util\Iterable_Util;
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Source_Span\File_Span;
 /**
  * A compound selector.
  *
@@ -32,7 +29,7 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class CompoundSelector extends Selector
+final class Compound_Selector extends Selector
 {
     /**
      * The components of this selector.
@@ -42,11 +39,8 @@ final class CompoundSelector extends Selector
      * @var list<SimpleSelector>
      */
     private readonly array $components;
-
     private ?int $specificity = null;
-
-    private ?bool $complicatedSuperselectorSemantics = null;
-
+    private ?bool $complicated_superselector_semantics = null;
     /**
      * Parses a compound selector from $contents.
      *
@@ -56,37 +50,32 @@ final class CompoundSelector extends Selector
      *
      * @throws SassFormatException if parsing fails.
      */
-    public static function parse(string $contents, ?LoggerInterface $logger = null, ?UriInterface $url = null, bool $allowParent = true): CompoundSelector
+    public static function parse(string $contents, ?Logger_Interface $logger = null, ?Uri_Interface $url = null, bool $allow_parent = true): Compound_Selector
     {
-        return (new SelectorParser($contents, $logger, $url, $allowParent))->parseCompoundSelector();
+        return (new Selector_Parser($contents, $logger, $url, $allow_parent))->parse_compound_selector();
     }
-
     /**
      * @param list<SimpleSelector> $components
      */
-    public function __construct(array $components, FileSpan $span)
+    public function __construct(array $components, File_Span $span)
     {
         if ($components === []) {
             throw new \InvalidArgumentException('components may not be empty.');
         }
-
         $this->components = $components;
         parent::__construct($span);
     }
-
     /**
      * @return list<SimpleSelector>
      */
-    public function getComponents(): array
+    public function get_components(): array
     {
         return $this->components;
     }
-
-    public function getLastComponent(): SimpleSelector
+    public function get_last_component(): Simple_Selector
     {
         return $this->components[\count($this->components) - 1];
     }
-
     /**
      * This selector's specificity.
      *
@@ -94,32 +83,27 @@ final class CompoundSelector extends Selector
      * "sufficiently high"; it's extremely unlikely that any single selector
      * sequence will contain 1000 simple selectors.
      */
-    public function getSpecificity(): int
+    public function get_specificity(): int
     {
         if ($this->specificity === null) {
             $specificity = 0;
-
             foreach ($this->components as $component) {
-                $specificity += $component->getSpecificity();
+                $specificity += $component->get_specificity();
             }
-
             $this->specificity = $specificity;
         }
-
         return $this->specificity;
     }
-
     /**
      * If this compound selector is composed of a single simple selector, returns
      * it.
      *
      * Otherwise, returns null.
      */
-    public function getSingleSimple(): ?SimpleSelector
+    public function get_single_simple(): ?Simple_Selector
     {
         return \count($this->components) === 1 ? $this->components[0] : null;
     }
-
     /**
      * Whether any simple selector in this contains a selector that requires
      * complex non-local reasoning to determine whether it's a super- or
@@ -130,29 +114,26 @@ final class CompoundSelector extends Selector
      *
      * @internal
      */
-    public function hasComplicatedSuperselectorSemantics(): bool
+    public function has_complicated_superselector_semantics(): bool
     {
-        return $this->complicatedSuperselectorSemantics ??= IterableUtil::any($this->components, fn (SimpleSelector $component): bool => $component->hasComplicatedSuperselectorSemantics());
+        return $this->complicated_superselector_semantics ??= Iterable_Util::any($this->components, fn(Simple_Selector $component): bool => $component->has_complicated_superselector_semantics());
     }
-
-    public function accept(SelectorVisitor $visitor)
+    public function accept(Selector_Visitor $visitor)
     {
-        return $visitor->visitCompoundSelector($this);
+        return $visitor->visit_compound_selector($this);
     }
-
     /**
      * Whether this is a superselector of $other.
      *
      * That is, whether this matches every element that $other matches, as well
      * as possibly additional elements.
      */
-    public function isSuperselector(CompoundSelector $other): bool
+    public function is_superselector(Compound_Selector $other): bool
     {
-        return ExtendUtil::compoundIsSuperselector($this, $other);
+        return Extend_Util::compound_is_superselector($this, $other);
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof CompoundSelector && EquatableUtil::listEquals($this->components, $other->components);
+        return $other instanceof Compound_Selector && Equatable_Util::list_equals($this->components, $other->components);
     }
 }

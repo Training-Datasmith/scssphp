@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,19 +10,17 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Visitor;
 
-namespace ScssPhp\ScssPhp\Visitor;
-
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssAtRule;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssComment;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssDeclaration;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssImport;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssKeyframeBlock;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssMediaRule;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssStyleRule;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssStylesheet;
-use ScssPhp\ScssPhp\Ast\Css\ModifiableCssSupportsRule;
-
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_At_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Comment;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Declaration;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Import;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Keyframe_Block;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Media_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Style_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Stylesheet;
+use Scss_Php\Scss_Php\Ast\Css\Modifiable_Css_Supports_Rule;
 /**
  * An interface for visitors that traverse CSS statements.
  *
@@ -31,50 +28,42 @@ use ScssPhp\ScssPhp\Ast\Css\ModifiableCssSupportsRule;
  *
  * @template T
  */
-interface ModifiableCssVisitor
+interface Modifiable_Css_Visitor
 {
     /**
      * @return T
      */
-    public function visitCssAtRule(ModifiableCssAtRule $node);
-
+    public function visit_css_at_rule(Modifiable_Css_At_Rule $node);
     /**
      * @return T
      */
-    public function visitCssComment(ModifiableCssComment $node);
-
+    public function visit_css_comment(Modifiable_Css_Comment $node);
     /**
      * @return T
      */
-    public function visitCssDeclaration(ModifiableCssDeclaration $node);
-
+    public function visit_css_declaration(Modifiable_Css_Declaration $node);
     /**
      * @return T
      */
-    public function visitCssImport(ModifiableCssImport $node);
-
+    public function visit_css_import(Modifiable_Css_Import $node);
     /**
      * @return T
      */
-    public function visitCssKeyframeBlock(ModifiableCssKeyframeBlock $node);
-
+    public function visit_css_keyframe_block(Modifiable_Css_Keyframe_Block $node);
     /**
      * @return T
      */
-    public function visitCssMediaRule(ModifiableCssMediaRule $node);
-
+    public function visit_css_media_rule(Modifiable_Css_Media_Rule $node);
     /**
      * @return T
      */
-    public function visitCssStyleRule(ModifiableCssStyleRule $node);
-
+    public function visit_css_style_rule(Modifiable_Css_Style_Rule $node);
     /**
      * @return T
      */
-    public function visitCssStylesheet(ModifiableCssStylesheet $node);
-
+    public function visit_css_stylesheet(Modifiable_Css_Stylesheet $node);
     /**
      * @return T
      */
-    public function visitCssSupportsRule(ModifiableCssSupportsRule $node);
+    public function visit_css_supports_rule(Modifiable_Css_Supports_Rule $node);
 }

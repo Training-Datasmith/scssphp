@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * A plain CSS `@media` rule.
  *
  * @internal
  */
-interface CssMediaRule extends CssParentNode
+interface Css_Media_Rule extends Css_Parent_Node
 {
     /**
      * The queries for this rule.
@@ -28,5 +26,5 @@ interface CssMediaRule extends CssParentNode
      *
      * @return list<CssMediaQuery>
      */
-    public function getQueries(): array;
+    public function get_queries(): array;
 }

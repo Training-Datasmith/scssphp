@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,45 +10,41 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Visitor\EveryCssVisitor;
-
+use Scss_Php\Scss_Php\Visitor\Every_Css_Visitor;
 /**
  * The visitor used to implement {@see CssNode::isInvisible}
  *
  * @internal
  */
-final class IsInvisibleVisitor extends EveryCssVisitor
+final class Is_Invisible_Visitor extends Every_Css_Visitor
 {
     public function __construct(
         /**
          * Whether to consider selectors with bogus combinators invisible.
          */
-        private readonly bool $includeBogus,
+        private readonly bool $include_bogus,
         /**
          * Whether to consider comments invisible.
          */
-        private readonly bool $includeComments
-    ) {
+        private readonly bool $include_comments
+    )
+    {
     }
-
-    public function visitCssAtRule(CssAtRule $node): bool
+    public function visit_css_at_rule(Css_At_Rule $node): bool
     {
         // An unknown at-rule is never invisible. Because we don't know the semantics
         // of unknown rules, we can't guarantee that (for example) `@foo {}` isn't
         // meaningful.
         return false;
     }
-
-    public function visitCssComment(CssComment $node): bool
+    public function visit_css_comment(Css_Comment $node): bool
     {
-        return $this->includeComments && !$node->isPreserved();
+        return $this->include_comments && !$node->is_preserved();
     }
-
-    public function visitCssStyleRule(CssStyleRule $node): bool
+    public function visit_css_style_rule(Css_Style_Rule $node): bool
     {
-        return ($this->includeBogus ? $node->getSelector()->isInvisible() : $node->getSelector()->isInvisibleOtherThanBogusCombinators()) || parent::visitCssStyleRule($node);
+        return ($this->include_bogus ? $node->get_selector()->is_invisible() : $node->get_selector()->is_invisible_other_than_bogus_combinators()) || parent::visit_css_style_rule($node);
     }
 }

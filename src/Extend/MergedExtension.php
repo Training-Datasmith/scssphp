@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,12 +10,10 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Extend;
 
-namespace ScssPhp\ScssPhp\Extend;
-
-use ScssPhp\ScssPhp\Exception\SimpleSassException;
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Exception;
+use Scss_Php\Scss_Php\Util\Equatable_Util;
 /**
  * An {@see Extension} created by merging two {@see Extension}s with the same extender
  * and target.
@@ -26,37 +23,31 @@ use ScssPhp\ScssPhp\Util\EquatableUtil;
  *
  * @internal
  */
-final class MergedExtension extends Extension
+final class Merged_Extension extends Extension
 {
     private function __construct(public readonly Extension $left, public readonly Extension $right)
     {
-        parent::__construct($this->left->extender->selector, $this->left->target, $this->left->span, $this->left->mediaContext ?? $this->right->mediaContext, true);
+        parent::__construct($this->left->extender->selector, $this->left->target, $this->left->span, $this->left->media_context ?? $this->right->media_context, true);
     }
-
     public static function merge(Extension $left, Extension $right): Extension
     {
-        if (!EquatableUtil::equals($left->extender->selector, $right->extender->selector) || !EquatableUtil::equals($left->target, $right->target)) {
+        if (!Equatable_Util::equals($left->extender->selector, $right->extender->selector) || !Equatable_Util::equals($left->target, $right->target)) {
             throw new \InvalidArgumentException('$left and $right aren\'t the same extension.');
         }
-
-        if ($left->mediaContext !== null && $right->mediaContext !== null && !EquatableUtil::listEquals($left->mediaContext, $right->mediaContext)) {
+        if ($left->media_context !== null && $right->media_context !== null && !Equatable_Util::list_equals($left->media_context, $right->media_context)) {
             $location = $left->span->message('');
-
-            throw new SimpleSassException("From $location\nYou may not @extend the same selector from within different media queries.", $right->span);
+            throw new Simple_Sass_Exception("From {$location}\nYou may not @extend the same selector from within different media queries.", $right->span);
         }
-
         // If one extension is optional and doesn't add a special media context, it
         // doesn't need to be merged.
-        if ($right->isOptional && $right->mediaContext === null) {
+        if ($right->is_optional && $right->media_context === null) {
             return $left;
         }
-        if ($left->isOptional && $left->mediaContext === null) {
+        if ($left->is_optional && $left->media_context === null) {
             return $right;
         }
-
-        return new MergedExtension($left, $right);
+        return new Merged_Extension($left, $right);
     }
-
     /**
      * Returns all leaf-node [Extension]s in the tree of [MergedExtension]s.
      *
@@ -64,13 +55,12 @@ final class MergedExtension extends Extension
      */
     public function unmerge(): \Traversable
     {
-        if ($this->left instanceof MergedExtension) {
+        if ($this->left instanceof Merged_Extension) {
             yield from $this->left->unmerge();
         } else {
             yield $this->left;
         }
-
-        if ($this->right instanceof MergedExtension) {
+        if ($this->right instanceof Merged_Extension) {
             yield from $this->right->unmerge();
         } else {
             yield $this->right;

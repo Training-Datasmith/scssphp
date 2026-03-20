@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,115 +10,94 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * A list literal.
  *
  * @internal
  */
-final class ListExpression implements Expression
+final class List_Expression implements Expression
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * ListExpression constructor.
      *
      * @param list<Expression> $contents
      */
-    public function __construct(private readonly array $contents, private readonly ListSeparator $separator, FileSpan $span, private readonly bool $brackets = false)
+    public function __construct(private readonly array $contents, private readonly List_Separator $separator, File_Span $span, private readonly bool $brackets = false)
     {
         $this->span = $span;
     }
-
     /**
      * @return list<Expression>
      */
-    public function getContents(): array
+    public function get_contents(): array
     {
         return $this->contents;
     }
-
-    public function getSeparator(): ListSeparator
+    public function get_separator(): List_Separator
     {
         return $this->separator;
     }
-
-    public function hasBrackets(): bool
+    public function has_brackets(): bool
     {
         return $this->brackets;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitListExpression($this);
+        return $visitor->visit_list_expression($this);
     }
-
     public function __toString(): string
     {
         $buffer = '';
-        if ($this->hasBrackets()) {
+        if ($this->has_brackets()) {
             $buffer .= '[';
-        } elseif (\count($this->contents) === 0 || (\count($this->contents) === 1 && $this->separator === ListSeparator::COMMA)) {
+        } elseif (\count($this->contents) === 0 || \count($this->contents) === 1 && $this->separator === List_Separator::COMMA) {
             $buffer .= '(';
         }
-
-        $buffer .= implode(
-            $this->separator === ListSeparator::COMMA ? ', ' : ' ',
-            array_map(fn (\ScssPhp\ScssPhp\Ast\Sass\Expression $element): string => $this->elementNeedsParens($element) ? "($element)" : (string) $element, $this->contents)
-        );
-
-        if ($this->hasBrackets()) {
+        $buffer .= implode($this->separator === List_Separator::COMMA ? ', ' : ' ', array_map(fn(\Scss_Php\Scss_Php\Ast\Sass\Expression $element): string => $this->element_needs_parens($element) ? "({$element})" : (string) $element, $this->contents));
+        if ($this->has_brackets()) {
             $buffer .= ']';
         } elseif (\count($this->contents) === 0) {
             $buffer .= ')';
-        } elseif (\count($this->contents) === 1 && $this->separator === ListSeparator::COMMA) {
+        } elseif (\count($this->contents) === 1 && $this->separator === List_Separator::COMMA) {
             $buffer .= ',)';
         }
-
         return $buffer;
     }
-
     /**
      * Returns whether $expression, contained in $this, needs parentheses when
      * printed as Sass source.
      */
-    private function elementNeedsParens(Expression $expression): bool
+    private function element_needs_parens(Expression $expression): bool
     {
-        if ($expression instanceof ListExpression) {
+        if ($expression instanceof List_Expression) {
             if (\count($expression->contents) < 2) {
                 return false;
             }
-
             if ($expression->brackets) {
                 return false;
             }
-
-            return $this->separator === ListSeparator::COMMA ? $expression->separator === ListSeparator::COMMA : $expression->separator !== ListSeparator::UNDECIDED;
+            return $this->separator === List_Separator::COMMA ? $expression->separator === List_Separator::COMMA : $expression->separator !== List_Separator::UNDECIDED;
         }
-
-        if ($this->separator !== ListSeparator::SPACE) {
+        if ($this->separator !== List_Separator::SPACE) {
             return false;
         }
-
-        if ($expression instanceof UnaryOperationExpression) {
-            if ($expression->getOperator() === UnaryOperator::PLUS) {
+        if ($expression instanceof Unary_Operation_Expression) {
+            if ($expression->get_operator() === Unary_Operator::PLUS) {
                 return true;
             }
-            return $expression->getOperator() === UnaryOperator::MINUS;
+            return $expression->get_operator() === Unary_Operator::MINUS;
         }
-
         return false;
     }
 }

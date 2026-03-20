@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,53 +10,45 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use ScssPhp\ScssPhp\Visitor\ModifiableCssVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Scss_Php\Scss_Php\Visitor\Modifiable_Css_Visitor;
+use Source_Span\File_Span;
 /**
  * A modifiable version of {@see CssMediaRule} for use in the evaluation step.
  *
  * @internal
  */
-final class ModifiableCssMediaRule extends ModifiableCssParentNode implements CssMediaRule
+final class Modifiable_Css_Media_Rule extends Modifiable_Css_Parent_Node implements Css_Media_Rule
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param list<CssMediaQuery> $queries
      */
-    public function __construct(private readonly array $queries, FileSpan $span)
+    public function __construct(private readonly array $queries, File_Span $span)
     {
         parent::__construct();
         $this->span = $span;
     }
-
-    public function getQueries(): array
+    public function get_queries(): array
     {
         return $this->queries;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ModifiableCssVisitor $visitor)
+    public function accept(Modifiable_Css_Visitor $visitor)
     {
-        return $visitor->visitCssMediaRule($this);
+        return $visitor->visit_css_media_rule($this);
     }
-
-    public function equalsIgnoringChildren(ModifiableCssNode $other): bool
+    public function equals_ignoring_children(Modifiable_Css_Node $other): bool
     {
-        return $other instanceof ModifiableCssMediaRule && EquatableUtil::listEquals($this->queries, $other->queries);
+        return $other instanceof Modifiable_Css_Media_Rule && Equatable_Util::list_equals($this->queries, $other->queries);
     }
-
-    public function copyWithoutChildren(): ModifiableCssMediaRule
+    public function copy_without_children(): Modifiable_Css_Media_Rule
     {
-        return new ModifiableCssMediaRule($this->queries, $this->span);
+        return new Modifiable_Css_Media_Rule($this->queries, $this->span);
     }
 }

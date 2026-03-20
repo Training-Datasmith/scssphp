@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,28 +10,25 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php;
 
-namespace ScssPhp\ScssPhp;
-
-use ScssPhp\ScssPhp\Collection\Map;
-use ScssPhp\ScssPhp\Logger\QuietLogger;
-use ScssPhp\ScssPhp\Node\Number;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Value\SassBoolean;
-use ScssPhp\ScssPhp\Value\SassList;
-use ScssPhp\ScssPhp\Value\SassMap;
-use ScssPhp\ScssPhp\Value\SassNull;
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Value\Value;
-
-final class ValueConverter
+use Scss_Php\Scss_Php\Collection\Map;
+use Scss_Php\Scss_Php\Logger\Quiet_Logger;
+use Scss_Php\Scss_Php\Node\Number;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Value\Sass_Boolean;
+use Scss_Php\Scss_Php\Value\Sass_List;
+use Scss_Php\Scss_Php\Value\Sass_Map;
+use Scss_Php\Scss_Php\Value\Sass_Null;
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Value\Value;
+final class Value_Converter
 {
     // Prevent instantiating it
     private function __construct()
     {
     }
-
     /**
      * Parses a value from a Scss source string.
      *
@@ -41,30 +37,24 @@ final class ValueConverter
      * guarantee about it is provided. It should be considered
      * opaque values by the caller.
      */
-    public static function parseValue(string $source): Value
+    public static function parse_value(string $source): Value
     {
         $value = null;
-
         $compiler = new Compiler();
-        $compiler->setLogger(new QuietLogger());
-        $compiler->registerFunction('scssphp-parse-value', function (array $arguments) use (&$value): Value {
+        $compiler->set_logger(new Quiet_Logger());
+        $compiler->register_function('scssphp-parse-value', function (array $arguments) use (&$value): Value {
             \assert(\count($arguments) === 1);
             \assert($arguments[0] instanceof Value);
             $value = $arguments[0];
-
-            return SassNull::create();
+            return Sass_Null::create();
         }, ['arg']);
         $scss = <<<SCSS
-        a {b: scssphp-parse-value(($source))}
+        a {b: scssphp-parse-value(({$source}))}
         SCSS;
-
-        $compiler->compileString($scss);
-
+        $compiler->compile_string($scss);
         \assert($value !== null);
-
         return $value;
     }
-
     /**
      * Converts a PHP value to a Sass value
      *
@@ -73,59 +63,47 @@ final class ValueConverter
      * guarantee about it is provided. It should be considered
      * opaque values by the caller.
      */
-    public static function fromPhp(mixed $value): Value
+    public static function from_php(mixed $value): Value
     {
         if ($value instanceof Value) {
             return $value;
         }
-
         if ($value instanceof Number) {
-            return SassNumber::withUnits($value->getDimension(), $value->getNumeratorUnits(), $value->getDenominatorUnits());
+            return Sass_Number::with_units($value->get_dimension(), $value->get_numerator_units(), $value->get_denominator_units());
         }
-
         if ($value === null) {
-            return SassNull::create();
+            return Sass_Null::create();
         }
-
         if ($value === true) {
-            return SassBoolean::create(true);
+            return Sass_Boolean::create(true);
         }
-
         if ($value === false) {
-            return SassBoolean::create(false);
+            return Sass_Boolean::create(false);
         }
-
         if ($value === '') {
-            return new SassString('');
+            return new Sass_String('');
         }
-
         if (\is_int($value) || \is_float($value)) {
-            return SassNumber::create($value);
+            return Sass_Number::create($value);
         }
-
         if (\is_string($value)) {
-            return new SassString($value);
+            return new Sass_String($value);
         }
-
         if (\is_array($value)) {
             if (array_is_list($value)) {
                 $result = [];
                 foreach ($value as $val) {
-                    $result[] = self::fromPhp($val);
+                    $result[] = self::from_php($val);
                 }
-
-                return new SassList($result, \count($result) > 0 ? ListSeparator::COMMA : ListSeparator::UNDECIDED);
+                return new Sass_List($result, \count($result) > 0 ? List_Separator::COMMA : List_Separator::UNDECIDED);
             }
-
             /** @var Map<Value> $map */
             $map = new Map();
             foreach ($value as $key => $val) {
-                $map->put(new SassString($key), self::fromPhp($val));
+                $map->put(new Sass_String($key), self::from_php($val));
             }
-
-            return SassMap::create($map);
+            return Sass_Map::create($map);
         }
-
         throw new \InvalidArgumentException(sprintf('Cannot convert the value of type "%s" to a Sass value.', get_debug_type($value)));
     }
 }

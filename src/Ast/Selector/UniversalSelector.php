@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,99 +10,83 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Extend\ExtendUtil;
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Extend\Extend_Util;
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Source_Span\File_Span;
 /**
  * Matches any element in the given namespace.
  *
  * @internal
  */
-final class UniversalSelector extends SimpleSelector
+final class Universal_Selector extends Simple_Selector
 {
-    public function __construct(FileSpan $span, /**
-     * The selector namespace.
-     *
-     * If this is `null`, this matches all elements in the default namespace. If
-     * it's the empty string, this matches all elements that aren't in any
-     * namespace. If it's `*`, this matches all elements in any namespace.
-     * Otherwise, it matches all elements in the given namespace.
-     */
-        private readonly ?string $namespace = null)
+    public function __construct(
+        File_Span $span,
+        /**
+         * The selector namespace.
+         *
+         * If this is `null`, this matches all elements in the default namespace. If
+         * it's the empty string, this matches all elements that aren't in any
+         * namespace. If it's `*`, this matches all elements in any namespace.
+         * Otherwise, it matches all elements in the given namespace.
+         */
+        private readonly ?string $namespace = null
+    )
     {
         parent::__construct($span);
     }
-
-    public function getNamespace(): ?string
+    public function get_namespace(): ?string
     {
         return $this->namespace;
     }
-
-    public function getSpecificity(): int
+    public function get_specificity(): int
     {
         return 0;
     }
-
-    public function accept(SelectorVisitor $visitor)
+    public function accept(Selector_Visitor $visitor)
     {
-        return $visitor->visitUniversalSelector($this);
+        return $visitor->visit_universal_selector($this);
     }
-
     public function unify(array $compound): ?array
     {
         $first = $compound[0] ?? null;
-
-        if ($first instanceof UniversalSelector || $first instanceof TypeSelector) {
-            $unified = ExtendUtil::unifyUniversalAndElement($this, $first);
-
+        if ($first instanceof Universal_Selector || $first instanceof Type_Selector) {
+            $unified = Extend_Util::unify_universal_and_element($this, $first);
             if ($unified === null) {
                 return null;
             }
-
             $compound[0] = $unified;
-
             return $compound;
         }
-
-        if (\count($compound) === 1 && $first instanceof PseudoSelector && ($first->isHost() || $first->isHostContext())) {
+        if (\count($compound) === 1 && $first instanceof Pseudo_Selector && ($first->is_host() || $first->is_host_context())) {
             return null;
         }
-
         if ($this->namespace !== null && $this->namespace !== '*') {
             return array_merge([$this], $compound);
         }
-
         // Not-empty compound list
         if ($first !== null) {
             return $compound;
         }
-
         return [$this];
     }
-
-    public function isSuperselector(SimpleSelector $other): bool
+    public function is_superselector(Simple_Selector $other): bool
     {
         if ($this->namespace === '*') {
             return true;
         }
-
-        if ($other instanceof TypeSelector) {
-            return $this->namespace === $other->getName()->getNamespace();
+        if ($other instanceof Type_Selector) {
+            return $this->namespace === $other->get_name()->get_namespace();
         }
-
-        if ($other instanceof UniversalSelector) {
+        if ($other instanceof Universal_Selector) {
             return $this->namespace === $other->namespace;
         }
-
-        return $this->namespace === null || parent::isSuperselector($other);
+        return $this->namespace === null || parent::is_superselector($other);
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof UniversalSelector && $other->namespace === $this->namespace;
+        return $other instanceof Universal_Selector && $other->namespace === $this->namespace;
     }
 }

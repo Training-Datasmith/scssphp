@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Util;
+namespace Scss_Php\Scss_Php\Util;
 
 /**
  * @internal
  */
-final class ListUtil
+final class List_Util
 {
     /**
      * Flattens the first level of nested arrays in $queues.
@@ -33,18 +31,15 @@ final class ListUtil
      *
      * @return list<T>
      */
-    public static function flattenVertically(array $queues): array
+    public static function flatten_vertically(array $queues): array
     {
         if (\count($queues) === 1) {
             return $queues[0];
         }
-
         $result = [];
-
         while (!empty($queues)) {
             foreach ($queues as $i => &$queue) {
                 $item = array_shift($queue);
-
                 if ($item === null) {
                     unset($queues[$i]);
                 } else {
@@ -53,10 +48,8 @@ final class ListUtil
             }
             unset($queue);
         }
-
         return $result;
     }
-
     /**
      * Returns the longest common subsequence between $list1 and $list2.
      *
@@ -75,25 +68,20 @@ final class ListUtil
      *
      * @return list<T>
      */
-    public static function longestCommonSubsequence(array $list1, array $list2, ?callable $select = null): array
+    public static function longest_common_subsequence(array $list1, array $list2, ?callable $select = null): array
     {
         if ($select === null) {
-            $select = fn ($element1, $element2) => EquatableUtil::equals($element1, $element2) ? $element1 : null;
+            $select = fn($element1, $element2) => Equatable_Util::equals($element1, $element2) ? $element1 : null;
         }
-
         $lengths = array_fill(0, \count($list1) + 1, array_fill(0, \count($list2) + 1, 0));
         $selections = array_fill(0, \count($list1) + 1, array_fill(0, \count($list2) + 1, null));
-
         for ($i = 0; $i < \count($list1); $i++) {
             for ($j = 0; $j < \count($list2); $j++) {
                 $selection = $select($list1[$i], $list2[$j]);
                 $selections[$i][$j] = $selection;
-                $lengths[$i + 1][$j + 1] = $selection === null
-                    ? max($lengths[$i + 1][$j], $lengths[$i][$j + 1])
-                    : $lengths[$i][$j] + 1;
+                $lengths[$i + 1][$j + 1] = $selection === null ? max($lengths[$i + 1][$j], $lengths[$i][$j + 1]) : $lengths[$i][$j] + 1;
             }
         }
-
         /**
          * @param int<-1, max> $i
          * @param int<-1, max> $j
@@ -103,27 +91,18 @@ final class ListUtil
             if ($i === -1 || $j === -1) {
                 return [];
             }
-
             \assert($i >= 0);
             \assert($j >= 0);
-
             $selection = $selections[$i][$j];
-
             if ($selection !== null) {
                 $selected = $backtrack($i - 1, $j - 1);
                 $selected[] = $selection;
-
                 return $selected;
             }
-
-            return $lengths[$i + 1][$j] > $lengths[$i][$j + 1]
-                ? $backtrack($i, $j - 1)
-                : $backtrack($i - 1, $j);
+            return $lengths[$i + 1][$j] > $lengths[$i][$j + 1] ? $backtrack($i, $j - 1) : $backtrack($i - 1, $j);
         };
-
         return $backtrack(\count($list1) - 1, \count($list2) - 1);
     }
-
     /**
      * @template T
      *
@@ -134,14 +113,11 @@ final class ListUtil
     public static function last(array $list)
     {
         $count = count($list);
-
         if ($count === 0) {
             throw new \LogicException('The list may not be empty.');
         }
-
         return $list[$count - 1];
     }
-
     /**
      * @template T
      *
@@ -149,14 +125,12 @@ final class ListUtil
      *
      * @return list<T>
      */
-    public static function exceptLast(array $list): array
+    public static function except_last(array $list): array
     {
         $count = count($list);
-
         if ($count === 0) {
             throw new \LogicException('The list may not be empty.');
         }
-
         return array_slice($list, 0, $count - 1);
     }
 }

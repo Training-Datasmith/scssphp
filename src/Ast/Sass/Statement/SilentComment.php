@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,42 +10,35 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * A silent Sass-style comment.
  *
  * @internal
  */
-final class SilentComment implements Statement
+final class Silent_Comment implements Statement
 {
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly string $text, FileSpan $span)
+    private readonly File_Span $span;
+    public function __construct(private readonly string $text, File_Span $span)
     {
         $this->span = $span;
     }
-
-    public function getText(): string
+    public function get_text(): string
     {
         return $this->text;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitSilentComment($this);
+        return $visitor->visit_silent_comment($this);
     }
-
     public function __toString(): string
     {
         return $this->text;

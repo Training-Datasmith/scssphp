@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,12 +10,10 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Sass_Callable;
 
-namespace ScssPhp\ScssPhp\SassCallable;
-
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\Value;
-
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Value;
 /**
  * An interface for functions and mixins that can be invoked from Sass by
  * passing in arguments.
@@ -64,10 +61,10 @@ use ScssPhp\ScssPhp\Value\Value;
  *
  * @internal
  */
-interface SassCallable
+interface Sass_Callable
 {
     /**
      * The callable's name
      */
-    public function getName(): string;
+    public function get_name(): string;
 }

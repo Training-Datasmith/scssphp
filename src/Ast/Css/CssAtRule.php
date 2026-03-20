@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,27 +10,25 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * An unknown plain CSS at-rule.
  *
  * @internal
  */
-interface CssAtRule extends CssParentNode
+interface Css_At_Rule extends Css_Parent_Node
 {
     /**
      * The name of this rule.
      *
      * @return CssValue<string>
      */
-    public function getName(): CssValue;
-
+    public function get_name(): Css_Value;
     /**
      * The value of this rule.
      *
      * @return CssValue<string>|null
      */
-    public function getValue(): ?CssValue;
+    public function get_value(): ?Css_Value;
 }

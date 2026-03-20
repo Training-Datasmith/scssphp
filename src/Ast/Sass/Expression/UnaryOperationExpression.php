@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,68 +10,53 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * A unary operator, as in `+$var` or `not fn()`.
  *
  * @internal
  */
-final class UnaryOperationExpression implements Expression
+final class Unary_Operation_Expression implements Expression
 {
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly UnaryOperator $operator, private readonly Expression $operand, FileSpan $span)
+    private readonly File_Span $span;
+    public function __construct(private readonly Unary_Operator $operator, private readonly Expression $operand, File_Span $span)
     {
         $this->span = $span;
     }
-
-    public function getOperator(): UnaryOperator
+    public function get_operator(): Unary_Operator
     {
         return $this->operator;
     }
-
-    public function getOperand(): Expression
+    public function get_operand(): Expression
     {
         return $this->operand;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitUnaryOperationExpression($this);
+        return $visitor->visit_unary_operation_expression($this);
     }
-
     public function __toString(): string
     {
-        $buffer = $this->operator->getOperator();
-        if ($this->operator === UnaryOperator::NOT) {
+        $buffer = $this->operator->get_operator();
+        if ($this->operator === Unary_Operator::NOT) {
             $buffer .= ' ';
         }
-
-        $needsParens = $this->operand instanceof BinaryOperationExpression
-            || $this->operand instanceof UnaryOperationExpression
-            || ($this->operand instanceof ListExpression && !$this->operand->hasBrackets() && \count($this->operand->getContents()) > 1);
-
-        if ($needsParens) {
+        $needs_parens = $this->operand instanceof Binary_Operation_Expression || $this->operand instanceof Unary_Operation_Expression || $this->operand instanceof List_Expression && !$this->operand->has_brackets() && \count($this->operand->get_contents()) > 1;
+        if ($needs_parens) {
             $buffer .= '(';
         }
-
         $buffer .= $this->operand;
-
-        if ($needsParens) {
+        if ($needs_parens) {
             $buffer .= ')';
         }
-
         return $buffer;
     }
 }

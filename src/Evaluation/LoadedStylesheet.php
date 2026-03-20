@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,18 +10,16 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Evaluation;
 
-namespace ScssPhp\ScssPhp\Evaluation;
-
-use ScssPhp\ScssPhp\Ast\Sass\Statement\Stylesheet;
-use ScssPhp\ScssPhp\Importer\Importer;
-
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Stylesheet;
+use Scss_Php\Scss_Php\Importer\Importer;
 /**
  * The result of loading a stylesheet via {@see EvaluateVisitor::loadStylesheet}.
  *
  * @internal
  */
-final class LoadedStylesheet
+final class Loaded_Stylesheet
 {
     public function __construct(
         /**
@@ -37,20 +34,18 @@ final class LoadedStylesheet
          * importer rather than relative to the entrypoint.
          */
         private readonly bool $dependency
-    ) {
+    )
+    {
     }
-
-    public function getStylesheet(): Stylesheet
+    public function get_stylesheet(): Stylesheet
     {
         return $this->stylesheet;
     }
-
-    public function getImporter(): Importer
+    public function get_importer(): Importer
     {
         return $this->importer;
     }
-
-    public function isDependency(): bool
+    public function is_dependency(): bool
     {
         return $this->dependency;
     }

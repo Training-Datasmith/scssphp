@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * A plain CSS comment.
@@ -21,16 +19,15 @@ namespace ScssPhp\ScssPhp\Ast\Css;
  *
  * @internal
  */
-interface CssComment extends CssNode
+interface Css_Comment extends Css_Node
 {
     /**
      * The contents of this comment, including `/*` and `* /`.
      */
-    public function getText(): string;
-
+    public function get_text(): string;
     /**
      * Whether this comment starts with `/*!` and so should be preserved even in
      * compressed mode.
      */
-    public function isPreserved(): bool;
+    public function is_preserved(): bool;
 }

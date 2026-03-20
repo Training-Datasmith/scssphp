@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,29 +10,26 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass;
 
-namespace ScssPhp\ScssPhp\Ast\Sass;
-
-use SourceSpan\FileSpan;
-
+use Source_Span\File_Span;
 /**
  * A common interface for any node that declares a Sass member.
  *
  * @internal
  */
-interface SassDeclaration extends SassNode
+interface Sass_Declaration extends Sass_Node
 {
     /**
      * The name of the declaration, with underscores converted to hyphens.
      *
      * This does not include the `$` for variables.
      */
-    public function getName(): string;
-
+    public function get_name(): string;
     /**
      * The span containing this declaration's name.
      *
      * This includes the `$` for variables.
      */
-    public function getNameSpan(): FileSpan;
+    public function get_name_span(): File_Span;
 }

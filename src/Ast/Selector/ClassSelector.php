@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,12 +10,10 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Source_Span\File_Span;
 /**
  * A class selector.
  *
@@ -25,34 +22,32 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class ClassSelector extends SimpleSelector
+final class Class_Selector extends Simple_Selector
 {
-    public function __construct(/**
-     * The class name this selects for.
-     */
+    public function __construct(
+        /**
+         * The class name this selects for.
+         */
         private readonly string $name,
-        FileSpan $span
-    ) {
+        File_Span $span
+    )
+    {
         parent::__construct($span);
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
-    public function accept(SelectorVisitor $visitor)
+    public function accept(Selector_Visitor $visitor)
     {
-        return $visitor->visitClassSelector($this);
+        return $visitor->visit_class_selector($this);
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof ClassSelector && $other->name === $this->name;
+        return $other instanceof Class_Selector && $other->name === $this->name;
     }
-
-    public function addSuffix(string $suffix): \ScssPhp\ScssPhp\Ast\Selector\ClassSelector
+    public function add_suffix(string $suffix): \Scss_Php\Scss_Php\Ast\Selector\Class_Selector
     {
-        return new ClassSelector($this->name . $suffix, $this->getSpan());
+        return new Class_Selector($this->name . $suffix, $this->get_span());
     }
 }

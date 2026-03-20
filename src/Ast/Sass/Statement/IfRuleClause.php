@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,49 +10,42 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Import\DynamicImport;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Util\IterableUtil;
-
+use Scss_Php\Scss_Php\Ast\Sass\Import\Dynamic_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Util\Iterable_Util;
 /**
  * The superclass of `@if` and `@else` clauses.
  *
  * @internal
  */
-abstract class IfRuleClause
+abstract class If_Rule_Clause
 {
     private readonly bool $declarations;
-
     /**
      * @param Statement[] $children
      */
     public function __construct(private readonly array $children)
     {
-        $this->declarations = IterableUtil::any($this->children, function (Statement $child): bool {
-            if ($child instanceof VariableDeclaration || $child instanceof FunctionRule || $child instanceof MixinRule) {
+        $this->declarations = Iterable_Util::any($this->children, function (Statement $child): bool {
+            if ($child instanceof Variable_Declaration || $child instanceof Function_Rule || $child instanceof Mixin_Rule) {
                 return true;
             }
-
-            if ($child instanceof ImportRule) {
-                return IterableUtil::any($child->getImports(), fn ($import): bool => $import instanceof DynamicImport);
+            if ($child instanceof Import_Rule) {
+                return Iterable_Util::any($child->get_imports(), fn($import): bool => $import instanceof Dynamic_Import);
             }
-
             return false;
         });
     }
-
     /**
      * @return Statement[]
      */
-    final public function getChildren(): array
+    final public function get_children(): array
     {
         return $this->children;
     }
-
-    final public function hasDeclarations(): bool
+    final public function has_declarations(): bool
     {
         return $this->declarations;
     }

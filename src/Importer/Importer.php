@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,11 +10,9 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Importer;
 
-namespace ScssPhp\ScssPhp\Importer;
-
-use League\Uri\Contracts\UriInterface;
-
+use League\Uri\Contracts\Uri_Interface;
 /**
  * A base class for importers that resolves URLs in `@import`s to the contents
  * of Sass files.
@@ -80,8 +77,7 @@ abstract class Importer implements \Stringable
      * must return that URL. Calling {@see canonicalize} with a URL relative to one
      * returned by {@see canonicalize} must return a meaningful result.
      */
-    abstract public function canonicalize(UriInterface $url): ?UriInterface;
-
+    abstract public function canonicalize(Uri_Interface $url): ?Uri_Interface;
     /**
      * Loads the Sass text for the given $url, or returns `null` if
      * this importer can't find the stylesheet it refers to.
@@ -100,8 +96,7 @@ abstract class Importer implements \Stringable
      * refer to a real stylesheet, the importer may throw an exception that will
      * be wrapped by Sass.
      */
-    abstract public function load(UriInterface $url): ?ImporterResult;
-
+    abstract public function load(Uri_Interface $url): ?Importer_Result;
     /**
      * Without accessing the filesystem, returns whether passing $url to
      * {@see canonicalize} could possibly return $canonicalUrl.
@@ -111,11 +106,10 @@ abstract class Importer implements \Stringable
      * $url would actually resolve to $canonicalUrl. Subclasses are not allowed
      * to return false negatives.
      */
-    public function couldCanonicalize(UriInterface $url, UriInterface $canonicalUrl): bool
+    public function could_canonicalize(Uri_Interface $url, Uri_Interface $canonical_url): bool
     {
         return true;
     }
-
     /**
      * Returns whether the given URL scheme (without `:`) should be considered
      * "non-canonical" for this importer.
@@ -128,11 +122,10 @@ abstract class Importer implements \Stringable
      * This must always return the same value for the same $scheme. It is
      * expected to be very efficient.
      */
-    public function isNonCanonicalScheme(string $scheme): bool
+    public function is_non_canonical_scheme(string $scheme): bool
     {
         return false;
     }
-
     /**
      * Whether the current {@see canonicalize} invocation comes from an `@import`
      * rule.
@@ -147,11 +140,10 @@ abstract class Importer implements \Stringable
      * Subclasses should only access this from within calls to {@see canonicalize}.
      * Outside of that context, its value is undefined and subject to change.
      */
-    final protected function isFromImport(): bool
+    final protected function is_from_import(): bool
     {
-        return ImportContext::isFromImport();
+        return Import_Context::is_from_import();
     }
-
     /**
      * The canonical URL of the stylesheet that caused the current {@see canonicalize}
      * invocation.
@@ -165,8 +157,8 @@ abstract class Importer implements \Stringable
      * Subclasses should only access this from within calls to {@see canonicalize}.
      * Outside of that context, its value is undefined and subject to change.
      */
-    final protected function getContainingUrl(): ?UriInterface
+    final protected function get_containing_url(): ?Uri_Interface
     {
-        return ImportContext::getCanonicalizeContext()->getContainingUrl();
+        return Import_Context::get_canonicalize_context()->get_containing_url();
     }
 }

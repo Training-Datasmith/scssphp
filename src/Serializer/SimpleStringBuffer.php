@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,12 +10,10 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Serializer;
 
-namespace ScssPhp\ScssPhp\Serializer;
-
-use ScssPhp\ScssPhp\SourceMap\SingleMapping;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Source_Map\Single_Mapping;
+use Source_Span\File_Span;
 /**
  * A buffer that doesn't actually build a source map.
  *
@@ -26,36 +23,30 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class SimpleStringBuffer implements SourceMapBuffer
+final class Simple_String_Buffer implements Source_Map_Buffer
 {
     private string $text = '';
-
-    public function getLength(): int
+    public function get_length(): int
     {
         return \strlen($this->text);
     }
-
     public function write(string $string): void
     {
         $this->text .= $string;
     }
-
-    public function writeChar(string $char): void
+    public function write_char(string $char): void
     {
         $this->text .= $char;
     }
-
     public function __toString(): string
     {
         return $this->text;
     }
-
-    public function forSpan(FileSpan $span, callable $callback)
+    public function for_span(File_Span $span, callable $callback)
     {
         return $callback();
     }
-
-    public function buildSourceMap(?string $prefix): SingleMapping
+    public function build_source_map(?string $prefix): Single_Mapping
     {
         throw new \BadMethodCallException(__METHOD__ . ' is not supported.');
     }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,26 +10,23 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Util;
 
-namespace ScssPhp\ScssPhp\Util;
-
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Logger\DeprecationProcessingLogger;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Logger\Deprecation_Processing_Logger;
+use Scss_Php\Scss_Php\Logger\Logger_Interface;
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class LoggerUtil
+final class Logger_Util
 {
-    public static function warnForDeprecation(LoggerInterface $logger, Deprecation $deprecation, string $message, ?FileSpan $span = null, ?Trace $trace = null): void
+    public static function warn_for_deprecation(Logger_Interface $logger, Deprecation $deprecation, string $message, ?File_Span $span = null, ?Trace $trace = null): void
     {
-        if ($deprecation->isFuture() && !$logger instanceof DeprecationProcessingLogger) {
+        if ($deprecation->is_future() && !$logger instanceof Deprecation_Processing_Logger) {
             return;
         }
-
         $logger->warn($message, $deprecation, $span, $trace);
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,11 +10,9 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Sass_Callable;
 
-namespace ScssPhp\ScssPhp\SassCallable;
-
-use ScssPhp\ScssPhp\Util\Equatable;
-
+use Scss_Php\Scss_Php\Util\Equatable;
 /**
  * A callable that emits a plain CSS function.
  *
@@ -23,19 +20,17 @@ use ScssPhp\ScssPhp\Util\Equatable;
  *
  * @internal
  */
-final class PlainCssCallable implements SassCallable, Equatable
+final class Plain_Css_Callable implements Sass_Callable, Equatable
 {
     public function __construct(private readonly string $name)
     {
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof PlainCssCallable && $this->name === $other->name;
+        return $other instanceof Plain_Css_Callable && $this->name === $other->name;
     }
 }

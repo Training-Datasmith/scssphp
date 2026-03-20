@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,21 +10,19 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Visitor;
 
-namespace ScssPhp\ScssPhp\Visitor;
-
-use ScssPhp\ScssPhp\Ast\Css\CssAtRule;
-use ScssPhp\ScssPhp\Ast\Css\CssComment;
-use ScssPhp\ScssPhp\Ast\Css\CssDeclaration;
-use ScssPhp\ScssPhp\Ast\Css\CssImport;
-use ScssPhp\ScssPhp\Ast\Css\CssKeyframeBlock;
-use ScssPhp\ScssPhp\Ast\Css\CssMediaRule;
-use ScssPhp\ScssPhp\Ast\Css\CssNode;
-use ScssPhp\ScssPhp\Ast\Css\CssStyleRule;
-use ScssPhp\ScssPhp\Ast\Css\CssStylesheet;
-use ScssPhp\ScssPhp\Ast\Css\CssSupportsRule;
-use ScssPhp\ScssPhp\Util\IterableUtil;
-
+use Scss_Php\Scss_Php\Ast\Css\Css_At_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Comment;
+use Scss_Php\Scss_Php\Ast\Css\Css_Declaration;
+use Scss_Php\Scss_Php\Ast\Css\Css_Import;
+use Scss_Php\Scss_Php\Ast\Css\Css_Keyframe_Block;
+use Scss_Php\Scss_Php\Ast\Css\Css_Media_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Node;
+use Scss_Php\Scss_Php\Ast\Css\Css_Style_Rule;
+use Scss_Php\Scss_Php\Ast\Css\Css_Stylesheet;
+use Scss_Php\Scss_Php\Ast\Css\Css_Supports_Rule;
+use Scss_Php\Scss_Php\Util\Iterable_Util;
 /**
  * A visitor that visits each statement in a CSS AST and returns `true` if all
  * of the individual methods return `true`.
@@ -35,50 +32,42 @@ use ScssPhp\ScssPhp\Util\IterableUtil;
  * @template-implements CssVisitor<bool>
  * @internal
  */
-abstract class EveryCssVisitor implements CssVisitor
+abstract class Every_Css_Visitor implements Css_Visitor
 {
-    public function visitCssAtRule(CssAtRule $node): bool
+    public function visit_css_at_rule(Css_At_Rule $node): bool
     {
-        return IterableUtil::every($node->getChildren(), fn (CssNode $child) => $child->accept($this));
+        return Iterable_Util::every($node->get_children(), fn(Css_Node $child) => $child->accept($this));
     }
-
-    public function visitCssComment(CssComment $node): bool
+    public function visit_css_comment(Css_Comment $node): bool
     {
         return false;
     }
-
-    public function visitCssDeclaration(CssDeclaration $node): bool
+    public function visit_css_declaration(Css_Declaration $node): bool
     {
         return false;
     }
-
-    public function visitCssImport(CssImport $node): bool
+    public function visit_css_import(Css_Import $node): bool
     {
         return false;
     }
-
-    public function visitCssKeyframeBlock(CssKeyframeBlock $node): bool
+    public function visit_css_keyframe_block(Css_Keyframe_Block $node): bool
     {
-        return IterableUtil::every($node->getChildren(), fn (CssNode $child) => $child->accept($this));
+        return Iterable_Util::every($node->get_children(), fn(Css_Node $child) => $child->accept($this));
     }
-
-    public function visitCssMediaRule(CssMediaRule $node): bool
+    public function visit_css_media_rule(Css_Media_Rule $node): bool
     {
-        return IterableUtil::every($node->getChildren(), fn (CssNode $child) => $child->accept($this));
+        return Iterable_Util::every($node->get_children(), fn(Css_Node $child) => $child->accept($this));
     }
-
-    public function visitCssStyleRule(CssStyleRule $node): bool
+    public function visit_css_style_rule(Css_Style_Rule $node): bool
     {
-        return IterableUtil::every($node->getChildren(), fn (CssNode $child) => $child->accept($this));
+        return Iterable_Util::every($node->get_children(), fn(Css_Node $child) => $child->accept($this));
     }
-
-    public function visitCssStylesheet(CssStylesheet $node): bool
+    public function visit_css_stylesheet(Css_Stylesheet $node): bool
     {
-        return IterableUtil::every($node->getChildren(), fn (CssNode $child) => $child->accept($this));
+        return Iterable_Util::every($node->get_children(), fn(Css_Node $child) => $child->accept($this));
     }
-
-    public function visitCssSupportsRule(CssSupportsRule $node): bool
+    public function visit_css_supports_rule(Css_Supports_Rule $node): bool
     {
-        return IterableUtil::every($node->getChildren(), fn (CssNode $child) => $child->accept($this));
+        return Iterable_Util::every($node->get_children(), fn(Css_Node $child) => $child->accept($this));
     }
 }

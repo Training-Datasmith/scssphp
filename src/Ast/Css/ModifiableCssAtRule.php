@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,73 +10,61 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use ScssPhp\ScssPhp\Visitor\ModifiableCssVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Scss_Php\Scss_Php\Visitor\Modifiable_Css_Visitor;
+use Source_Span\File_Span;
 /**
  * A modifiable version of {@see CssAtRule} for use in the evaluation step.
  *
  * @internal
  */
-final class ModifiableCssAtRule extends ModifiableCssParentNode implements CssAtRule
+final class Modifiable_Css_At_Rule extends Modifiable_Css_Parent_Node implements Css_At_Rule
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param CssValue<string> $name
      * @param CssValue<string>|null $value
      */
-    public function __construct(private readonly CssValue $name, FileSpan $span, private readonly bool $childless = false, private readonly ?CssValue $value = null)
+    public function __construct(private readonly Css_Value $name, File_Span $span, private readonly bool $childless = false, private readonly ?Css_Value $value = null)
     {
         parent::__construct();
         $this->span = $span;
     }
-
-    public function getName(): CssValue
+    public function get_name(): Css_Value
     {
         return $this->name;
     }
-
-    public function getValue(): ?CssValue
+    public function get_value(): ?Css_Value
     {
         return $this->value;
     }
-
-    public function isChildless(): bool
+    public function is_childless(): bool
     {
         return $this->childless;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ModifiableCssVisitor $visitor)
+    public function accept(Modifiable_Css_Visitor $visitor)
     {
-        return $visitor->visitCssAtRule($this);
+        return $visitor->visit_css_at_rule($this);
     }
-
-    public function equalsIgnoringChildren(ModifiableCssNode $other): bool
+    public function equals_ignoring_children(Modifiable_Css_Node $other): bool
     {
-        return $other instanceof ModifiableCssAtRule && EquatableUtil::equals($this->name, $other->name) && EquatableUtil::equals($this->value, $other->value) && $this->childless === $other->childless;
+        return $other instanceof Modifiable_Css_At_Rule && Equatable_Util::equals($this->name, $other->name) && Equatable_Util::equals($this->value, $other->value) && $this->childless === $other->childless;
     }
-
-    public function copyWithoutChildren(): ModifiableCssAtRule
+    public function copy_without_children(): Modifiable_Css_At_Rule
     {
-        return new ModifiableCssAtRule($this->name, $this->span, $this->childless, $this->value);
+        return new Modifiable_Css_At_Rule($this->name, $this->span, $this->childless, $this->value);
     }
-
-    public function addChild(ModifiableCssNode $child): void
+    public function add_child(Modifiable_Css_Node $child): void
     {
         if ($this->childless) {
             throw new \LogicException('Cannot add a child in a childless at-rule.');
         }
-
-        parent::addChild($child);
+        parent::add_child($child);
     }
 }

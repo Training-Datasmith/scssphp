@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Util;
+namespace Scss_Php\Scss_Php\Util;
 
 /**
  * @internal
  */
-final class IterableUtil
+final class Iterable_Util
 {
     /**
      * @template T
@@ -34,10 +32,8 @@ final class IterableUtil
                 return true;
             }
         }
-
         return false;
     }
-
     /**
      * @template T
      *
@@ -53,25 +49,21 @@ final class IterableUtil
                 return false;
             }
         }
-
         return true;
     }
-
     /**
      * @template T
      *
      * @param iterable<T> $iterable
      * @return T|null
      */
-    public static function firstOrNull(iterable $iterable): mixed
+    public static function first_or_null(iterable $iterable): mixed
     {
         foreach ($iterable as $item) {
             return $item;
         }
-
         return null;
     }
-
     /**
      * Returns the first `T` returned by $callback for an element of $iterable,
      * or `null` if it returns `null` for every element.
@@ -89,12 +81,10 @@ final class IterableUtil
     {
         foreach ($iterable as $element) {
             $value = $callback($element);
-
             if ($value !== null) {
                 return $value;
             }
         }
-
         return null;
     }
 }

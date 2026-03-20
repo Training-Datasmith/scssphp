@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,32 +10,34 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Exception;
 
-namespace ScssPhp\ScssPhp\Exception;
-
-use SourceSpan\FileSpan;
-
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class MultiSpanSassScriptException extends SassScriptException
+final class Multi_Span_Sass_Script_Exception extends Sass_Script_Exception
 {
     /**
      * @param array<string, FileSpan> $secondarySpans
      */
-    public function __construct(string $message, /**
-     * {@see MultiSpanSassException::$primaryLabel}
-     */
-        public readonly string $primaryLabel, /**
-     * {@see MultiSpanSassException::$secondarySpans}
-     */
-        public readonly array $secondarySpans, ?\Throwable $previous = null)
+    public function __construct(
+        string $message,
+        /**
+         * {@see MultiSpanSassException::$primaryLabel}
+         */
+        public readonly string $primary_label,
+        /**
+         * {@see MultiSpanSassException::$secondarySpans}
+         */
+        public readonly array $secondary_spans,
+        ?\Throwable $previous = null
+    )
     {
         parent::__construct($message, 0, $previous);
     }
-
-    public function withSpan(FileSpan $span): MultiSpanSassException
+    public function with_span(File_Span $span): Multi_Span_Sass_Exception
     {
-        return new MultiSpanSassException($this->message, $span, $this->primaryLabel, $this->secondarySpans, $this);
+        return new Multi_Span_Sass_Exception($this->message, $span, $this->primary_label, $this->secondary_spans, $this);
     }
 }

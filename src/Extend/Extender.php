@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,14 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Extend;
 
-namespace ScssPhp\ScssPhp\Extend;
-
-use ScssPhp\ScssPhp\Ast\Css\CssMediaQuery;
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelector;
-use ScssPhp\ScssPhp\Exception\SimpleSassException;
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-
+use Scss_Php\Scss_Php\Ast\Css\Css_Media_Query;
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector;
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Exception;
+use Scss_Php\Scss_Php\Util\Equatable_Util;
 /**
  * A selector that's extending another selector, such as `A` in `A {@extend B}`.
  * @internal
@@ -30,50 +27,48 @@ final class Extender
      * extender.
      */
     public readonly int $specificity;
-
-    private function __construct(public readonly ComplexSelector $selector, ?int $specificity = null, /**
-     * Whether this extender represents a selector that was originally in the
-     * document, rather than one defined with `@extend`.
-     */
-        public readonly bool $isOriginal = false, /**
-     * The extension that created this Extender.
-     *
-     * Not all {@see Extender}s are created by extensions. Some simply represent the
-     * original selectors that exist in the document.
-     */
-        private readonly ?Extension $extension = null)
+    private function __construct(
+        public readonly Complex_Selector $selector,
+        ?int $specificity = null,
+        /**
+         * Whether this extender represents a selector that was originally in the
+         * document, rather than one defined with `@extend`.
+         */
+        public readonly bool $is_original = false,
+        /**
+         * The extension that created this Extender.
+         *
+         * Not all {@see Extender}s are created by extensions. Some simply represent the
+         * original selectors that exist in the document.
+         */
+        private readonly ?Extension $extension = null
+    )
     {
-        $this->specificity = $specificity ?? $this->selector->getSpecificity();
+        $this->specificity = $specificity ?? $this->selector->get_specificity();
     }
-
-    public static function create(ComplexSelector $selector, ?int $specificity = null, bool $original = false): self
+    public static function create(Complex_Selector $selector, ?int $specificity = null, bool $original = false): self
     {
         return new Extender($selector, $specificity, $original);
     }
-
-    public static function forExtension(ComplexSelector $selector, Extension $extension): self
+    public static function for_extension(Complex_Selector $selector, Extension $extension): self
     {
         return new Extender($selector, extension: $extension);
     }
-
     /**
      * @param list<CssMediaQuery>|null $mediaContext
      */
-    public function assertCompatibleMediaContext(?array $mediaContext): void
+    public function assert_compatible_media_context(?array $media_context): void
     {
         if ($this->extension === null) {
             return;
         }
-
-        $expectedMediaContext = $this->extension->mediaContext;
-        if ($expectedMediaContext === null) {
+        $expected_media_context = $this->extension->media_context;
+        if ($expected_media_context === null) {
             return;
         }
-
-        if ($mediaContext !== null && EquatableUtil::listEquals($expectedMediaContext, $mediaContext)) {
+        if ($media_context !== null && Equatable_Util::list_equals($expected_media_context, $media_context)) {
             return;
         }
-
-        throw new SimpleSassException('You may not @extend selectors across media queries.', $this->extension->span);
+        throw new Simple_Sass_Exception('You may not @extend selectors across media queries.', $this->extension->span);
     }
 }

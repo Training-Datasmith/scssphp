@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,32 +10,28 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Exception;
 
-namespace ScssPhp\ScssPhp\Exception;
-
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class MultiSpanSassRuntimeException extends MultiSpanSassException implements SassRuntimeException
+final class Multi_Span_Sass_Runtime_Exception extends Multi_Span_Sass_Exception implements Sass_Runtime_Exception
 {
     /**
      * @param array<string, FileSpan> $secondarySpans
      */
-    public function __construct(string $message, FileSpan $span, string $primaryLabel, array $secondarySpans, private readonly Trace $sassTrace, ?\Throwable $previous = null)
+    public function __construct(string $message, File_Span $span, string $primary_label, array $secondary_spans, private readonly Trace $sass_trace, ?\Throwable $previous = null)
     {
-        parent::__construct($message, $span, $primaryLabel, $secondarySpans, $previous);
+        parent::__construct($message, $span, $primary_label, $secondary_spans, $previous);
     }
-
-    public function getSassTrace(): Trace
+    public function get_sass_trace(): Trace
     {
-        return $this->sassTrace;
+        return $this->sass_trace;
     }
-
-    public function withAdditionalSpan(FileSpan $span, string $label, ?\Throwable $previous = null): MultiSpanSassRuntimeException
+    public function with_additional_span(File_Span $span, string $label, ?\Throwable $previous = null): Multi_Span_Sass_Runtime_Exception
     {
-        return new self($this->getOriginalMessage(), $this->getSpan(), $this->primaryLabel, $this->secondarySpans + [$label => $span], $this->sassTrace, $previous);
+        return new self($this->get_original_message(), $this->get_span(), $this->primary_label, $this->secondary_spans + [$label => $span], $this->sass_trace, $previous);
     }
 }

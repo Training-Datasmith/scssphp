@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,40 +10,34 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * A loud CSS-style comment.
  *
  * @internal
  */
-final class LoudComment implements Statement
+final class Loud_Comment implements Statement
 {
     public function __construct(private readonly Interpolation $text)
     {
     }
-
-    public function getText(): Interpolation
+    public function get_text(): Interpolation
     {
         return $this->text;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
-        return $this->text->getSpan();
+        return $this->text->get_span();
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitLoudComment($this);
+        return $visitor->visit_loud_comment($this);
     }
-
     public function __toString(): string
     {
         return (string) $this->text;

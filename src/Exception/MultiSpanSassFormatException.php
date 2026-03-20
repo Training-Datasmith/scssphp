@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,18 +10,16 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Exception;
 
-namespace ScssPhp\ScssPhp\Exception;
-
-use SourceSpan\FileSpan;
-
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class MultiSpanSassFormatException extends MultiSpanSassException implements SassFormatException
+final class Multi_Span_Sass_Format_Exception extends Multi_Span_Sass_Exception implements Sass_Format_Exception
 {
-    public function withAdditionalSpan(FileSpan $span, string $label, ?\Throwable $previous = null): MultiSpanSassFormatException
+    public function with_additional_span(File_Span $span, string $label, ?\Throwable $previous = null): Multi_Span_Sass_Format_Exception
     {
-        return new self($this->getOriginalMessage(), $this->getSpan(), $this->primaryLabel, $this->secondarySpans + [$label => $span], $previous);
+        return new self($this->get_original_message(), $this->get_span(), $this->primary_label, $this->secondary_spans + [$label => $span], $previous);
     }
 }

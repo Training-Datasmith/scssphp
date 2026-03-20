@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,14 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * An `@each` rule.
  *
@@ -28,45 +25,39 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class EachRule extends ParentStatement
+final class Each_Rule extends Parent_Statement
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param list<string> $variables
      * @param Statement[] $children
      */
-    public function __construct(private readonly array $variables, private readonly Expression $list, array $children, FileSpan $span)
+    public function __construct(private readonly array $variables, private readonly Expression $list, array $children, File_Span $span)
     {
         $this->span = $span;
         parent::__construct($children);
     }
-
     /**
      * @return list<string>
      */
-    public function getVariables(): array
+    public function get_variables(): array
     {
         return $this->variables;
     }
-
-    public function getList(): Expression
+    public function get_list(): Expression
     {
         return $this->list;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitEachRule($this);
+        return $visitor->visit_each_rule($this);
     }
-
     public function __toString(): string
     {
-        return '@each ' . implode(', ', array_map(fn (string $variable): string => '$' . $variable, $this->variables)) . ' in ' . $this->list . ' {' . implode(' ', $this->getChildren()) . '}';
+        return '@each ' . implode(', ', array_map(fn(string $variable): string => '$' . $variable, $this->variables)) . ' in ' . $this->list . ' {' . implode(' ', $this->get_children()) . '}';
     }
 }

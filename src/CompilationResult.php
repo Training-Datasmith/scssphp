@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,36 +10,32 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php;
 
-namespace ScssPhp\ScssPhp;
-
-final class CompilationResult
+final class Compilation_Result
 {
     /**
      * @param list<string> $includedFiles
      */
-    public function __construct(private readonly string $css, private readonly ?string $sourceMap, private readonly array $includedFiles)
+    public function __construct(private readonly string $css, private readonly ?string $source_map, private readonly array $included_files)
     {
     }
-
-    public function getCss(): string
+    public function get_css(): string
     {
         return $this->css;
     }
-
     /**
      * @return list<string>
      */
-    public function getIncludedFiles(): array
+    public function get_included_files(): array
     {
-        return $this->includedFiles;
+        return $this->included_files;
     }
-
     /**
      * The sourceMap content, if it was generated
      */
-    public function getSourceMap(): ?string
+    public function get_source_map(): ?string
     {
-        return $this->sourceMap;
+        return $this->source_map;
     }
 }

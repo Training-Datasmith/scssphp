@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,13 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Value;
 
-namespace ScssPhp\ScssPhp\Value;
-
-use JiriPudil\SealedClasses\Sealed;
-
+use Jiri_Pudil\Sealed_Classes\Sealed;
 /**
  * @internal
  */
-#[Sealed(permits: [ColorFormatEnum::class, SpanColorFormat::class])]
-interface ColorFormat
+#[Sealed(permits: [Color_Format_Enum::class, Span_Color_Format::class])]
+interface Color_Format
 {
 }

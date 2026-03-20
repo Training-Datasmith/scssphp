@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,43 +10,36 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Value\SassColor;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Value\Sass_Color;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * A color literal.
  *
  * @internal
  */
-final class ColorExpression implements Expression
+final class Color_Expression implements Expression
 {
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly SassColor $value, FileSpan $span)
+    private readonly File_Span $span;
+    public function __construct(private readonly Sass_Color $value, File_Span $span)
     {
         $this->span = $span;
     }
-
-    public function getValue(): SassColor
+    public function get_value(): Sass_Color
     {
         return $this->value;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitColorExpression($this);
+        return $visitor->visit_color_expression($this);
     }
-
     public function __toString(): string
     {
         return (string) $this->value;

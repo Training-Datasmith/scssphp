@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,17 +10,15 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Logger;
 
-namespace ScssPhp\ScssPhp\Logger;
-
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Exception\SimpleSassException;
-use ScssPhp\ScssPhp\Exception\SimpleSassRuntimeException;
-use ScssPhp\ScssPhp\StackTrace\Trace;
-use SourceSpan\FileSpan;
-use SourceSpan\SourceSpan;
-
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Exception;
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Runtime_Exception;
+use Scss_Php\Scss_Php\Stack_Trace\Trace;
+use Source_Span\File_Span;
+use Source_Span\Source_Span;
 /**
  * A logger that wraps an inner logger to have special handling for
  * deprecation warnings, silencing, making fatal, enabling future, and/or
@@ -29,28 +26,26 @@ use SourceSpan\SourceSpan;
  *
  * @internal
  */
-final class DeprecationProcessingLogger implements LoggerInterface
+final class Deprecation_Processing_Logger implements Logger_Interface
 {
     private const MAX_REPETITIONS = 5;
-
     /**
      * A map of how many times each deprecation has been emitted by this logger.
      *
      * @var array<value-of<Deprecation>, int>
      */
-    private array $warningCounts = [];
-
+    private array $warning_counts = [];
     /**
      * @param Deprecation[] $silenceDeprecations
      * @param Deprecation[] $fatalDeprecations
      * @param Deprecation[] $futureDeprecations
      */
     public function __construct(
-        private readonly LoggerInterface $inner,
+        private readonly Logger_Interface $inner,
         /**
          * Deprecation warnings of these types will be ignored.
          */
-        private readonly array $silenceDeprecations,
+        private readonly array $silence_deprecations,
         /**
          * Deprecation warnings of one of these types will cause an error to be
          * thrown.
@@ -58,58 +53,54 @@ final class DeprecationProcessingLogger implements LoggerInterface
          * Future deprecations in this list will still cause an error even if they
          * are not also in {@see $futureDeprecations}.
          */
-        private readonly array $fatalDeprecations,
+        private readonly array $fatal_deprecations,
         /**
          * Future deprecations that the user has explicitly opted into.
          */
-        private readonly array $futureDeprecations,
-        private readonly bool $limitRepetition = true
-    ) {
+        private readonly array $future_deprecations,
+        private readonly bool $limit_repetition = true
+    )
+    {
     }
-
     /**
      * Warns if any of the deprecations options are incompatible or unnecessary.
      */
     public function validate(): void
     {
-        foreach ($this->fatalDeprecations as $deprecation) {
-            if ($deprecation->isFuture() && !\in_array($deprecation, $this->futureDeprecations, true)) {
-                $this->warn("Future $deprecation->value deprecation must be enabled before it can be made fatal.");
-            } elseif ($deprecation->getObsoleteIn() !== null) {
-                $this->warn("$deprecation->value deprecation is obsolete, so does not need to be made fatal.");
-            } elseif (\in_array($deprecation, $this->silenceDeprecations, true)) {
-                $this->warn("Ignoring setting to silence $deprecation->value deprecation, since it has also been made fatal.");
+        foreach ($this->fatal_deprecations as $deprecation) {
+            if ($deprecation->is_future() && !\in_array($deprecation, $this->future_deprecations, true)) {
+                $this->warn("Future {$deprecation->value} deprecation must be enabled before it can be made fatal.");
+            } elseif ($deprecation->get_obsolete_in() !== null) {
+                $this->warn("{$deprecation->value} deprecation is obsolete, so does not need to be made fatal.");
+            } elseif (\in_array($deprecation, $this->silence_deprecations, true)) {
+                $this->warn("Ignoring setting to silence {$deprecation->value} deprecation, since it has also been made fatal.");
             }
         }
-
-        foreach ($this->silenceDeprecations as $deprecation) {
+        foreach ($this->silence_deprecations as $deprecation) {
             if ($deprecation === Deprecation::userAuthored) {
                 $this->warn('User-authored deprecations should not be silenced.');
-            } elseif ($deprecation->getObsoleteIn() !== null) {
-                $this->warn("$deprecation->value deprecation is obsolete. If you were previously silencing it, your code may now behave in unexpected ways.");
-            } elseif ($deprecation->isFuture() && \in_array($deprecation, $this->futureDeprecations, true)) {
-                $this->warn("Conflicting options for future $deprecation->value deprecation cancel each other out.");
-            } elseif ($deprecation->isFuture()) {
-                $this->warn("Future $deprecation->value deprecation is not yet active, so silencing it is unnecessary.");
+            } elseif ($deprecation->get_obsolete_in() !== null) {
+                $this->warn("{$deprecation->value} deprecation is obsolete. If you were previously silencing it, your code may now behave in unexpected ways.");
+            } elseif ($deprecation->is_future() && \in_array($deprecation, $this->future_deprecations, true)) {
+                $this->warn("Conflicting options for future {$deprecation->value} deprecation cancel each other out.");
+            } elseif ($deprecation->is_future()) {
+                $this->warn("Future {$deprecation->value} deprecation is not yet active, so silencing it is unnecessary.");
             }
         }
-
-        foreach ($this->futureDeprecations as $deprecation) {
-            if (!$deprecation->isFuture()) {
-                $this->warn("$deprecation->value is not a future deprecation, so it does not need to be explicitly enabled.");
+        foreach ($this->future_deprecations as $deprecation) {
+            if (!$deprecation->is_future()) {
+                $this->warn("{$deprecation->value} is not a future deprecation, so it does not need to be explicitly enabled.");
             }
         }
     }
-
-    public function warn(string $message, ?Deprecation $deprecation = null, ?FileSpan $span = null, ?Trace $trace = null): void
+    public function warn(string $message, ?Deprecation $deprecation = null, ?File_Span $span = null, ?Trace $trace = null): void
     {
         if ($deprecation !== null) {
-            $this->handleDeprecation($deprecation, $message, $span, $trace);
+            $this->handle_deprecation($deprecation, $message, $span, $trace);
         } else {
             $this->inner->warn($message, $deprecation, $span, $trace);
         }
     }
-
     /**
      * Processes a deprecation warning.
      *
@@ -121,46 +112,36 @@ final class DeprecationProcessingLogger implements LoggerInterface
      *
      * Otherwise, this is passed on to {@see warn}.
      */
-    private function handleDeprecation(Deprecation $deprecation, string $message, ?FileSpan $span = null, ?Trace $trace = null): void
+    private function handle_deprecation(Deprecation $deprecation, string $message, ?File_Span $span = null, ?Trace $trace = null): void
     {
-        if ($deprecation->isFuture() && !\in_array($deprecation, $this->futureDeprecations, true)) {
+        if ($deprecation->is_future() && !\in_array($deprecation, $this->future_deprecations, true)) {
             return;
         }
-
-        if (\in_array($deprecation, $this->fatalDeprecations, true)) {
+        if (\in_array($deprecation, $this->fatal_deprecations, true)) {
             $message .= "\n\nThis is only an error because you've set the {$deprecation->value} deprecation to be fatal.\nRemove this setting if you need to keep using this feature.";
-
             if ($span !== null && $trace !== null) {
-                throw new SimpleSassRuntimeException($message, $span, $trace);
+                throw new Simple_Sass_Runtime_Exception($message, $span, $trace);
             }
-
             if ($span !== null) {
-                throw new SimpleSassException($message, $span);
+                throw new Simple_Sass_Exception($message, $span);
             }
-
-            throw new SassScriptException($message);
+            throw new Sass_Script_Exception($message);
         }
-
-        if (\in_array($deprecation, $this->silenceDeprecations, true)) {
+        if (\in_array($deprecation, $this->silence_deprecations, true)) {
             return;
         }
-
-        if ($this->limitRepetition) {
-            $count = $this->warningCounts[$deprecation->value] = ($this->warningCounts[$deprecation->value] ?? 0) + 1;
-
+        if ($this->limit_repetition) {
+            $count = $this->warning_counts[$deprecation->value] = ($this->warning_counts[$deprecation->value] ?? 0) + 1;
             if ($count > self::MAX_REPETITIONS) {
                 return;
             }
         }
-
         $this->inner->warn($message, $deprecation, $span, $trace);
     }
-
-    public function debug(string $message, SourceSpan $span): void
+    public function debug(string $message, Source_Span $span): void
     {
         $this->inner->debug($message, $span);
     }
-
     /**
      * Prints a warning indicating the number of deprecation warnings that were
      * omitted due to repetition.
@@ -168,15 +149,13 @@ final class DeprecationProcessingLogger implements LoggerInterface
     public function summarize(): void
     {
         $total = 0;
-
-        foreach ($this->warningCounts as $count) {
+        foreach ($this->warning_counts as $count) {
             if ($count > self::MAX_REPETITIONS) {
                 $total += $count - self::MAX_REPETITIONS;
             }
         }
-
         if ($total > 0) {
-            $this->inner->warn("$total repetitive deprecation warnings omitted.\nRun in verbose mode to see all warnings.");
+            $this->inner->warn("{$total} repetitive deprecation warnings omitted.\nRun in verbose mode to see all warnings.");
         }
     }
 }

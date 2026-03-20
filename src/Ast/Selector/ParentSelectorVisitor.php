@@ -1,11 +1,9 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Visitor\SelectorSearchVisitor;
-
+use Scss_Php\Scss_Php\Visitor\Selector_Search_Visitor;
 /**
  * A visitor for finding the first {@see ParentSelector} in a given selector.
  *
@@ -13,9 +11,9 @@ use ScssPhp\ScssPhp\Visitor\SelectorSearchVisitor;
  *
  * @internal
  */
-final class ParentSelectorVisitor extends SelectorSearchVisitor
+final class Parent_Selector_Visitor extends Selector_Search_Visitor
 {
-    public function visitParentSelector(ParentSelector $selector): ParentSelector
+    public function visit_parent_selector(Parent_Selector $selector): Parent_Selector
     {
         return $selector;
     }

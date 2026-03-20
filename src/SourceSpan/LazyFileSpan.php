@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,25 +10,22 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Source_Span;
 
-namespace ScssPhp\ScssPhp\SourceSpan;
-
-use League\Uri\Contracts\UriInterface;
-use SourceSpan\FileLocation;
-use SourceSpan\FileSpan;
-use SourceSpan\SourceFile;
-use SourceSpan\SourceSpan;
-
+use League\Uri\Contracts\Uri_Interface;
+use Source_Span\File_Location;
+use Source_Span\File_Span;
+use Source_Span\Source_File;
+use Source_Span\Source_Span;
 /**
  * A wrapper for {@see FileSpan} that allows an expensive creation process to be
  * deferred until the span is actually needed.
  *
  * @internal
  */
-class LazyFileSpan implements FileSpan
+class Lazy_File_Span implements File_Span
 {
-    private ?FileSpan $span = null;
-
+    private ?File_Span $span = null;
     /**
      * @param \Closure(): FileSpan $builder
      */
@@ -38,90 +34,74 @@ class LazyFileSpan implements FileSpan
          * @readonly
          */
         private readonly \Closure $builder
-    ) {
+    )
+    {
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         if ($this->span === null) {
             $this->span = ($this->builder)();
         }
-
         return $this->span;
     }
-
-    public function getFile(): SourceFile
+    public function get_file(): Source_File
     {
-        return $this->getSpan()->getFile();
+        return $this->get_span()->get_file();
     }
-
-    public function getSourceUrl(): ?UriInterface
+    public function get_source_url(): ?Uri_Interface
     {
-        return $this->getSpan()->getSourceUrl();
+        return $this->get_span()->get_source_url();
     }
-
-    public function getLength(): int
+    public function get_length(): int
     {
-        return $this->getSpan()->getLength();
+        return $this->get_span()->get_length();
     }
-
-    public function getStart(): FileLocation
+    public function get_start(): File_Location
     {
-        return $this->getSpan()->getStart();
+        return $this->get_span()->get_start();
     }
-
-    public function getEnd(): FileLocation
+    public function get_end(): File_Location
     {
-        return $this->getSpan()->getEnd();
+        return $this->get_span()->get_end();
     }
-
-    public function getText(): string
+    public function get_text(): string
     {
-        return $this->getSpan()->getText();
+        return $this->get_span()->get_text();
     }
-
-    public function union(SourceSpan $other): SourceSpan
+    public function union(Source_Span $other): Source_Span
     {
-        return $this->getSpan()->union($other);
+        return $this->get_span()->union($other);
     }
-
-    public function compareTo(SourceSpan $other): int
+    public function compare_to(Source_Span $other): int
     {
-        return $this->getSpan()->compareTo($other);
+        return $this->get_span()->compare_to($other);
     }
-
-    public function expand(FileSpan $other): FileSpan
+    public function expand(File_Span $other): File_Span
     {
-        return $this->getSpan()->expand($other);
+        return $this->get_span()->expand($other);
     }
-
     public function message(string $message): string
     {
-        return $this->getSpan()->message($message);
+        return $this->get_span()->message($message);
     }
-
-    public function messageMultiple(string $message, string $label, array $secondarySpans): string
+    public function message_multiple(string $message, string $label, array $secondary_spans): string
     {
-        return $this->getSpan()->messageMultiple($message, $label, $secondarySpans);
+        return $this->get_span()->message_multiple($message, $label, $secondary_spans);
     }
-
     public function highlight(): string
     {
-        return $this->getSpan()->highlight();
+        return $this->get_span()->highlight();
     }
-
-    public function highlightMultiple(string $label, array $secondarySpans): string
+    public function highlight_multiple(string $label, array $secondary_spans): string
     {
-        return $this->getSpan()->highlightMultiple($label, $secondarySpans);
+        return $this->get_span()->highlight_multiple($label, $secondary_spans);
     }
-
-    public function subspan(int $start, ?int $end = null): FileSpan
+    public function subspan(int $start, ?int $end = null): File_Span
     {
-        return $this->getSpan()->subspan($start, $end);
+        return $this->get_span()->subspan($start, $end);
     }
-
-    public function getContext(): string
+    public function get_context(): string
     {
-        return $this->getSpan()->getContext();
+        return $this->get_span()->get_context();
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,53 +10,45 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use ScssPhp\ScssPhp\Visitor\ModifiableCssVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Scss_Php\Scss_Php\Visitor\Modifiable_Css_Visitor;
+use Source_Span\File_Span;
 /**
  * A modifiable version of {@see CssSupportsRule} for use in the evaluation step.
  *
  * @internal
  */
-final class ModifiableCssSupportsRule extends ModifiableCssParentNode implements CssSupportsRule
+final class Modifiable_Css_Supports_Rule extends Modifiable_Css_Parent_Node implements Css_Supports_Rule
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param CssValue<string> $condition
      */
-    public function __construct(private readonly CssValue $condition, FileSpan $span)
+    public function __construct(private readonly Css_Value $condition, File_Span $span)
     {
         parent::__construct();
         $this->span = $span;
     }
-
-    public function getCondition(): CssValue
+    public function get_condition(): Css_Value
     {
         return $this->condition;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ModifiableCssVisitor $visitor)
+    public function accept(Modifiable_Css_Visitor $visitor)
     {
-        return $visitor->visitCssSupportsRule($this);
+        return $visitor->visit_css_supports_rule($this);
     }
-
-    public function equalsIgnoringChildren(ModifiableCssNode $other): bool
+    public function equals_ignoring_children(Modifiable_Css_Node $other): bool
     {
-        return $other instanceof ModifiableCssSupportsRule && EquatableUtil::equals($this->condition, $other->condition);
+        return $other instanceof Modifiable_Css_Supports_Rule && Equatable_Util::equals($this->condition, $other->condition);
     }
-
-    public function copyWithoutChildren(): ModifiableCssSupportsRule
+    public function copy_without_children(): Modifiable_Css_Supports_Rule
     {
-        return new ModifiableCssSupportsRule($this->condition, $this->span);
+        return new Modifiable_Css_Supports_Rule($this->condition, $this->span);
     }
 }

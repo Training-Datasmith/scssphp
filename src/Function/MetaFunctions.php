@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,88 +10,78 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Function;
 
-namespace ScssPhp\ScssPhp\Function;
-
-use ScssPhp\ScssPhp\Collection\Map;
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Value\SassArgumentList;
-use ScssPhp\ScssPhp\Value\SassBoolean;
-use ScssPhp\ScssPhp\Value\SassCalculation;
-use ScssPhp\ScssPhp\Value\SassColor;
-use ScssPhp\ScssPhp\Value\SassFunction;
-use ScssPhp\ScssPhp\Value\SassList;
-use ScssPhp\ScssPhp\Value\SassMap;
-use ScssPhp\ScssPhp\Value\SassMixin;
-use ScssPhp\ScssPhp\Value\SassNull;
-use ScssPhp\ScssPhp\Value\SassNumber;
-use ScssPhp\ScssPhp\Value\SassString;
-use ScssPhp\ScssPhp\Value\Value;
-use ScssPhp\ScssPhp\Warn;
-
+use Scss_Php\Scss_Php\Collection\Map;
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Value\Sass_Argument_List;
+use Scss_Php\Scss_Php\Value\Sass_Boolean;
+use Scss_Php\Scss_Php\Value\Sass_Calculation;
+use Scss_Php\Scss_Php\Value\Sass_Color;
+use Scss_Php\Scss_Php\Value\Sass_Function;
+use Scss_Php\Scss_Php\Value\Sass_List;
+use Scss_Php\Scss_Php\Value\Sass_Map;
+use Scss_Php\Scss_Php\Value\Sass_Mixin;
+use Scss_Php\Scss_Php\Value\Sass_Null;
+use Scss_Php\Scss_Php\Value\Sass_Number;
+use Scss_Php\Scss_Php\Value\Sass_String;
+use Scss_Php\Scss_Php\Value\Value;
+use Scss_Php\Scss_Php\Warn;
 /**
  * @internal
  */
-final class MetaFunctions
+final class Meta_Functions
 {
     /**
      * @param list<Value> $arguments
      */
-    public static function featureExists(array $arguments): \ScssPhp\ScssPhp\Value\SassBoolean
+    public static function feature_exists(array $arguments): \Scss_Php\Scss_Php\Value\Sass_Boolean
     {
-        Warn::forDeprecation("The feature-exists() function is deprecated.\n\nMore info: https://sass-lang.com/d/feature-exists", Deprecation::featureExists);
-
-        $feature = $arguments[0]->assertString('feature');
-
-        return SassBoolean::create(\in_array($feature->getText(), ['global-variable-shadowing', 'extend-selector-pseudoclass', 'units-level-3', 'at-error', 'custom-property'], true));
+        Warn::for_deprecation("The feature-exists() function is deprecated.\n\nMore info: https://sass-lang.com/d/feature-exists", Deprecation::featureExists);
+        $feature = $arguments[0]->assert_string('feature');
+        return Sass_Boolean::create(\in_array($feature->get_text(), ['global-variable-shadowing', 'extend-selector-pseudoclass', 'units-level-3', 'at-error', 'custom-property'], true));
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function inspect(array $arguments): \ScssPhp\ScssPhp\Value\SassString
+    public static function inspect(array $arguments): \Scss_Php\Scss_Php\Value\Sass_String
     {
-        return new SassString((string) $arguments[0], false);
+        return new Sass_String((string) $arguments[0], false);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function typeof(array $arguments): \ScssPhp\ScssPhp\Value\SassString
+    public static function typeof(array $arguments): \Scss_Php\Scss_Php\Value\Sass_String
     {
         $value = $arguments[0];
-
-        return new SassString(match (true) {
-            $value instanceof SassArgumentList => 'arglist',
-            $value instanceof SassBoolean => 'bool',
-            $value instanceof SassColor => 'color',
-            $value instanceof SassList => 'list',
-            $value instanceof SassMap => 'map',
-            $value instanceof SassNull => 'null',
-            $value instanceof SassNumber => 'number',
-            $value instanceof SassFunction => 'function',
-            $value instanceof SassMixin => 'mixin',
-            $value instanceof SassCalculation => 'calculation',
-            $value instanceof SassString => 'string',
-            default => throw new SassScriptException("[BUG] Unknown value type $value"),
+        return new Sass_String(match (true) {
+            $value instanceof Sass_Argument_List => 'arglist',
+            $value instanceof Sass_Boolean => 'bool',
+            $value instanceof Sass_Color => 'color',
+            $value instanceof Sass_List => 'list',
+            $value instanceof Sass_Map => 'map',
+            $value instanceof Sass_Null => 'null',
+            $value instanceof Sass_Number => 'number',
+            $value instanceof Sass_Function => 'function',
+            $value instanceof Sass_Mixin => 'mixin',
+            $value instanceof Sass_Calculation => 'calculation',
+            $value instanceof Sass_String => 'string',
+            default => throw new Sass_Script_Exception("[BUG] Unknown value type {$value}"),
         }, false);
     }
-
     /**
      * @param list<Value> $arguments
      */
-    public static function keywords(array $arguments): \ScssPhp\ScssPhp\Value\SassMap
+    public static function keywords(array $arguments): \Scss_Php\Scss_Php\Value\Sass_Map
     {
-        if ($arguments[0] instanceof SassArgumentList) {
+        if ($arguments[0] instanceof Sass_Argument_List) {
             $map = new Map();
-            foreach ($arguments[0]->getKeywords() as $key => $value) {
-                $map->put(new SassString($key, false), $value);
+            foreach ($arguments[0]->get_keywords() as $key => $value) {
+                $map->put(new Sass_String($key, false), $value);
             }
-
-            return SassMap::create($map);
+            return Sass_Map::create($map);
         }
-
-        throw SassScriptException::forArgument("$arguments[0] is not an argument list.", 'args');
+        throw Sass_Script_Exception::for_argument("{$arguments[0]} is not an argument list.", 'args');
     }
 }

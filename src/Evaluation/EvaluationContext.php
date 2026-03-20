@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,34 +10,29 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Evaluation;
 
-namespace ScssPhp\ScssPhp\Evaluation;
-
-use ScssPhp\ScssPhp\Deprecation;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Deprecation;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-abstract class EvaluationContext
+abstract class Evaluation_Context
 {
-    private static ?EvaluationContext $evaluationContext = null;
-
+    private static ?Evaluation_Context $evaluation_context = null;
     /**
      * The current evaluation context.
      *
      * @throws \LogicException if there isn't a Sass stylesheet currently being
      * evaluated.
      */
-    public static function getCurrent(): EvaluationContext
+    public static function get_current(): Evaluation_Context
     {
-        if (self::$evaluationContext !== null) {
-            return self::$evaluationContext;
+        if (self::$evaluation_context !== null) {
+            return self::$evaluation_context;
         }
-
         throw new \LogicException('No Sass stylesheet is currently being evaluated.');
     }
-
     /**
      * Runs $callback with $context as {@see EvaluationContext::getCurrent()}.
      *
@@ -50,18 +44,16 @@ abstract class EvaluationContext
      *
      * @param-immediately-invoked-callable $callback
      */
-    public static function withEvaluationContext(EvaluationContext $context, callable $callback)
+    public static function with_evaluation_context(Evaluation_Context $context, callable $callback)
     {
-        $oldContext = self::$evaluationContext;
-        self::$evaluationContext = $context;
-
+        $old_context = self::$evaluation_context;
+        self::$evaluation_context = $context;
         try {
             return $callback();
         } finally {
-            self::$evaluationContext = $oldContext;
+            self::$evaluation_context = $old_context;
         }
     }
-
     /**
      * Returns the span for the currently executing callable.
      *
@@ -71,8 +63,7 @@ abstract class EvaluationContext
      *
      * @throws \LogicException if there isn't a callable being invoked.
      */
-    abstract public function getCurrentCallableSpan(): FileSpan;
-
+    abstract public function get_current_callable_span(): File_Span;
     /**
      * Prints a warning message associated with the current `@import` or function
      * call.

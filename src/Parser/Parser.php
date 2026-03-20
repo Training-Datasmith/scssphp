@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,183 +10,161 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use League\Uri\Contracts\UriInterface;
-use ScssPhp\ScssPhp\Exception\MultiSpanSassFormatException;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Exception\SimpleSassFormatException;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
-use ScssPhp\ScssPhp\Logger\QuietLogger;
-use ScssPhp\ScssPhp\SourceSpan\LazyFileSpan;
-use ScssPhp\ScssPhp\Util\Character;
-use ScssPhp\ScssPhp\Util\ParserUtil;
-use SourceSpan\FileLocation;
-use SourceSpan\FileSpan;
-
+use League\Uri\Contracts\Uri_Interface;
+use Scss_Php\Scss_Php\Exception\Multi_Span_Sass_Format_Exception;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
+use Scss_Php\Scss_Php\Exception\Simple_Sass_Format_Exception;
+use Scss_Php\Scss_Php\Logger\Logger_Interface;
+use Scss_Php\Scss_Php\Logger\Quiet_Logger;
+use Scss_Php\Scss_Php\Source_Span\Lazy_File_Span;
+use Scss_Php\Scss_Php\Util\Character;
+use Scss_Php\Scss_Php\Util\Parser_Util;
+use Source_Span\File_Location;
+use Source_Span\File_Span;
 /**
  * @internal
  */
 class Parser
 {
-    protected readonly StringScanner $scanner;
-
+    protected readonly String_Scanner $scanner;
     /**
      * Parses $text as a CSS identifier and returns the result.
      *
      * @throws SassFormatException if parsing fails.
      */
-    public static function parseIdentifier(string $text, ?LoggerInterface $logger = null): string
+    public static function parse_identifier(string $text, ?Logger_Interface $logger = null): string
     {
-        return (new Parser($text, $logger))->doParseIdentifier();
+        return (new Parser($text, $logger))->do_parse_identifier();
     }
-
     /**
      * Returns whether $text is a valid CSS identifier.
      */
-    public static function isIdentifier(string $text, ?LoggerInterface $logger = null): bool
+    public static function is_identifier(string $text, ?Logger_Interface $logger = null): bool
     {
         try {
-            self::parseIdentifier($text, $logger);
-
+            self::parse_identifier($text, $logger);
             return true;
-        } catch (SassFormatException) {
+        } catch (Sass_Format_Exception) {
             return false;
         }
     }
-
-    public function __construct(string $contents, protected readonly ?LoggerInterface $logger = new QuietLogger(), ?UriInterface $sourceUrl = null, /**
-     * A map used to map source spans in the text being parsed back to their
-     * original locations in the source file, if this isn't being parsed directly
-     * from source.
-     */
-        private readonly ?InterpolationMap $interpolationMap = null)
+    public function __construct(
+        string $contents,
+        protected readonly ?Logger_Interface $logger = new Quiet_Logger(),
+        ?Uri_Interface $source_url = null,
+        /**
+         * A map used to map source spans in the text being parsed back to their
+         * original locations in the source file, if this isn't being parsed directly
+         * from source.
+         */
+        private readonly ?Interpolation_Map $interpolation_map = null
+    )
     {
-        $this->scanner = new StringScanner($contents, $sourceUrl);
+        $this->scanner = new String_Scanner($contents, $source_url);
     }
-
     /**
      * @throws SassFormatException
      */
-    private function doParseIdentifier(): string
+    private function do_parse_identifier(): string
     {
-        return $this->wrapSpanFormatException(function (): string {
+        return $this->wrap_span_format_exception(function (): string {
             $result = $this->identifier();
-            $this->scanner->expectDone();
-
+            $this->scanner->expect_done();
             return $result;
         });
     }
-
     /**
      * Consumes whitespace, including any comments.
      */
     protected function whitespace(): void
     {
         do {
-            $this->whitespaceWithoutComments();
-        } while ($this->scanComment());
+            $this->whitespace_without_comments();
+        } while ($this->scan_comment());
     }
-
     /**
      * Consumes whitespace, but not comments.
      */
-    protected function whitespaceWithoutComments(): void
+    protected function whitespace_without_comments(): void
     {
-        while (!$this->scanner->isDone() && Character::isWhitespace($this->scanner->peekChar())) {
-            $this->scanner->readChar();
+        while (!$this->scanner->is_done() && Character::is_whitespace($this->scanner->peek_char())) {
+            $this->scanner->read_char();
         }
     }
-
     /**
      * Consumes spaces and tabs.
      */
     protected function spaces(): void
     {
-        while (!$this->scanner->isDone() && Character::isSpaceOrTab($this->scanner->peekChar())) {
-            $this->scanner->readChar();
+        while (!$this->scanner->is_done() && Character::is_space_or_tab($this->scanner->peek_char())) {
+            $this->scanner->read_char();
         }
     }
-
     /**
      * Consumes and ignores a comment if possible.
      *
      * Returns whether the comment was consumed.
      */
-    protected function scanComment(): bool
+    protected function scan_comment(): bool
     {
-        if ($this->scanner->peekChar() !== '/') {
+        if ($this->scanner->peek_char() !== '/') {
             return false;
         }
-
-        $next = $this->scanner->peekChar(1);
-
+        $next = $this->scanner->peek_char(1);
         if ($next === '/') {
-            return $this->silentComment();
+            return $this->silent_comment();
         }
-
         if ($next === '*') {
-            $this->loudComment();
+            $this->loud_comment();
             return true;
         }
-
         return false;
     }
-
     /**
      * Like {@see whitespace}, but throws an error if no whitespace is consumed.
      */
-    protected function expectWhitespace(): void
+    protected function expect_whitespace(): void
     {
-        if ($this->scanner->isDone() || !(Character::isWhitespace($this->scanner->peekChar()) || $this->scanComment())) {
+        if ($this->scanner->is_done() || !(Character::is_whitespace($this->scanner->peek_char()) || $this->scan_comment())) {
             $this->scanner->error('Expected whitespace.');
         }
-
         $this->whitespace();
     }
-
     /**
      * Consumes and ignores a single silent (Sass-style) comment, not including
      * the trailing newline.
      *
      * Returns whether the comment was consumed.
      */
-    protected function silentComment(): bool
+    protected function silent_comment(): bool
     {
         $this->scanner->expect('//');
-
-        while (!$this->scanner->isDone() && !Character::isNewline($this->scanner->peekChar())) {
-            $this->scanner->readChar();
+        while (!$this->scanner->is_done() && !Character::is_newline($this->scanner->peek_char())) {
+            $this->scanner->read_char();
         }
-
         return true;
     }
-
     /**
      * Consumes and ignores a loud (CSS-style) comment.
      */
-    protected function loudComment(): void
+    protected function loud_comment(): void
     {
         $this->scanner->expect('/*');
-
         while (true) {
-            $next = $this->scanner->readChar();
-
+            $next = $this->scanner->read_char();
             if ($next !== '*') {
                 continue;
             }
-
             do {
-                $next = $this->scanner->readChar();
+                $next = $this->scanner->read_char();
             } while ($next === '*');
-
             if ($next === '/') {
                 break;
             }
         }
     }
-
     /**
      * Consumes a plain CSS identifier.
      *
@@ -200,85 +177,67 @@ class Parser
     protected function identifier(bool $normalize = false, bool $unit = false): string
     {
         $text = '';
-
-        if ($this->scanner->scanChar('-')) {
+        if ($this->scanner->scan_char('-')) {
             $text .= '-';
-
-            if ($this->scanner->scanChar('-')) {
+            if ($this->scanner->scan_char('-')) {
                 $text .= '-';
-
-                return $text . $this->consumeIdentifierBody($normalize, $unit);
+                return $text . $this->consume_identifier_body($normalize, $unit);
             }
         }
-
-        $first = $this->scanner->peekChar();
-
+        $first = $this->scanner->peek_char();
         if ($first === null) {
             $this->scanner->error('Expected identifier.');
         }
-
         if ($normalize && $first === '_') {
-            $this->scanner->readChar();
+            $this->scanner->read_char();
             $text .= '-';
-        } elseif (Character::isNameStart($first)) {
-            $text .= $this->scanner->readUtf8Char();
+        } elseif (Character::is_name_start($first)) {
+            $text .= $this->scanner->read_utf8char();
         } elseif ($first === '\\') {
             $text .= $this->escape(true);
         } else {
             $this->scanner->error('Expected identifier.');
         }
-
-        return $text . $this->consumeIdentifierBody($normalize, $unit);
+        return $text . $this->consume_identifier_body($normalize, $unit);
     }
-
     /**
      * Consumes a chunk of a plain CSS identifier after the name start.
      */
-    public function identifierBody(): string
+    public function identifier_body(): string
     {
-        $text = $this->consumeIdentifierBody();
-
+        $text = $this->consume_identifier_body();
         if ($text === '') {
             $this->scanner->error('Expected identifier body.');
         }
-
         return $text;
     }
-
-    private function consumeIdentifierBody(bool $normalize = false, bool $unit = false): string
+    private function consume_identifier_body(bool $normalize = false, bool $unit = false): string
     {
         $text = '';
-
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === null) {
                 break;
             }
-
             if ($unit && $next === '-') {
-                $second = $this->scanner->peekChar(1);
-
-                if ($second !== null && ($second === '.' || Character::isDigit($second))) {
+                $second = $this->scanner->peek_char(1);
+                if ($second !== null && ($second === '.' || Character::is_digit($second))) {
                     break;
                 }
-
-                $text .= $this->scanner->readChar();
+                $text .= $this->scanner->read_char();
             } elseif ($normalize && $next === '_') {
-                $this->scanner->readChar();
+                $this->scanner->read_char();
                 $text .= '-';
-            } elseif (Character::isName($next)) {
-                $text .= $this->scanner->readUtf8Char();
+            } elseif (Character::is_name($next)) {
+                $text .= $this->scanner->read_utf8char();
             } elseif ($next === '\\') {
                 $text .= $this->escape();
             } else {
                 break;
             }
         }
-
         return $text;
     }
-
     /**
      * Consumes a plain CSS string.
      *
@@ -287,322 +246,258 @@ class Parser
      */
     protected function string(): string
     {
-        $quote = $this->scanner->readChar();
-
+        $quote = $this->scanner->read_char();
         if ($quote !== '"' && $quote !== "'") {
             $this->scanner->error('Expected string.');
         }
-
         $buffer = '';
-
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === $quote) {
-                $this->scanner->readChar();
+                $this->scanner->read_char();
                 break;
             }
-
-            if ($next === null || Character::isNewline($next)) {
-                $this->scanner->error("Expected $quote.");
+            if ($next === null || Character::is_newline($next)) {
+                $this->scanner->error("Expected {$quote}.");
             }
-
             if ($next === '\\') {
-                $second = $this->scanner->peekChar(1);
-
-                if ($second !== null && Character::isNewline($second)) {
-                    $this->scanner->readChar();
-                    $this->scanner->readChar();
+                $second = $this->scanner->peek_char(1);
+                if ($second !== null && Character::is_newline($second)) {
+                    $this->scanner->read_char();
+                    $this->scanner->read_char();
                 } else {
-                    $buffer .= $this->escapeCharacter();
+                    $buffer .= $this->escape_character();
                 }
             } else {
-                $buffer .= $this->scanner->readUtf8Char();
+                $buffer .= $this->scanner->read_utf8char();
             }
         }
-
         return $buffer;
     }
-
     /**
      * Consumes and returns a natural number (that is, a non-negative integer) as a double.
      *
      * Doesn't support scientific notation.
      */
-    protected function naturalNumber(): float
+    protected function natural_number(): float
     {
-        $first = $this->scanner->readChar();
-
-        if (!Character::isDigit($first)) {
-            $this->scanner->error('Expected digit.', $this->scanner->getPosition() - 1);
+        $first = $this->scanner->read_char();
+        if (!Character::is_digit($first)) {
+            $this->scanner->error('Expected digit.', $this->scanner->get_position() - 1);
         }
-
         $number = (float) intval($first);
-
-        while (Character::isDigit($this->scanner->peekChar())) {
+        while (Character::is_digit($this->scanner->peek_char())) {
             $number *= 10;
-            $number += intval($this->scanner->readChar());
+            $number += intval($this->scanner->read_char());
         }
-
         return $number;
     }
-
     /**
      * Consumes tokens until it reaches a top-level `";"`, `")"`, `"]"`,
      * or `"}"` and returns their contents as a string.
      *
      * If $allowEmpty is `false` (the default), this requires at least one token.
      */
-    protected function declarationValue(bool $allowEmpty = false): string
+    protected function declaration_value(bool $allow_empty = false): string
     {
         $buffer = '';
         $brackets = [];
-        $wroteNewline = false;
-
+        $wrote_newline = false;
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === null) {
                 break;
             }
-
             switch ($next) {
                 case '\\':
                     $buffer .= $this->escape(true);
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 case '"':
                 case "'":
-                    $buffer .= $this->rawText($this->string(...));
-                    $wroteNewline = false;
+                    $buffer .= $this->raw_text($this->string(...));
+                    $wrote_newline = false;
                     break;
-
                 case '/':
-                    if ($this->scanner->peekChar(1) === '*') {
-                        $buffer .= $this->rawText($this->loudComment(...));
+                    if ($this->scanner->peek_char(1) === '*') {
+                        $buffer .= $this->raw_text($this->loud_comment(...));
                     } else {
-                        $buffer .= $this->scanner->readChar();
+                        $buffer .= $this->scanner->read_char();
                     }
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 case ' ':
                 case "\t":
-                    $second = $this->scanner->peekChar(1);
-                    if ($wroteNewline || $second === null || !Character::isWhitespace($second)) {
+                    $second = $this->scanner->peek_char(1);
+                    if ($wrote_newline || $second === null || !Character::is_whitespace($second)) {
                         $buffer .= ' ';
                     }
-                    $this->scanner->readChar();
+                    $this->scanner->read_char();
                     break;
-
                 case "\n":
                 case "\r":
                 case "\f":
-                    $prev = $this->scanner->peekChar(-1);
-                    if ($prev === null || !Character::isNewline($prev)) {
+                    $prev = $this->scanner->peek_char(-1);
+                    if ($prev === null || !Character::is_newline($prev)) {
                         $buffer .= "\n";
                     }
-                    $this->scanner->readChar();
-                    $wroteNewline = true;
+                    $this->scanner->read_char();
+                    $wrote_newline = true;
                     break;
-
                 case '(':
                 case '{':
                 case '[':
                     $buffer .= $next;
-                    $brackets[] = Character::opposite($this->scanner->readChar());
-                    $wroteNewline = false;
+                    $brackets[] = Character::opposite($this->scanner->read_char());
+                    $wrote_newline = false;
                     break;
-
                 case ')':
                 case '}':
                 case ']':
                     if (empty($brackets)) {
                         break 2;
                     }
-
                     $buffer .= $next;
-                    $this->scanner->expectChar(array_pop($brackets));
-                    $wroteNewline = false;
+                    $this->scanner->expect_char(array_pop($brackets));
+                    $wrote_newline = false;
                     break;
-
                 case ';':
                     if (empty($brackets)) {
                         break 2;
                     }
-
-                    $buffer .= $this->scanner->readChar();
+                    $buffer .= $this->scanner->read_char();
                     break;
-
                 case 'u':
                 case 'U':
-                    $url = $this->tryUrl();
-
+                    $url = $this->try_url();
                     if ($url !== null) {
                         $buffer .= $url;
                     } else {
-                        $buffer .= $this->scanner->readChar();
+                        $buffer .= $this->scanner->read_char();
                     }
-
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 default:
-                    if ($this->lookingAtIdentifier()) {
+                    if ($this->looking_at_identifier()) {
                         $buffer .= $this->identifier();
                     } else {
-                        $buffer .= $this->scanner->readUtf8Char();
+                        $buffer .= $this->scanner->read_utf8char();
                     }
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
             }
         }
-
         if (!empty($brackets)) {
-            $this->scanner->expectChar(array_pop($brackets));
+            $this->scanner->expect_char(array_pop($brackets));
         }
-
-        if (!$allowEmpty && $buffer === '') {
+        if (!$allow_empty && $buffer === '') {
             $this->scanner->error('Expected token.');
         }
-
         return $buffer;
     }
-
     /**
      * Consumes a `url()` token if possible, and returns `null` otherwise.
      */
-    protected function tryUrl(): ?string
+    protected function try_url(): ?string
     {
-        $start = $this->scanner->getPosition();
-
-        if (!$this->scanIdentifier('url')) {
+        $start = $this->scanner->get_position();
+        if (!$this->scan_identifier('url')) {
             return null;
         }
-
-        if (!$this->scanner->scanChar('(')) {
-            $this->scanner->setPosition($start);
-
+        if (!$this->scanner->scan_char('(')) {
+            $this->scanner->set_position($start);
             return null;
         }
-
         $this->whitespace();
-
         $buffer = 'url(';
-
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === null) {
                 break;
             }
-
-            $nextCharCode = \ord($next);
-
+            $next_char_code = \ord($next);
             if ($next === '\\') {
                 $buffer .= $this->escape();
-            } elseif ($next === '%' || $next === '&' || $next === '#' || ($nextCharCode >= \ord('*') && $nextCharCode <= \ord('~')) || $nextCharCode >= 0x80) {
-                $buffer .= $this->scanner->readUtf8Char();
-            } elseif (Character::isWhitespace($next)) {
+            } elseif ($next === '%' || $next === '&' || $next === '#' || $next_char_code >= \ord('*') && $next_char_code <= \ord('~') || $next_char_code >= 0x80) {
+                $buffer .= $this->scanner->read_utf8char();
+            } elseif (Character::is_whitespace($next)) {
                 $this->whitespace();
-
-                if ($this->scanner->peekChar() !== ')') {
+                if ($this->scanner->peek_char() !== ')') {
                     break;
                 }
             } elseif ($next === ')') {
-                return $buffer . $this->scanner->readChar();
+                return $buffer . $this->scanner->read_char();
             } else {
                 break;
             }
         }
-
-        $this->scanner->setPosition($start);
-
+        $this->scanner->set_position($start);
         return null;
     }
-
     /**
      * Consumes a Sass variable name, and returns its name without the dollar sign.
      */
-    protected function variableName(): string
+    protected function variable_name(): string
     {
-        $this->scanner->expectChar('$');
-
+        $this->scanner->expect_char('$');
         return $this->identifier(true);
     }
-
     /**
      * Consumes an escape sequence and returns the text that defines it.
      *
      * If $identifierStart is true, this normalizes the escape sequence as
      * though it were at the beginning of an identifier.
      */
-    protected function escape(bool $identifierStart = false): string
+    protected function escape(bool $identifier_start = false): string
     {
-        $start = $this->scanner->getPosition();
-
-        $this->scanner->expectChar('\\');
-
-        $first = $this->scanner->peekChar();
-
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('\\');
+        $first = $this->scanner->peek_char();
         if ($first === null) {
             $this->scanner->error('Expected escape sequence.');
         }
-
-        if (Character::isNewline($first)) {
+        if (Character::is_newline($first)) {
             $this->scanner->error('Expected escape sequence.');
         }
-
-        if (Character::isHex($first)) {
+        if (Character::is_hex($first)) {
             $value = 0;
             for ($i = 0; $i < 6; $i++) {
-                $next = $this->scanner->peekChar();
-
-                if ($next === null || !Character::isHex($next)) {
+                $next = $this->scanner->peek_char();
+                if ($next === null || !Character::is_hex($next)) {
                     break;
                 }
-
                 $value *= 16;
-                $value += hexdec($this->scanner->readChar());
+                $value += hexdec($this->scanner->read_char());
                 assert(\is_int($value));
             }
-
-            $this->scanCharIf(Character::isWhitespace(...));
-            $valueText = mb_chr($value, 'UTF-8');
+            $this->scan_char_if(Character::is_whitespace(...));
+            $value_text = mb_chr($value, 'UTF-8');
         } else {
-            $valueText = $this->scanner->readUtf8Char();
-            $value = mb_ord($valueText, 'UTF-8');
+            $value_text = $this->scanner->read_utf8char();
+            $value = mb_ord($value_text, 'UTF-8');
         }
-
-        if ($valueText === false) {
-            $this->scanner->error('Invalid Unicode code point.', $start, $this->scanner->getPosition() - $start);
+        if ($value_text === false) {
+            $this->scanner->error('Invalid Unicode code point.', $start, $this->scanner->get_position() - $start);
         }
-
-        if ($identifierStart ? Character::isNameStart($valueText) : Character::isName($valueText)) {
+        if ($identifier_start ? Character::is_name_start($value_text) : Character::is_name($value_text)) {
             if ($value > 0x10ffff) {
-                $this->scanner->error('Invalid Unicode code point.', $start, $this->scanner->getPosition() - $start);
+                $this->scanner->error('Invalid Unicode code point.', $start, $this->scanner->get_position() - $start);
             }
-
-            return $valueText;
+            return $value_text;
         }
-
-        if ($value <= 0x1f || $valueText === "\x7f" || ($identifierStart && Character::isDigit($valueText))) {
-            $hexValueText = $value === 0 ? '0' : ltrim(bin2hex($valueText), '0');
-            return '\\' . $hexValueText . ' ';
+        if ($value <= 0x1f || $value_text === "" || $identifier_start && Character::is_digit($value_text)) {
+            $hex_value_text = $value === 0 ? '0' : ltrim(bin2hex($value_text), '0');
+            return '\\' . $hex_value_text . ' ';
         }
-
-        return '\\' . $valueText;
+        return '\\' . $value_text;
     }
-
     /**
      * Consumes an escape sequence and returns the character it represents.
      */
-    protected function escapeCharacter(): string
+    protected function escape_character(): string
     {
-        return ParserUtil::consumeEscapedCharacter($this->scanner);
+        return Parser_Util::consume_escaped_character($this->scanner);
     }
-
     /**
      * @param callable(string): bool $condition
      *
@@ -610,19 +505,15 @@ class Parser
      *
      * @phpstan-impure
      */
-    protected function scanCharIf(callable $condition): bool
+    protected function scan_char_if(callable $condition): bool
     {
-        $next = $this->scanner->peekChar();
-
+        $next = $this->scanner->peek_char();
         if ($next === null || !$condition($next)) {
             return false;
         }
-
-        $this->scanner->readChar();
-
+        $this->scanner->read_char();
         return true;
     }
-
     /**
      * Consumes the next character or escape sequence if it matches $character.
      *
@@ -631,37 +522,28 @@ class Parser
      *
      * This only supports ASCII identifier characters.
      */
-    protected function scanIdentChar(string $character, bool $caseSensitive = false): bool
+    protected function scan_ident_char(string $character, bool $case_sensitive = false): bool
     {
-        $matches = function (string $actual) use ($character, $caseSensitive): bool {
-            if ($caseSensitive) {
+        $matches = function (string $actual) use ($character, $case_sensitive): bool {
+            if ($case_sensitive) {
                 return $actual === $character;
             }
-
             return \strtolower($actual) === $character;
         };
-
-        $next = $this->scanner->peekChar();
-
+        $next = $this->scanner->peek_char();
         if ($next !== null && $matches($next)) {
-            $this->scanner->readChar();
-
+            $this->scanner->read_char();
             return true;
         }
-
         if ($next === '\\') {
-            $start = $this->scanner->getPosition();
-
-            if ($matches($this->escapeCharacter())) {
+            $start = $this->scanner->get_position();
+            if ($matches($this->escape_character())) {
                 return true;
             }
-
-            $this->scanner->setPosition($start);
+            $this->scanner->set_position($start);
         }
-
         return false;
     }
-
     /**
      * Consumes the next character or escape sequence and asserts it matches $char.
      *
@@ -670,15 +552,13 @@ class Parser
      *
      * This only supports ASCII identifier characters.
      */
-    protected function expectIdentChar(string $char, bool $caseSensitive = false): void
+    protected function expect_ident_char(string $char, bool $case_sensitive = false): void
     {
-        if ($this->scanIdentChar($char, $caseSensitive)) {
+        if ($this->scan_ident_char($char, $case_sensitive)) {
             return;
         }
-
-        $this->scanner->error("Expected \"$char\".");
+        $this->scanner->error("Expected \"{$char}\".");
     }
-
     /**
      * Returns whether the scanner is immediately before a number.
      *
@@ -686,47 +566,35 @@ class Parser
      *
      * [the CSS algorithm]: https://drafts.csswg.org/css-syntax-3/#starts-with-a-number
      */
-    protected function lookingAtNumber(): bool
+    protected function looking_at_number(): bool
     {
-        $first = $this->scanner->peekChar();
-
+        $first = $this->scanner->peek_char();
         if ($first === null) {
             return false;
         }
-
-        if (Character::isDigit($first)) {
+        if (Character::is_digit($first)) {
             return true;
         }
-
         if ($first === '.') {
-            $second = $this->scanner->peekChar(1);
-
-            return $second !== null && Character::isDigit($second);
+            $second = $this->scanner->peek_char(1);
+            return $second !== null && Character::is_digit($second);
         }
-
         if ($first === '+' || $first === '-') {
-            $second = $this->scanner->peekChar(1);
-
+            $second = $this->scanner->peek_char(1);
             if ($second === null) {
                 return false;
             }
-
-            if (Character::isDigit($second)) {
+            if (Character::is_digit($second)) {
                 return true;
             }
-
             if ($second !== '.') {
                 return false;
             }
-
-            $third = $this->scanner->peekChar(2);
-
-            return $third !== null && Character::isDigit($third);
+            $third = $this->scanner->peek_char(2);
+            return $third !== null && Character::is_digit($third);
         }
-
         return false;
     }
-
     /**
      * Returns whether the scanner is immediately before a plain CSS identifier.
      *
@@ -737,42 +605,33 @@ class Parser
      *
      * [the CSS algorithm]: https://drafts.csswg.org/css-syntax-3/#would-start-an-identifier
      */
-    protected function lookingAtIdentifier(int $forward = 0): bool
+    protected function looking_at_identifier(int $forward = 0): bool
     {
-        $first = $this->scanner->peekChar($forward);
-
+        $first = $this->scanner->peek_char($forward);
         if ($first === null) {
             return false;
         }
-
-        if ($first === '\\' || Character::isNameStart($first)) {
+        if ($first === '\\' || Character::is_name_start($first)) {
             return true;
         }
-
         if ($first !== '-') {
             return false;
         }
-
-        $second = $this->scanner->peekChar($forward + 1);
-
+        $second = $this->scanner->peek_char($forward + 1);
         if ($second === null) {
             return false;
         }
-
-        return $second === '\\' || $second === '-' || Character::isNameStart($second);
+        return $second === '\\' || $second === '-' || Character::is_name_start($second);
     }
-
     /**
      * Returns whether the scanner is immediately before a sequence of characters
      * that could be part of a plain CSS identifier body.
      */
-    protected function lookingAtIdentifierBody(): bool
+    protected function looking_at_identifier_body(): bool
     {
-        $next = $this->scanner->peekChar();
-
-        return $next !== null && ($next === '\\' || Character::isName($next));
+        $next = $this->scanner->peek_char();
+        return $next !== null && ($next === '\\' || Character::is_name($next));
     }
-
     /**
      * Consumes an identifier if its name exactly matches $text.
      *
@@ -780,42 +639,34 @@ class Parser
      *
      * This only supports ASCII identifiers.
      */
-    protected function scanIdentifier(string $text, bool $caseSensitive = false): bool
+    protected function scan_identifier(string $text, bool $case_sensitive = false): bool
     {
-        if (!$this->lookingAtIdentifier()) {
+        if (!$this->looking_at_identifier()) {
             return false;
         }
-
-        $start = $this->scanner->getPosition();
-
-        if ($this->consumeIdentifier($text, $caseSensitive) && !$this->lookingAtIdentifierBody()) {
+        $start = $this->scanner->get_position();
+        if ($this->consume_identifier($text, $case_sensitive) && !$this->looking_at_identifier_body()) {
             return true;
         }
-
-        $this->scanner->setPosition($start);
-
+        $this->scanner->set_position($start);
         return false;
     }
-
     /**
      * Returns whether an identifier whose name exactly matches $text is at the
      * current scanner position.
      *
      * This doesn't move the scan pointer forward
      */
-    protected function matchesIdentifier(string $text, bool $caseSensitive = false): bool
+    protected function matches_identifier(string $text, bool $case_sensitive = false): bool
     {
-        if (!$this->lookingAtIdentifier()) {
+        if (!$this->looking_at_identifier()) {
             return false;
         }
-
-        $start = $this->scanner->getPosition();
-        $result = $this->consumeIdentifier($text, $caseSensitive) && !$this->lookingAtIdentifierBody();
-        $this->scanner->setPosition($start);
-
+        $start = $this->scanner->get_position();
+        $result = $this->consume_identifier($text, $case_sensitive) && !$this->looking_at_identifier_body();
+        $this->scanner->set_position($start);
         return $result;
     }
-
     /**
      * Consumes $text as an identifier, but doesn't verify whether there's
      * additional identifier text afterwards.
@@ -823,17 +674,15 @@ class Parser
      * Returns `true` if the full $text is consumed and `false` otherwise, but
      * doesn't reset the scan pointer.
      */
-    private function consumeIdentifier(string $text, bool $caseSensitive): bool
+    private function consume_identifier(string $text, bool $case_sensitive): bool
     {
         for ($i = 0; $i < \strlen($text); $i++) {
-            if (!$this->scanIdentChar($text[$i], $caseSensitive)) {
+            if (!$this->scan_ident_char($text[$i], $case_sensitive)) {
                 return false;
             }
         }
-
         return true;
     }
-
     /**
      * Consumes an identifier asserts that its name exactly matches $text.
      *
@@ -841,27 +690,21 @@ class Parser
      *
      * This only supports ASCII identifiers.
      */
-    protected function expectIdentifier(string $text, ?string $name = null, bool $caseSensitive = false): void
+    protected function expect_identifier(string $text, ?string $name = null, bool $case_sensitive = false): void
     {
-        $name ??= "\"$text\"";
-
-        $start = $this->scanner->getPosition();
-
+        $name ??= "\"{$text}\"";
+        $start = $this->scanner->get_position();
         for ($i = 0; $i < \strlen($text); $i++) {
-            if ($this->scanIdentChar($text[$i], $caseSensitive)) {
+            if ($this->scan_ident_char($text[$i], $case_sensitive)) {
                 continue;
             }
-
-            $this->scanner->error("Expected $name.", $start);
+            $this->scanner->error("Expected {$name}.", $start);
         }
-
-        if (!$this->lookingAtIdentifierBody()) {
+        if (!$this->looking_at_identifier_body()) {
             return;
         }
-
-        $this->scanner->error("Expected $name.", $start);
+        $this->scanner->error("Expected {$name}.", $start);
     }
-
     /**
      * Runs $consumer and returns the source text that it consumes.
      *
@@ -869,48 +712,40 @@ class Parser
      *
      * @param-immediately-invoked-callable $consumer
      */
-    protected function rawText(callable $consumer): string
+    protected function raw_text(callable $consumer): string
     {
-        $start = $this->scanner->getPosition();
+        $start = $this->scanner->get_position();
         $consumer();
-
         return $this->scanner->substring($start);
     }
-
     /**
      * Like {@see StringScanner::spanFrom()} but passes the span through {@see $interpolationMap} if it's available.
      */
-    protected function spanFrom(int $position): FileSpan
+    protected function span_from(int $position): File_Span
     {
-        $span = $this->scanner->spanFrom($position);
-
-        if ($this->interpolationMap === null) {
+        $span = $this->scanner->span_from($position);
+        if ($this->interpolation_map === null) {
             return $span;
         }
-
-        $interpolationMap = $this->interpolationMap;
-
-        return new LazyFileSpan(static fn (): \SourceSpan\FileSpan => $interpolationMap->mapSpan($span));
+        $interpolation_map = $this->interpolation_map;
+        return new Lazy_File_Span(static fn(): \Source_Span\File_Span => $interpolation_map->map_span($span));
     }
-
     /**
      * Prints a warning to standard error, associated with $span.
      */
-    protected function warn(string $message, FileSpan $span): void
+    protected function warn(string $message, File_Span $span): void
     {
         $this->logger->warn($message, null, $span);
     }
-
     /**
      * Throws an error associated with $position.
      *
      * @throws FormatException
      */
-    protected function error(string $message, FileSpan $span, ?\Throwable $previous = null): never
+    protected function error(string $message, File_Span $span, ?\Throwable $previous = null): never
     {
-        throw new FormatException($message, $span, $previous);
+        throw new Format_Exception($message, $span, $previous);
     }
-
     /**
      * Runs $callback and wraps any {@see FormatException} it throws in a
      * {@see SassFormatException}
@@ -923,57 +758,47 @@ class Parser
      *
      * @throws SassFormatException
      */
-    protected function wrapSpanFormatException(callable $callback)
+    protected function wrap_span_format_exception(callable $callback)
     {
         try {
             try {
                 return $callback();
-            } catch (FormatException $e) {
-                if ($this->interpolationMap === null) {
+            } catch (Format_Exception $e) {
+                if ($this->interpolation_map === null) {
                     throw $e;
                 }
-
-                throw $this->interpolationMap->mapException($e);
+                throw $this->interpolation_map->map_exception($e);
             }
-        } catch (MultiSourceFormatException $error) {
-            $span = $error->getSpan();
-            $secondarySpans = $error->secondarySpans;
-
-            if (0 === stripos($error->getMessage(), 'expected')) {
-                $span = $this->adjustExceptionSpan($span);
-                $secondarySpans = array_map($this->adjustExceptionSpan(...), $secondarySpans);
+        } catch (Multi_Source_Format_Exception $error) {
+            $span = $error->get_span();
+            $secondary_spans = $error->secondary_spans;
+            if (0 === stripos($error->get_message(), 'expected')) {
+                $span = $this->adjust_exception_span($span);
+                $secondary_spans = array_map($this->adjust_exception_span(...), $secondary_spans);
             }
-
-            throw new MultiSpanSassFormatException($error->getMessage(), $span, $error->primaryLabel, $secondarySpans, $error);
-        } catch (FormatException $error) {
-            $span = $error->getSpan();
-
-            if (0 === stripos($error->getMessage(), 'expected')) {
-                $span = $this->adjustExceptionSpan($span);
+            throw new Multi_Span_Sass_Format_Exception($error->get_message(), $span, $error->primary_label, $secondary_spans, $error);
+        } catch (Format_Exception $error) {
+            $span = $error->get_span();
+            if (0 === stripos($error->get_message(), 'expected')) {
+                $span = $this->adjust_exception_span($span);
             }
-
-            throw new SimpleSassFormatException($error->getMessage(), $span, $error);
+            throw new Simple_Sass_Format_Exception($error->get_message(), $span, $error);
         }
     }
-
     /**
      * Moves span to {@see firstNewlineBefore} if necessary.
      */
-    private function adjustExceptionSpan(FileSpan $span): FileSpan
+    private function adjust_exception_span(File_Span $span): File_Span
     {
-        if ($span->getLength() > 0) {
+        if ($span->get_length() > 0) {
             return $span;
         }
-
-        $start = $this->firstNewlineBefore($span->getStart());
-
-        if ($start === $span->getStart()) {
+        $start = $this->first_newline_before($span->get_start());
+        if ($start === $span->get_start()) {
             return $span;
         }
-
-        return $start->pointSpan();
+        return $start->point_span();
     }
-
     /**
      * If $location is separated from the previous non-whitespace character in
      * `$scanner->getString()` by one or more newlines, returns the location of the last
@@ -984,28 +809,23 @@ class Parser
      * This helps avoid missing token errors pointing at the next closing bracket
      * rather than the line where the problem actually occurred.
      */
-    private function firstNewlineBefore(FileLocation $location): FileLocation
+    private function first_newline_before(File_Location $location): File_Location
     {
-        $text = $location->getFile()->getText(0, $location->getOffset());
-        $index = $location->getOffset() - 1;
-        $lastNewline = null;
-
+        $text = $location->get_file()->get_text(0, $location->get_offset());
+        $index = $location->get_offset() - 1;
+        $last_newline = null;
         while ($index >= 0) {
             $char = $text[$index];
-
-            if (!Character::isWhitespace($char)) {
-                return $lastNewline === null ? $location : $location->getFile()->location($lastNewline);
+            if (!Character::is_whitespace($char)) {
+                return $last_newline === null ? $location : $location->get_file()->location($last_newline);
             }
-
-            if (Character::isNewline($char)) {
-                $lastNewline = $index;
+            if (Character::is_newline($char)) {
+                $last_newline = $index;
             }
             $index--;
         }
-
         // If the document *only* contains whitespace before $location, always
         // return $location.
-
         return $location;
     }
 }

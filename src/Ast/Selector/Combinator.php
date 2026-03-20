@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Selector;
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
 /**
  * A combinator that defines the relationship between selectors in a
@@ -27,20 +25,17 @@ enum Combinator
      * left-hand selector in the DOM tree.
      */
     case NEXT_SIBLING;
-
     /**
      * Matches the right-hand selector if it's a direct child of the left-hand
      * selector in the DOM tree.
      */
     case CHILD;
-
     /**
      * Matches the right-hand selector if it comes after the left-hand selector
      * in the DOM tree.
      */
     case FOLLOWING_SIBLING;
-
-    public function getText(): string
+    public function get_text(): string
     {
         return match ($this) {
             self::NEXT_SIBLING => '+',

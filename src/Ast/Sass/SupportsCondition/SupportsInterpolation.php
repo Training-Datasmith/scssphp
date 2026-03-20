@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,41 +10,37 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Source_Span\File_Span;
 /**
  * An interpolated condition.
  *
  * @internal
  */
-final class SupportsInterpolation implements SupportsCondition
+final class Supports_Interpolation implements Supports_Condition
 {
-    private readonly FileSpan $span;
-
-    public function __construct(/**
-     * The expression in the interpolation.
-     */
+    private readonly File_Span $span;
+    public function __construct(
+        /**
+         * The expression in the interpolation.
+         */
         private readonly Expression $expression,
-        FileSpan $span
-    ) {
+        File_Span $span
+    )
+    {
         $this->span = $span;
     }
-
-    public function getExpression(): Expression
+    public function get_expression(): Expression
     {
         return $this->expression;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
         return '#{' . $this->expression . '}';

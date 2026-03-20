@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Value;
+namespace Scss_Php\Scss_Php\Value;
 
 /**
  * A SassScript argument list.
@@ -21,36 +19,32 @@ namespace ScssPhp\ScssPhp\Value;
  * {@see SassList} in that it may contain a keyword map as well as the positional
  * arguments.
  */
-final class SassArgumentList extends SassList
+final class Sass_Argument_List extends Sass_List
 {
-    private bool $keywordAccessed = false;
-
+    private bool $keyword_accessed = false;
     /**
      * SassArgumentList constructor.
      *
      * @param list<Value> $contents
      * @param array<string, Value> $keywords
      */
-    public function __construct(array $contents, private readonly array $keywords, ListSeparator $separator)
+    public function __construct(array $contents, private readonly array $keywords, List_Separator $separator)
     {
         parent::__construct($contents, $separator);
     }
-
     /**
      * @return array<string, Value>
      */
-    public function getKeywords(): array
+    public function get_keywords(): array
     {
-        $this->keywordAccessed = true;
-
+        $this->keyword_accessed = true;
         return $this->keywords;
     }
-
     /**
      * @internal
      */
-    public function wereKeywordAccessed(): bool
+    public function were_keyword_accessed(): bool
     {
-        return $this->keywordAccessed;
+        return $this->keyword_accessed;
     }
 }

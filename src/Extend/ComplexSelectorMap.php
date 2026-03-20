@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,30 +10,27 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Extend;
 
-namespace ScssPhp\ScssPhp\Extend;
-
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelector;
-
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector;
 /**
  * @template T
  * @template-extends \SplObjectStorage<ComplexSelector, T>
  *
  * @internal
  */
-final class ComplexSelectorMap extends \SplObjectStorage
+final class Complex_Selector_Map extends \Spl_Object_Storage
 {
-    public function getHash(object $object): string
+    public function get_hash(object $object): string
     {
-        \assert($object instanceof ComplexSelector);
+        \assert($object instanceof Complex_Selector);
         // For ComplexSelector, selectors that are equal by value semantic are exactly the ones that have the same string representation.
         return (string) $object;
     }
-
     /**
      * @return iterable<T>
      */
-    public function getValues(): iterable
+    public function get_values(): iterable
     {
         foreach ($this as $selector) {
             yield $this[$selector];

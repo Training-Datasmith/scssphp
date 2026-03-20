@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Util;
+namespace Scss_Php\Scss_Php\Util;
 
 /**
  * A mutable reference to a (presumably immutable) value.
@@ -24,7 +22,7 @@ namespace ScssPhp\ScssPhp\Util;
  *
  * @internal
  */
-final class ModifiableBox
+final class Modifiable_Box
 {
     /**
      * @param T $value
@@ -32,23 +30,20 @@ final class ModifiableBox
     public function __construct(private mixed $value)
     {
     }
-
     /**
      * @return T
      */
-    public function getValue()
+    public function get_value()
     {
         return $this->value;
     }
-
     /**
      * @param T $value
      */
-    public function setValue(mixed $value): void
+    public function set_value(mixed $value): void
     {
         $this->value = $value;
     }
-
     /**
      * Returns an unmodifiable reference to this box.
      *

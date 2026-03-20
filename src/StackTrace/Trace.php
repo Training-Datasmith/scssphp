@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\StackTrace;
+namespace Scss_Php\Scss_Php\Stack_Trace;
 
 /**
  * A stack trace, comprised of a list of stack frames.
@@ -27,26 +25,23 @@ final class Trace
          * @readonly
          */
         private readonly array $frames
-    ) {
+    )
+    {
     }
-
     /**
      * @return list<Frame>
      */
-    public function getFrames(): array
+    public function get_frames(): array
     {
         return $this->frames;
     }
-
-    public function getFormattedTrace(): string
+    public function get_formatted_trace(): string
     {
         $longest = 0;
-
         foreach ($this->frames as $frame) {
-            $length = \strlen($frame->getLocation());
+            $length = \strlen($frame->get_location());
             $longest = max($longest, $length);
         }
-
-        return implode('', array_map(fn (Frame $frame): string => str_pad($frame->getLocation(), $longest) . '  ' . $frame->getMember() . "\n", $this->frames));
+        return implode('', array_map(fn(Frame $frame): string => str_pad($frame->get_location(), $longest) . '  ' . $frame->get_member() . "\n", $this->frames));
     }
 }

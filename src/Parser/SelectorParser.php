@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,49 +10,45 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use League\Uri\Contracts\UriInterface;
-use ScssPhp\ScssPhp\Ast\Css\CssValue;
-use ScssPhp\ScssPhp\Ast\Selector\AttributeOperator;
-use ScssPhp\ScssPhp\Ast\Selector\AttributeSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ClassSelector;
-use ScssPhp\ScssPhp\Ast\Selector\Combinator;
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ComplexSelectorComponent;
-use ScssPhp\ScssPhp\Ast\Selector\CompoundSelector;
-use ScssPhp\ScssPhp\Ast\Selector\IDSelector;
-use ScssPhp\ScssPhp\Ast\Selector\ParentSelector;
-use ScssPhp\ScssPhp\Ast\Selector\PlaceholderSelector;
-use ScssPhp\ScssPhp\Ast\Selector\PseudoSelector;
-use ScssPhp\ScssPhp\Ast\Selector\QualifiedName;
-use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
-use ScssPhp\ScssPhp\Ast\Selector\SimpleSelector;
-use ScssPhp\ScssPhp\Ast\Selector\TypeSelector;
-use ScssPhp\ScssPhp\Ast\Selector\UniversalSelector;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
-use ScssPhp\ScssPhp\Util;
-use ScssPhp\ScssPhp\Util\Character;
-
+use League\Uri\Contracts\Uri_Interface;
+use Scss_Php\Scss_Php\Ast\Css\Css_Value;
+use Scss_Php\Scss_Php\Ast\Selector\Attribute_Operator;
+use Scss_Php\Scss_Php\Ast\Selector\Attribute_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Class_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Combinator;
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Complex_Selector_Component;
+use Scss_Php\Scss_Php\Ast\Selector\Compound_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Id_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Parent_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Placeholder_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Pseudo_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Qualified_Name;
+use Scss_Php\Scss_Php\Ast\Selector\Selector_List;
+use Scss_Php\Scss_Php\Ast\Selector\Simple_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Type_Selector;
+use Scss_Php\Scss_Php\Ast\Selector\Universal_Selector;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
+use Scss_Php\Scss_Php\Logger\Logger_Interface;
+use Scss_Php\Scss_Php\Util;
+use Scss_Php\Scss_Php\Util\Character;
 /**
  * A parser for selectors.
  *
  * @internal
  */
-final class SelectorParser extends Parser
+final class Selector_Parser extends Parser
 {
     /**
      * Pseudo-class selectors that take unadorned selectors as arguments.
      */
     private const SELECTOR_PSEUDO_CLASSES = ['not', 'is', 'matches', 'where', 'current', 'any', 'has', 'host', 'host-context'];
-
     /**
      * Pseudo-element selectors that take unadorned selectors as arguments.
      */
     private const SELECTOR_PSEUDO_ELEMENTS = ['slotted'];
-
     /**
      * Creates a parser that parses CSS selectors.
      *
@@ -63,547 +58,447 @@ final class SelectorParser extends Parser
      * If $plainCss is `true`, this will parse the selector as a plain CSS
      * selector rather than a Sass selector.
      */
-    public function __construct(string $contents, ?LoggerInterface $logger = null, ?UriInterface $url = null, private readonly bool $allowParent = true, ?InterpolationMap $interpolationMap = null, /**
-     * Whether to parse the selector as plain CSS.
-     */
-        private readonly bool $plainCss = false)
+    public function __construct(
+        string $contents,
+        ?Logger_Interface $logger = null,
+        ?Uri_Interface $url = null,
+        private readonly bool $allow_parent = true,
+        ?Interpolation_Map $interpolation_map = null,
+        /**
+         * Whether to parse the selector as plain CSS.
+         */
+        private readonly bool $plain_css = false
+    )
     {
-        parent::__construct($contents, $logger, $url, $interpolationMap);
+        parent::__construct($contents, $logger, $url, $interpolation_map);
     }
-
     /**
      * @throws SassFormatException
      */
-    public function parse(): SelectorList
+    public function parse(): Selector_List
     {
-        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Selector\SelectorList {
-            $selector = $this->selectorList();
-
-            if (!$this->scanner->isDone()) {
+        return $this->wrap_span_format_exception(function (): \Scss_Php\Scss_Php\Ast\Selector\Selector_List {
+            $selector = $this->selector_list();
+            if (!$this->scanner->is_done()) {
                 $this->scanner->error('expected selector.');
             }
-
             return $selector;
         });
     }
-
-    public function parseComplexSelector(): ComplexSelector
+    public function parse_complex_selector(): Complex_Selector
     {
-        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Selector\ComplexSelector {
-            $complex = $this->complexSelector();
-
-            if (!$this->scanner->isDone()) {
+        return $this->wrap_span_format_exception(function (): \Scss_Php\Scss_Php\Ast\Selector\Complex_Selector {
+            $complex = $this->complex_selector();
+            if (!$this->scanner->is_done()) {
                 $this->scanner->error('expected selector.');
             }
-
             return $complex;
         });
     }
-
-    public function parseCompoundSelector(): CompoundSelector
+    public function parse_compound_selector(): Compound_Selector
     {
-        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Selector\CompoundSelector {
-            $compound = $this->compoundSelector();
-
-            if (!$this->scanner->isDone()) {
+        return $this->wrap_span_format_exception(function (): \Scss_Php\Scss_Php\Ast\Selector\Compound_Selector {
+            $compound = $this->compound_selector();
+            if (!$this->scanner->is_done()) {
                 $this->scanner->error('expected selector.');
             }
-
             return $compound;
         });
     }
-
-    public function parseSimpleSelector(): SimpleSelector
+    public function parse_simple_selector(): Simple_Selector
     {
-        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Selector\SimpleSelector {
-            $simple = $this->simpleSelector();
-
-            if (!$this->scanner->isDone()) {
+        return $this->wrap_span_format_exception(function (): \Scss_Php\Scss_Php\Ast\Selector\Simple_Selector {
+            $simple = $this->simple_selector();
+            if (!$this->scanner->is_done()) {
                 $this->scanner->error('unexpected token.');
             }
-
             return $simple;
         });
     }
-
     /**
      * Consumes a selector list.
      */
-    private function selectorList(): SelectorList
+    private function selector_list(): Selector_List
     {
-        $start = $this->scanner->getPosition();
-        $previousLine = $this->scanner->getLine();
-        $components = [$this->complexSelector()];
-
+        $start = $this->scanner->get_position();
+        $previous_line = $this->scanner->get_line();
+        $components = [$this->complex_selector()];
         $this->whitespace();
-        while ($this->scanner->scanChar(',')) {
+        while ($this->scanner->scan_char(',')) {
             $this->whitespace();
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === ',') {
                 continue;
             }
-
-            if ($this->scanner->isDone()) {
+            if ($this->scanner->is_done()) {
                 break;
             }
-
-            $lineBreak = $this->scanner->getLine() !== $previousLine;
-
-            if ($lineBreak) {
-                $previousLine = $this->scanner->getLine();
+            $line_break = $this->scanner->get_line() !== $previous_line;
+            if ($line_break) {
+                $previous_line = $this->scanner->get_line();
             }
-
-            $components[] = $this->complexSelector($lineBreak);
+            $components[] = $this->complex_selector($line_break);
         }
-
-        return new SelectorList($components, $this->spanFrom($start));
+        return new Selector_List($components, $this->span_from($start));
     }
-
     /**
      * Consumes a complex selector.
      *
      * If $lineBreak is `true`, that indicates that there was a line break
      * before this selector.
      */
-    private function complexSelector(bool $lineBreak = false): ComplexSelector
+    private function complex_selector(bool $line_break = false): Complex_Selector
     {
-        $start = $this->scanner->getPosition();
-
-        $componentStart = $this->scanner->getPosition();
-        $lastCompound = null;
+        $start = $this->scanner->get_position();
+        $component_start = $this->scanner->get_position();
+        $last_compound = null;
         /** @var list<CssValue<Combinator>> $combinators */
         $combinators = [];
-
-        $initialCombinators = null;
+        $initial_combinators = null;
         $components = [];
-
         while (true) {
             $this->whitespace();
-
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             switch ($next) {
                 case '+':
-                    $combinatorStart = $this->scanner->getPosition();
-                    $this->scanner->readChar();
-                    $combinators[] = new CssValue(Combinator::NEXT_SIBLING, $this->spanFrom($combinatorStart));
+                    $combinator_start = $this->scanner->get_position();
+                    $this->scanner->read_char();
+                    $combinators[] = new Css_Value(Combinator::NEXT_SIBLING, $this->span_from($combinator_start));
                     break;
-
                 case '>':
-                    $combinatorStart = $this->scanner->getPosition();
-                    $this->scanner->readChar();
-                    $combinators[] = new CssValue(Combinator::CHILD, $this->spanFrom($combinatorStart));
+                    $combinator_start = $this->scanner->get_position();
+                    $this->scanner->read_char();
+                    $combinators[] = new Css_Value(Combinator::CHILD, $this->span_from($combinator_start));
                     break;
-
                 case '~':
-                    $combinatorStart = $this->scanner->getPosition();
-                    $this->scanner->readChar();
-                    $combinators[] = new CssValue(Combinator::FOLLOWING_SIBLING, $this->spanFrom($combinatorStart));
+                    $combinator_start = $this->scanner->get_position();
+                    $this->scanner->read_char();
+                    $combinators[] = new Css_Value(Combinator::FOLLOWING_SIBLING, $this->span_from($combinator_start));
                     break;
-
                 default:
-                    if ($next === null || (!\in_array($next, ['[', '.', '#', '%', ':', '&', '*', '|'], true) && !$this->lookingAtIdentifier())) {
+                    if ($next === null || !\in_array($next, ['[', '.', '#', '%', ':', '&', '*', '|'], true) && !$this->looking_at_identifier()) {
                         break 2;
                     }
-
-                    if ($lastCompound !== null) {
-                        $components[] = new ComplexSelectorComponent($lastCompound, $combinators, $this->spanFrom($componentStart));
+                    if ($last_compound !== null) {
+                        $components[] = new Complex_Selector_Component($last_compound, $combinators, $this->span_from($component_start));
                     } elseif (\count($combinators) !== 0) {
-                        \assert($initialCombinators === null);
-                        $initialCombinators = $combinators;
-                        $componentStart = $this->scanner->getPosition();
+                        \assert($initial_combinators === null);
+                        $initial_combinators = $combinators;
+                        $component_start = $this->scanner->get_position();
                     }
-                    $lastCompound = $this->compoundSelector();
+                    $last_compound = $this->compound_selector();
                     $combinators = [];
-
-                    if ($this->scanner->peekChar() === '&') {
+                    if ($this->scanner->peek_char() === '&') {
                         $this->scanner->error('"&" may only used at the beginning of a compound selector.');
                     }
                     break;
             }
         }
-
-        if (\count($combinators) > 0 && $this->plainCss) {
+        if (\count($combinators) > 0 && $this->plain_css) {
             $this->scanner->error('expected selector.');
         }
-        if ($lastCompound !== null) {
-            $components[] = new ComplexSelectorComponent($lastCompound, $combinators, $this->spanFrom($componentStart));
+        if ($last_compound !== null) {
+            $components[] = new Complex_Selector_Component($last_compound, $combinators, $this->span_from($component_start));
         } elseif (\count($combinators) !== 0) {
-            $initialCombinators = $combinators;
+            $initial_combinators = $combinators;
         } else {
             $this->scanner->error('expected selector.');
         }
-
-        return new ComplexSelector($initialCombinators ?? [], $components, $this->spanFrom($start), $lineBreak);
+        return new Complex_Selector($initial_combinators ?? [], $components, $this->span_from($start), $line_break);
     }
-
     /**
      * Consumes a compound selector.
      */
-    private function compoundSelector(): CompoundSelector
+    private function compound_selector(): Compound_Selector
     {
-        $start = $this->scanner->getPosition();
-        $components = [$this->simpleSelector()];
-
-        while ($this->isSimpleSelectorStart($this->scanner->peekChar())) {
-            $components[] = $this->simpleSelector(false);
+        $start = $this->scanner->get_position();
+        $components = [$this->simple_selector()];
+        while ($this->is_simple_selector_start($this->scanner->peek_char())) {
+            $components[] = $this->simple_selector(false);
         }
-
-        return new CompoundSelector($components, $this->spanFrom($start));
+        return new Compound_Selector($components, $this->span_from($start));
     }
-
     /**
      * Consumes a simple selector.
      *
      * If $allowParent is passed, it controls whether the parent selector `&` is
      * allowed. Otherwise, it defaults to {@see allowParent}.
      */
-    private function simpleSelector(?bool $allowParent = null): SimpleSelector
+    private function simple_selector(?bool $allow_parent = null): Simple_Selector
     {
-        $start = $this->scanner->getPosition();
-        $allowParent ??= $this->allowParent;
-
-        switch ($this->scanner->peekChar()) {
+        $start = $this->scanner->get_position();
+        $allow_parent ??= $this->allow_parent;
+        switch ($this->scanner->peek_char()) {
             case '[':
-                return $this->attributeSelector();
-
+                return $this->attribute_selector();
             case '.':
-                return $this->classSelector();
-
+                return $this->class_selector();
             case '#':
-                return $this->idSelector();
-
+                return $this->id_selector();
             case '%':
-                $selector = $this->placeholderSelector();
-                if ($this->plainCss) {
-                    $this->error("Placeholder selectors aren't allowed in plain CSS.", $this->scanner->spanFrom($start));
+                $selector = $this->placeholder_selector();
+                if ($this->plain_css) {
+                    $this->error("Placeholder selectors aren't allowed in plain CSS.", $this->scanner->span_from($start));
                 }
                 return $selector;
-
             case ':':
-                return $this->pseudoSelector();
-
+                return $this->pseudo_selector();
             case '&':
-                $selector = $this->parentSelector();
-                if (!$allowParent) {
-                    $this->error("Parent selectors aren't allowed here.", $this->scanner->spanFrom($start));
+                $selector = $this->parent_selector();
+                if (!$allow_parent) {
+                    $this->error("Parent selectors aren't allowed here.", $this->scanner->span_from($start));
                 }
                 return $selector;
-
             default:
-                return $this->typeOrUniversalSelector();
+                return $this->type_or_universal_selector();
         }
     }
-
     /**
      * Consumes an attribute selector.
      */
-    private function attributeSelector(): AttributeSelector
+    private function attribute_selector(): Attribute_Selector
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('[');
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('[');
         $this->whitespace();
-
-        $name = $this->attributeName();
+        $name = $this->attribute_name();
         $this->whitespace();
-
-        if ($this->scanner->scanChar(']')) {
-            return AttributeSelector::create($name, $this->spanFrom($start));
+        if ($this->scanner->scan_char(']')) {
+            return Attribute_Selector::create($name, $this->span_from($start));
         }
-
-        $operator = $this->attributeOperator();
+        $operator = $this->attribute_operator();
         $this->whitespace();
-
-        $next = $this->scanner->peekChar();
+        $next = $this->scanner->peek_char();
         $value = $next === "'" || $next === '"' ? $this->string() : $this->identifier();
         $this->whitespace();
-
-        $next = $this->scanner->peekChar();
-        $modifier = $next !== null && Character::isAlphabetic($next) ? $this->scanner->readChar() : null;
-
-        $this->scanner->expectChar(']');
-
-        return AttributeSelector::withOperator($name, $operator, $value, $this->spanFrom($start), $modifier);
+        $next = $this->scanner->peek_char();
+        $modifier = $next !== null && Character::is_alphabetic($next) ? $this->scanner->read_char() : null;
+        $this->scanner->expect_char(']');
+        return Attribute_Selector::with_operator($name, $operator, $value, $this->span_from($start), $modifier);
     }
-
     /**
      * Consumes a qualified name as part of an attribute selector.
      */
-    private function attributeName(): QualifiedName
+    private function attribute_name(): Qualified_Name
     {
-        if ($this->scanner->scanChar('*')) {
-            $this->scanner->expectChar('|');
-
-            return new QualifiedName($this->identifier(), '*');
+        if ($this->scanner->scan_char('*')) {
+            $this->scanner->expect_char('|');
+            return new Qualified_Name($this->identifier(), '*');
         }
-
-        if ($this->scanner->scanChar('|')) {
-            return new QualifiedName($this->identifier(), '');
+        if ($this->scanner->scan_char('|')) {
+            return new Qualified_Name($this->identifier(), '');
         }
-
-        $nameOrNamespace = $this->identifier();
-
-        if ($this->scanner->peekChar() !== '|' || $this->scanner->peekChar(1) === '=') {
-            return new QualifiedName($nameOrNamespace);
+        $name_or_namespace = $this->identifier();
+        if ($this->scanner->peek_char() !== '|' || $this->scanner->peek_char(1) === '=') {
+            return new Qualified_Name($name_or_namespace);
         }
-
-        $this->scanner->readChar();
-
-        return new QualifiedName($this->identifier(), $nameOrNamespace);
+        $this->scanner->read_char();
+        return new Qualified_Name($this->identifier(), $name_or_namespace);
     }
-
     /**
      * Consumes an attribute selector's operator.
      */
-    private function attributeOperator(): AttributeOperator
+    private function attribute_operator(): Attribute_Operator
     {
-        $start = $this->scanner->getPosition();
-
-        switch ($this->scanner->readChar()) {
+        $start = $this->scanner->get_position();
+        switch ($this->scanner->read_char()) {
             case '=':
-                return AttributeOperator::EQUAL;
-
+                return Attribute_Operator::EQUAL;
             case '~':
-                $this->scanner->expectChar('=');
-                return AttributeOperator::INCLUDE;
-
+                $this->scanner->expect_char('=');
+                return Attribute_Operator::INCLUDE;
             case '|':
-                $this->scanner->expectChar('=');
-                return AttributeOperator::DASH;
-
+                $this->scanner->expect_char('=');
+                return Attribute_Operator::DASH;
             case '^':
-                $this->scanner->expectChar('=');
-                return AttributeOperator::PREFIX;
-
+                $this->scanner->expect_char('=');
+                return Attribute_Operator::PREFIX;
             case '$':
-                $this->scanner->expectChar('=');
-                return AttributeOperator::SUFFIX;
-
+                $this->scanner->expect_char('=');
+                return Attribute_Operator::SUFFIX;
             case '*':
-                $this->scanner->expectChar('=');
-                return AttributeOperator::SUBSTRING;
-
+                $this->scanner->expect_char('=');
+                return Attribute_Operator::SUBSTRING;
             default:
                 $this->scanner->error('Expected "]".', $start);
         }
     }
-
     /**
      * Consumes a class selector.
      */
-    private function classSelector(): ClassSelector
+    private function class_selector(): Class_Selector
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('.');
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('.');
         $name = $this->identifier();
-
-        return new ClassSelector($name, $this->spanFrom($start));
+        return new Class_Selector($name, $this->span_from($start));
     }
-
     /**
      * Consumes an ID selector.
      */
-    private function idSelector(): IDSelector
+    private function id_selector(): Id_Selector
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('#');
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('#');
         $name = $this->identifier();
-
-        return new IDSelector($name, $this->spanFrom($start));
+        return new Id_Selector($name, $this->span_from($start));
     }
-
     /**
      * Consumes a placeholder selector.
      */
-    private function placeholderSelector(): PlaceholderSelector
+    private function placeholder_selector(): Placeholder_Selector
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('%');
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('%');
         $name = $this->identifier();
-
-        return new PlaceholderSelector($name, $this->spanFrom($start));
+        return new Placeholder_Selector($name, $this->span_from($start));
     }
-
     /**
      * Consumes a parent selector.
      */
-    private function parentSelector(): ParentSelector
+    private function parent_selector(): Parent_Selector
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('&');
-        $suffix = $this->lookingAtIdentifierBody() ? $this->identifierBody() : null;
-
-        if ($this->plainCss && $suffix !== null) {
-            $this->scanner->error("Parent selectors can't have suffixes in plain CSS.", $start, $this->scanner->getPosition() - $start);
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('&');
+        $suffix = $this->looking_at_identifier_body() ? $this->identifier_body() : null;
+        if ($this->plain_css && $suffix !== null) {
+            $this->scanner->error("Parent selectors can't have suffixes in plain CSS.", $start, $this->scanner->get_position() - $start);
         }
-
-        return new ParentSelector($this->spanFrom($start), $suffix);
+        return new Parent_Selector($this->span_from($start), $suffix);
     }
-
     /**
      * Consumes a pseudo selector.
      */
-    private function pseudoSelector(): PseudoSelector
+    private function pseudo_selector(): Pseudo_Selector
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar(':');
-        $element = $this->scanner->scanChar(':');
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char(':');
+        $element = $this->scanner->scan_char(':');
         $name = $this->identifier();
-
-        if (!$this->scanner->scanChar('(')) {
-            return new PseudoSelector($name, $this->spanFrom($start), $element);
+        if (!$this->scanner->scan_char('(')) {
+            return new Pseudo_Selector($name, $this->span_from($start), $element);
         }
         $this->whitespace();
-
         $unvendored = Util::unvendor($name);
         $argument = null;
         $selector = null;
-
         if ($element) {
             if (\in_array($unvendored, self::SELECTOR_PSEUDO_ELEMENTS, true)) {
-                $selector = $this->selectorList();
+                $selector = $this->selector_list();
             } else {
-                $argument = $this->declarationValue(true);
+                $argument = $this->declaration_value(true);
             }
         } elseif (\in_array($unvendored, self::SELECTOR_PSEUDO_CLASSES, true)) {
-            $selector = $this->selectorList();
+            $selector = $this->selector_list();
         } elseif ($unvendored === 'nth-child' || $unvendored === 'nth-last-child') {
-            $argument = $this->aNPlusB();
+            $argument = $this->a_n_plus_b();
             $this->whitespace();
-
-            if (Character::isWhitespace($this->scanner->peekChar(-1)) && $this->scanner->peekChar() !== ')') {
-                $this->expectIdentifier('of');
+            if (Character::is_whitespace($this->scanner->peek_char(-1)) && $this->scanner->peek_char() !== ')') {
+                $this->expect_identifier('of');
                 $argument .= ' of';
                 $this->whitespace();
-
-                $selector = $this->selectorList();
+                $selector = $this->selector_list();
             }
         } else {
-            $argument = rtrim($this->declarationValue(true));
+            $argument = rtrim($this->declaration_value(true));
         }
-
-        $this->scanner->expectChar(')');
-
-        return new PseudoSelector($name, $this->spanFrom($start), $element, $argument, $selector);
+        $this->scanner->expect_char(')');
+        return new Pseudo_Selector($name, $this->span_from($start), $element, $argument, $selector);
     }
-
     /**
      * Consumes an [`An+B` production][An+B] and returns its text.
      *
      * [An+B]: https://drafts.csswg.org/css-syntax-3/#anb-microsyntax
      */
-    private function aNPlusB(): string
+    private function a_n_plus_b(): string
     {
         $buffer = '';
-
-        switch ($this->scanner->peekChar()) {
+        switch ($this->scanner->peek_char()) {
             case 'e':
             case 'E':
-                $this->expectIdentifier('even');
+                $this->expect_identifier('even');
                 return 'even';
-
             case 'o':
             case 'O':
-                $this->expectIdentifier('odd');
+                $this->expect_identifier('odd');
                 return 'odd';
-
             case '+':
             case '-':
-                $buffer .= $this->scanner->readChar();
+                $buffer .= $this->scanner->read_char();
                 break;
         }
-
-        $first = $this->scanner->peekChar();
-
-        if ($first !== null && Character::isDigit($first)) {
-            while (Character::isDigit($this->scanner->peekChar())) {
-                $buffer .= $this->scanner->readChar();
+        $first = $this->scanner->peek_char();
+        if ($first !== null && Character::is_digit($first)) {
+            while (Character::is_digit($this->scanner->peek_char())) {
+                $buffer .= $this->scanner->read_char();
             }
             $this->whitespace();
-
-            if (!$this->scanIdentChar('n')) {
+            if (!$this->scan_ident_char('n')) {
                 return $buffer;
             }
         } else {
-            $this->expectIdentChar('n');
+            $this->expect_ident_char('n');
         }
         $buffer .= 'n';
         $this->whitespace();
-
-        $next = $this->scanner->peekChar();
+        $next = $this->scanner->peek_char();
         if ($next !== '+' && $next !== '-') {
             return $buffer;
         }
-        $buffer .= $this->scanner->readChar();
+        $buffer .= $this->scanner->read_char();
         $this->whitespace();
-
-        $last = $this->scanner->peekChar();
-        if ($last === null || !Character::isDigit($last)) {
+        $last = $this->scanner->peek_char();
+        if ($last === null || !Character::is_digit($last)) {
             $this->scanner->error('Expected a number.');
         }
-        while (Character::isDigit($this->scanner->peekChar())) {
-            $buffer .= $this->scanner->readChar();
+        while (Character::is_digit($this->scanner->peek_char())) {
+            $buffer .= $this->scanner->read_char();
         }
-
         return $buffer;
     }
-
     /**
      * Consumes a type selector or a universal selector.
      *
      * These are combined because either one could start with `*`.
      */
-    private function typeOrUniversalSelector(): SimpleSelector
+    private function type_or_universal_selector(): Simple_Selector
     {
-        $start = $this->scanner->getPosition();
-        $first = $this->scanner->peekChar();
-
+        $start = $this->scanner->get_position();
+        $first = $this->scanner->peek_char();
         if ($first === '*') {
-            $this->scanner->readChar();
-
-            if (!$this->scanner->scanChar('|')) {
-                return new UniversalSelector($this->spanFrom($start));
+            $this->scanner->read_char();
+            if (!$this->scanner->scan_char('|')) {
+                return new Universal_Selector($this->span_from($start));
             }
-
-            if ($this->scanner->scanChar('*')) {
-                return new UniversalSelector($this->spanFrom($start), '*');
+            if ($this->scanner->scan_char('*')) {
+                return new Universal_Selector($this->span_from($start), '*');
             }
-
-            return new TypeSelector(new QualifiedName($this->identifier(), '*'), $this->spanFrom($start));
+            return new Type_Selector(new Qualified_Name($this->identifier(), '*'), $this->span_from($start));
         }
-
         if ($first === '|') {
-            $this->scanner->readChar();
-
-            if ($this->scanner->scanChar('*')) {
-                return new UniversalSelector($this->spanFrom($start), '');
+            $this->scanner->read_char();
+            if ($this->scanner->scan_char('*')) {
+                return new Universal_Selector($this->span_from($start), '');
             }
-
-            return new TypeSelector(new QualifiedName($this->identifier(), ''), $this->spanFrom($start));
+            return new Type_Selector(new Qualified_Name($this->identifier(), ''), $this->span_from($start));
         }
-
-        $nameOrNamespace = $this->identifier();
-
-        if (!$this->scanner->scanChar('|')) {
-            return new TypeSelector(new QualifiedName($nameOrNamespace), $this->spanFrom($start));
+        $name_or_namespace = $this->identifier();
+        if (!$this->scanner->scan_char('|')) {
+            return new Type_Selector(new Qualified_Name($name_or_namespace), $this->span_from($start));
         }
-
-        if ($this->scanner->scanChar('*')) {
-            return new UniversalSelector($this->spanFrom($start), $nameOrNamespace);
+        if ($this->scanner->scan_char('*')) {
+            return new Universal_Selector($this->span_from($start), $name_or_namespace);
         }
-
-        return new TypeSelector(new QualifiedName($this->identifier(), $nameOrNamespace), $this->spanFrom($start));
+        return new Type_Selector(new Qualified_Name($this->identifier(), $name_or_namespace), $this->span_from($start));
     }
-
     /**
      *  Returns whether $character can start a simple selector in the middle of a compound selector.
      */
-    private function isSimpleSelectorStart(?string $character): bool
+    private function is_simple_selector_start(?string $character): bool
     {
         return match ($character) {
             '*', '[', '.', '#', '%', ':' => true,
-            '&' => $this->plainCss,
+            '&' => $this->plain_css,
             default => false,
         };
     }

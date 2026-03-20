@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,24 +10,20 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Importer;
 
-namespace ScssPhp\ScssPhp\Importer;
-
-use League\Uri\Contracts\UriInterface;
+use League\Uri\Contracts\Uri_Interface;
 use League\Uri\Uri;
-use ScssPhp\ScssPhp\Syntax;
-
-final class ImporterResult
+use Scss_Php\Scss_Php\Syntax;
+final class Importer_Result
 {
-    public function __construct(private readonly string $contents, private readonly Syntax $syntax, private readonly ?UriInterface $sourceMapUrl = null)
+    public function __construct(private readonly string $contents, private readonly Syntax $syntax, private readonly ?Uri_Interface $source_map_url = null)
     {
     }
-
-    public function getContents(): string
+    public function get_contents(): string
     {
         return $this->contents;
     }
-
     /**
      * An absolute, browser-accessible URL indicating the resolved location of
      * the imported stylesheet.
@@ -37,15 +32,14 @@ final class ImporterResult
      * acceptable as well. If no URL is supplied, a `data:` URL is generated
      * automatically from {@see contents}.
      */
-    public function getSourceMapUrl(): UriInterface
+    public function get_source_map_url(): Uri_Interface
     {
-        return $this->sourceMapUrl ?? Uri::fromData($this->contents, '', 'charset=utf-8');
+        return $this->source_map_url ?? Uri::from_data($this->contents, '', 'charset=utf-8');
     }
-
     /**
      * The syntax to use to parse the stylesheet.
      */
-    public function getSyntax(): Syntax
+    public function get_syntax(): Syntax
     {
         return $this->syntax;
     }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,38 +10,33 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * An anonymous block of code that's invoked for a {@see ContentRule}.
  *
  * @internal
  */
-final class ContentBlock extends CallableDeclaration
+final class Content_Block extends Callable_Declaration
 {
     /**
      * @param Statement[] $children
      */
-    public function __construct(ArgumentDeclaration $arguments, array $children, FileSpan $span)
+    public function __construct(Argument_Declaration $arguments, array $children, File_Span $span)
     {
         parent::__construct('@content', $arguments, $span, $children);
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitContentBlock($this);
+        return $visitor->visit_content_block($this);
     }
-
     public function __toString(): string
     {
-        $buffer = $this->getArguments()->isEmpty() ? '' : ' using (' . $this->getArguments() . ')';
-
-        return $buffer . '{' . implode(' ', $this->getChildren()) . '}';
+        $buffer = $this->get_arguments()->is_empty() ? '' : ' using (' . $this->get_arguments() . ')';
+        return $buffer . '{' . implode(' ', $this->get_children()) . '}';
     }
 }

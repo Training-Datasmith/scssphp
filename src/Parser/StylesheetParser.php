@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,135 +10,124 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use League\Uri\Exceptions\SyntaxError;
+use League\Uri\Exceptions\Syntax_Error;
 use League\Uri\Uri;
-use ScssPhp\ScssPhp\Ast\Sass\Argument;
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\BinaryOperationExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\BinaryOperator;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\BooleanExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ColorExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\FunctionExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\IfExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\InterpolatedFunctionExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ListExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\MapExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\NullExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\NumberExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ParenthesizedExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\SelectorExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\StringExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\SupportsExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\UnaryOperationExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\UnaryOperator;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\VariableExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Import;
-use ScssPhp\ScssPhp\Ast\Sass\Import\DynamicImport;
-use ScssPhp\ScssPhp\Ast\Sass\Import\StaticImport;
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ContentBlock;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ContentRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\DebugRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\Declaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\EachRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ElseClause;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ErrorRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ExtendRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ForRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\FunctionRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\IfClause;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\IfRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ImportRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\IncludeRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\MediaRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\MixinRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ReturnRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\SilentComment;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\StyleRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\Stylesheet;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\SupportsRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\VariableDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\WarnRule;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\WhileRule;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsAnything;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsFunction;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsInterpolation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsNegation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition\SupportsOperation;
-use ScssPhp\ScssPhp\Colors;
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Util;
-use ScssPhp\ScssPhp\Util\Character;
-use ScssPhp\ScssPhp\Util\LoggerUtil;
-use ScssPhp\ScssPhp\Util\Path;
-use ScssPhp\ScssPhp\Util\StringUtil;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Value\SassColor;
-use ScssPhp\ScssPhp\Value\SpanColorFormat;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Argument;
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Binary_Operation_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Binary_Operator;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Boolean_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Color_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Function_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\If_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Interpolated_Function_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\List_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Map_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Null_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Number_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Parenthesized_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Selector_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\String_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Supports_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Unary_Operation_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Unary_Operator;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Variable_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Import;
+use Scss_Php\Scss_Php\Ast\Sass\Import\Dynamic_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Import\Static_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\At_Root_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\At_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Content_Block;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Content_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Debug_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Each_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Else_Clause;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Error_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Extend_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\For_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Function_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\If_Clause;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\If_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Import_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Include_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Media_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Mixin_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Return_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Silent_Comment;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Style_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Stylesheet;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Supports_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Variable_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Warn_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\While_Rule;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Anything;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Function;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Negation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition\Supports_Operation;
+use Scss_Php\Scss_Php\Colors;
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
+use Scss_Php\Scss_Php\Util;
+use Scss_Php\Scss_Php\Util\Character;
+use Scss_Php\Scss_Php\Util\Logger_Util;
+use Scss_Php\Scss_Php\Util\Path;
+use Scss_Php\Scss_Php\Util\String_Util;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Value\Sass_Color;
+use Scss_Php\Scss_Php\Value\Span_Color_Format;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-abstract class StylesheetParser extends Parser
+abstract class Stylesheet_Parser extends Parser
 {
     /**
      * The silent comment this parser encountered previously.
      */
-    protected ?SilentComment $lastSilentComment = null;
-
+    protected ?Silent_Comment $last_silent_comment = null;
     /**
      * Whether we've consumed a rule other than `@charset`, `@forward`, or `@use`.
      */
-    private bool $isUseAllowed = true;
-
+    private bool $is_use_allowed = true;
     /**
      * Whether the parser is currently parsing the contents of a mixin declaration.
      */
-    private bool $inMixin = false;
-
+    private bool $in_mixin = false;
     /**
      * Whether the parser is currently parsing a content block passed to a mixin.
      */
-    private bool $inContentBlock = false;
-
+    private bool $in_content_block = false;
     /**
      * Whether the parser is currently parsing a control directive such as `@if`
      * or `@each`.
      */
-    private bool $inControlDirective = false;
-
+    private bool $in_control_directive = false;
     /**
      * Whether the parser is currently parsing an unknown rule.
      */
-    private bool $inUnknownAtRule = false;
-
+    private bool $in_unknown_at_rule = false;
     /**
      * Whether the parser is currently parsing a style rule.
      */
-    private bool $inStyleRule = false;
-
+    private bool $in_style_rule = false;
     /**
      * Whether the parser is currently within a parenthesized expression.
      */
-    private bool $inParentheses = false;
-
+    private bool $in_parentheses = false;
     /**
      * Whether the parser is currently within an expression.
      */
-    private bool $inExpression = false;
-
+    private bool $in_expression = false;
     /**
      * A map from all variable names that are assigned with `!global` in the
      * current stylesheet to the nodes where they're defined.
@@ -151,65 +139,52 @@ abstract class StylesheetParser extends Parser
      *
      * @var array<string, VariableDeclaration>
      */
-    private array $globalVariables = [];
-
-    protected function inExpression(): bool
+    private array $global_variables = [];
+    protected function in_expression(): bool
     {
-        return $this->inExpression;
+        return $this->in_expression;
     }
-
     /**
      * @throws SassFormatException when parsing fails
      */
     public function parse(): Stylesheet
     {
-        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Sass\Statement\Stylesheet {
-            $start = $this->scanner->getPosition();
-
+        return $this->wrap_span_format_exception(function (): \Scss_Php\Scss_Php\Ast\Sass\Statement\Stylesheet {
+            $start = $this->scanner->get_position();
             // Allow a byte-order mark at the beginning of the document.
-            $this->scanner->scan("\u{FEFF}");
-
-            $statements = $this->statements(function (): ?\ScssPhp\ScssPhp\Ast\Sass\Statement {
+            $this->scanner->scan("﻿");
+            $statements = $this->statements(function (): ?\Scss_Php\Scss_Php\Ast\Sass\Statement {
                 // Handle this specially so that {@see atRule} always returns a non-nullable Statement.
                 if ($this->scanner->scan('@charset')) {
                     $this->whitespace();
                     $this->string();
-
                     return null;
                 }
-
                 return $this->statement(true);
             });
-
-            $this->scanner->expectDone();
-
+            $this->scanner->expect_done();
             // Ensure that all global variable assignments produce a variable in this
             // stylesheet, even if they aren't evaluated. See sass/language#50.
-            foreach ($this->globalVariables as $declaration) {
-                $statements[] = new VariableDeclaration($declaration->getName(), new NullExpression($declaration->getExpression()->getSpan()), $declaration->getSpan(), null, true);
+            foreach ($this->global_variables as $declaration) {
+                $statements[] = new Variable_Declaration($declaration->get_name(), new Null_Expression($declaration->get_expression()->get_span()), $declaration->get_span(), null, true);
             }
-
-            return new Stylesheet($statements, $this->scanner->spanFrom($start), $this->isPlainCss());
+            return new Stylesheet($statements, $this->scanner->span_from($start), $this->is_plain_css());
         });
     }
-
-    public function parseArgumentDeclaration(): ArgumentDeclaration
+    public function parse_argument_declaration(): Argument_Declaration
     {
-        return $this->wrapSpanFormatException(function (): \ScssPhp\ScssPhp\Ast\Sass\ArgumentDeclaration {
-            $this->scanner->expectChar('@', '@-rule');
+        return $this->wrap_span_format_exception(function (): \Scss_Php\Scss_Php\Ast\Sass\Argument_Declaration {
+            $this->scanner->expect_char('@', '@-rule');
             $this->identifier();
             $this->whitespace();
             $this->identifier();
-            $arguments = $this->argumentDeclaration();
+            $arguments = $this->argument_declaration();
             $this->whitespace();
-            $this->scanner->expectChar('{');
-
-            $this->scanner->expectDone();
-
+            $this->scanner->expect_char('{');
+            $this->scanner->expect_done();
             return $arguments;
         });
     }
-
     /**
      * Consumes a statement that's allowed at the top level of the stylesheet or
      * within nested style and at rules.
@@ -219,184 +194,144 @@ abstract class StylesheetParser extends Parser
      */
     private function statement(bool $root = false): Statement
     {
-        switch ($this->scanner->peekChar()) {
+        switch ($this->scanner->peek_char()) {
             case '@':
-                return $this->atRule($this->statement(...), $root);
-
+                return $this->at_rule($this->statement(...), $root);
             case '+':
-                if (!$this->isIndented() || !$this->lookingAtIdentifier(1)) {
-                    return $this->styleRule();
+                if (!$this->is_indented() || !$this->looking_at_identifier(1)) {
+                    return $this->style_rule();
                 }
-
-                $this->isUseAllowed = false;
-                $start = $this->scanner->getPosition();
-                $this->scanner->readChar();
-
-                return $this->includeRule($start);
-
+                $this->is_use_allowed = false;
+                $start = $this->scanner->get_position();
+                $this->scanner->read_char();
+                return $this->include_rule($start);
             case '=':
-                if (!$this->isIndented()) {
-                    return $this->styleRule();
+                if (!$this->is_indented()) {
+                    return $this->style_rule();
                 }
-
-                $this->isUseAllowed = false;
-                $start = $this->scanner->getPosition();
-                $this->scanner->readChar();
+                $this->is_use_allowed = false;
+                $start = $this->scanner->get_position();
+                $this->scanner->read_char();
                 $this->whitespace();
-
-                return $this->mixinRule($start);
-
+                return $this->mixin_rule($start);
             case '}':
                 $this->scanner->error('unmatched "}".');
-
-                // no break
+            // no break
             default:
-                if ($this->inStyleRule || $this->inUnknownAtRule || $this->inMixin || $this->inContentBlock) {
-                    return $this->declarationOrStyleRule();
+                if ($this->in_style_rule || $this->in_unknown_at_rule || $this->in_mixin || $this->in_content_block) {
+                    return $this->declaration_or_style_rule();
                 }
-
-                return $this->variableDeclarationOrStyleRule();
+                return $this->variable_declaration_or_style_rule();
         }
     }
-
     /**
      * Consumes a namespaced variable declaration.
      *
      * @throws FormatException
      */
-    private function variableDeclarationWithNamespace(): VariableDeclaration
+    private function variable_declaration_with_namespace(): Variable_Declaration
     {
-        $start = $this->scanner->getPosition();
+        $start = $this->scanner->get_position();
         $namespace = $this->identifier();
-        $this->scanner->expectChar('.');
-
-        return $this->variableDeclarationWithoutNamespace($namespace, $start);
+        $this->scanner->expect_char('.');
+        return $this->variable_declaration_without_namespace($namespace, $start);
     }
-
     /**
      * Consumes a variable declaration.
      */
-    protected function variableDeclarationWithoutNamespace(?string $namespace = null, ?int $start = null): VariableDeclaration
+    protected function variable_declaration_without_namespace(?string $namespace = null, ?int $start = null): Variable_Declaration
     {
-        $precedingComment = $this->lastSilentComment;
-        $this->lastSilentComment = null;
-        $start ??= $this->scanner->getPosition();
-
-        $name = $this->variableName();
-
+        $preceding_comment = $this->last_silent_comment;
+        $this->last_silent_comment = null;
+        $start ??= $this->scanner->get_position();
+        $name = $this->variable_name();
         if ($namespace !== null) {
-            $this->assertPublic($name, fn (): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
+            $this->assert_public($name, fn(): \Source_Span\File_Span => $this->scanner->span_from($start));
         }
-
-        if ($this->isPlainCss()) {
-            $this->error('Sass variables aren\'t allowed in plain CSS.', $this->scanner->spanFrom($start));
+        if ($this->is_plain_css()) {
+            $this->error('Sass variables aren\'t allowed in plain CSS.', $this->scanner->span_from($start));
         }
-
         $this->whitespace();
-        $this->scanner->expectChar(':');
+        $this->scanner->expect_char(':');
         $this->whitespace();
-
         $value = $this->expression();
-
         $guarded = false;
         $global = false;
-        $flagStart = $this->scanner->getPosition();
-
-        while ($this->scanner->scanChar('!')) {
+        $flag_start = $this->scanner->get_position();
+        while ($this->scanner->scan_char('!')) {
             $flag = $this->identifier();
             if ($flag === 'default') {
                 if ($guarded) {
-                    LoggerUtil::warnForDeprecation($this->logger, Deprecation::duplicateVarFlags, "!default should only be written once for each variable.\nThis will be an error in Dart Sass 2.0.0.", $this->scanner->spanFrom($flagStart));
+                    Logger_Util::warn_for_deprecation($this->logger, Deprecation::duplicateVarFlags, "!default should only be written once for each variable.\nThis will be an error in Dart Sass 2.0.0.", $this->scanner->span_from($flag_start));
                 }
-
                 $guarded = true;
             } elseif ($flag === 'global') {
                 if ($namespace !== null) {
-                    $this->error("!global isn't allowed for variables in other modules.", $this->scanner->spanFrom($flagStart));
+                    $this->error("!global isn't allowed for variables in other modules.", $this->scanner->span_from($flag_start));
                 } elseif ($global) {
-                    LoggerUtil::warnForDeprecation($this->logger, Deprecation::duplicateVarFlags, "!global should only be written once for each variable.\nThis will be an error in Dart Sass 2.0.0.", $this->scanner->spanFrom($flagStart));
+                    Logger_Util::warn_for_deprecation($this->logger, Deprecation::duplicateVarFlags, "!global should only be written once for each variable.\nThis will be an error in Dart Sass 2.0.0.", $this->scanner->span_from($flag_start));
                 }
-
                 $global = true;
             } else {
-                $this->error('Invalid flag name.', $this->scanner->spanFrom($flagStart));
+                $this->error('Invalid flag name.', $this->scanner->span_from($flag_start));
             }
-
             $this->whitespace();
-            $flagStart = $this->scanner->getPosition();
+            $flag_start = $this->scanner->get_position();
         }
-
-        $this->expectStatementSeparator('variable declaration');
-
+        $this->expect_statement_separator('variable declaration');
         // TODO remove this when implementing modules
         if ($namespace !== null) {
-            $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
+            $this->error('Sass modules are not implemented yet.', $this->scanner->span_from($start));
         }
-
-        $declaration = new VariableDeclaration($name, $value, $this->scanner->spanFrom($start), $namespace, $guarded, $global, $precedingComment);
-
-        if ($global && !isset($this->globalVariables[$name])) {
-            $this->globalVariables[$name] = $declaration;
+        $declaration = new Variable_Declaration($name, $value, $this->scanner->span_from($start), $namespace, $guarded, $global, $preceding_comment);
+        if ($global && !isset($this->global_variables[$name])) {
+            $this->global_variables[$name] = $declaration;
         }
-
         return $declaration;
     }
-
-    private function variableDeclarationOrStyleRule(): Statement
+    private function variable_declaration_or_style_rule(): Statement
     {
-        if ($this->isPlainCss()) {
-            return $this->styleRule();
+        if ($this->is_plain_css()) {
+            return $this->style_rule();
         }
-
         // The indented syntax allows a single backslash to distinguish a style rule
         // from old-style property syntax. We don't support old property syntax, but
         // we do support the backslash because it's easy to do.
-        if ($this->isIndented() && $this->scanner->scanChar('\\')) {
-            return $this->styleRule();
+        if ($this->is_indented() && $this->scanner->scan_char('\\')) {
+            return $this->style_rule();
         }
-
-        if (!$this->lookingAtIdentifier()) {
-            return $this->styleRule();
+        if (!$this->looking_at_identifier()) {
+            return $this->style_rule();
         }
-
-        $start = $this->scanner->getPosition();
-        $variableOrInterpolation = $this->variableDeclarationOrInterpolation();
-
-        if ($variableOrInterpolation instanceof VariableDeclaration) {
-            return $variableOrInterpolation;
+        $start = $this->scanner->get_position();
+        $variable_or_interpolation = $this->variable_declaration_or_interpolation();
+        if ($variable_or_interpolation instanceof Variable_Declaration) {
+            return $variable_or_interpolation;
         }
-
-        $buffer = new InterpolationBuffer();
-        $buffer->addInterpolation($variableOrInterpolation);
-
-        return $this->styleRule($buffer, $start);
+        $buffer = new Interpolation_Buffer();
+        $buffer->add_interpolation($variable_or_interpolation);
+        return $this->style_rule($buffer, $start);
     }
-
     /**
      * Consumes a {@see VariableDeclaration}, a {@see Declaration}, or a {@see StyleRule}.
      *
      * @throws FormatException
      */
-    private function declarationOrStyleRule(): Statement
+    private function declaration_or_style_rule(): Statement
     {
         // The indented syntax allows a single backslash to distinguish a style rule
         // from old-style property syntax. We don't support old property syntax, but
         // we do support the backslash because it's easy to do.
-        if ($this->isIndented() && $this->scanner->scanChar('\\')) {
-            return $this->styleRule();
+        if ($this->is_indented() && $this->scanner->scan_char('\\')) {
+            return $this->style_rule();
         }
-
-        $start = $this->scanner->getPosition();
-
-        $declarationBuffer = $this->declarationOrBuffer();
-
-        if ($declarationBuffer instanceof Statement) {
-            return $declarationBuffer;
+        $start = $this->scanner->get_position();
+        $declaration_buffer = $this->declaration_or_buffer();
+        if ($declaration_buffer instanceof Statement) {
+            return $declaration_buffer;
         }
-
-        return $this->styleRule($declarationBuffer, $start);
+        return $this->style_rule($declaration_buffer, $start);
     }
-
     /**
      * Tries to parse a variable or property declaration, and returns the value
      * parsed so far if it fails.
@@ -406,136 +341,103 @@ abstract class StylesheetParser extends Parser
      * attempted; or it can return a {@see Declaration} or a {@see VariableDeclaration},
      * indicating that it successfully consumed a declaration.
      */
-    private function declarationOrBuffer(): Statement|InterpolationBuffer
+    private function declaration_or_buffer(): Statement|Interpolation_Buffer
     {
-        $start = $this->scanner->getPosition();
-        $nameBuffer = new InterpolationBuffer();
-        $first = $this->scanner->peekChar();
-        $startsWithPunctuation = false;
-
+        $start = $this->scanner->get_position();
+        $name_buffer = new Interpolation_Buffer();
+        $first = $this->scanner->peek_char();
+        $starts_with_punctuation = false;
         // Allow the "*prop: val", ":prop: val", "#prop: val", and ".prop: val"
         // hacks.
-        if ($first === ':' || $first === '*' || $first === '.' || ($first === '#' && $this->scanner->peekChar(1) !== '{')) {
-            $startsWithPunctuation = true;
-            $nameBuffer->write($this->scanner->readChar());
-            $nameBuffer->write($this->rawText($this->whitespace(...)));
+        if ($first === ':' || $first === '*' || $first === '.' || $first === '#' && $this->scanner->peek_char(1) !== '{') {
+            $starts_with_punctuation = true;
+            $name_buffer->write($this->scanner->read_char());
+            $name_buffer->write($this->raw_text($this->whitespace(...)));
         }
-
-        if (!$this->lookingAtInterpolatedIdentifier()) {
-            return $nameBuffer;
+        if (!$this->looking_at_interpolated_identifier()) {
+            return $name_buffer;
         }
-
-        $variableOrInterpolation = $startsWithPunctuation ? $this->interpolatedIdentifier() : $this->variableDeclarationOrInterpolation();
-
-        if ($variableOrInterpolation instanceof VariableDeclaration) {
-            return $variableOrInterpolation;
+        $variable_or_interpolation = $starts_with_punctuation ? $this->interpolated_identifier() : $this->variable_declaration_or_interpolation();
+        if ($variable_or_interpolation instanceof Variable_Declaration) {
+            return $variable_or_interpolation;
         }
-
-        $nameBuffer->addInterpolation($variableOrInterpolation);
-
-        $this->isUseAllowed = false;
-
+        $name_buffer->add_interpolation($variable_or_interpolation);
+        $this->is_use_allowed = false;
         if ($this->scanner->matches('/*')) {
-            $nameBuffer->write($this->rawText($this->loudComment(...)));
+            $name_buffer->write($this->raw_text($this->loud_comment(...)));
         }
-
-        $midBuffer = $this->rawText($this->whitespace(...));
-        $beforeColon = $this->scanner->getPosition();
-
-        if (!$this->scanner->scanChar(':')) {
-            if ($midBuffer !== '') {
-                $nameBuffer->write(' ');
+        $mid_buffer = $this->raw_text($this->whitespace(...));
+        $before_colon = $this->scanner->get_position();
+        if (!$this->scanner->scan_char(':')) {
+            if ($mid_buffer !== '') {
+                $name_buffer->write(' ');
             }
-
-            return $nameBuffer;
+            return $name_buffer;
         }
-
-        $midBuffer .= ':';
-
+        $mid_buffer .= ':';
         // Parse custom properties as declarations no matter what.
-        $name = $nameBuffer->buildInterpolation($this->scanner->spanFrom($start, $beforeColon));
-
-        if (str_starts_with($name->getInitialPlain(), '--')) {
-            $value = new StringExpression($this->interpolatedDeclarationValue(silentComments: false));
-            $this->expectStatementSeparator('custom property');
-
-            return Declaration::create($name, $value, $this->scanner->spanFrom($start));
+        $name = $name_buffer->build_interpolation($this->scanner->span_from($start, $before_colon));
+        if (str_starts_with($name->get_initial_plain(), '--')) {
+            $value = new String_Expression($this->interpolated_declaration_value(silentComments: false));
+            $this->expect_statement_separator('custom property');
+            return Declaration::create($name, $value, $this->scanner->span_from($start));
         }
-
-        if ($this->scanner->scanChar(':')) {
-            $nameBuffer->write($midBuffer);
-            $nameBuffer->write(':');
-
-            return $nameBuffer;
+        if ($this->scanner->scan_char(':')) {
+            $name_buffer->write($mid_buffer);
+            $name_buffer->write(':');
+            return $name_buffer;
         }
-
-        if ($this->isIndented() && $this->lookingAtInterpolatedIdentifier()) {
+        if ($this->is_indented() && $this->looking_at_interpolated_identifier()) {
             // In the indented syntax, `foo:bar` is always considered a selector
             // rather than a property.
-            $nameBuffer->write($midBuffer);
-
-            return $nameBuffer;
+            $name_buffer->write($mid_buffer);
+            return $name_buffer;
         }
-
-        $postColonWhitespace = $this->rawText($this->whitespace(...));
-
-        $nested = $this->tryDeclarationChildren($name, $start);
+        $post_colon_whitespace = $this->raw_text($this->whitespace(...));
+        $nested = $this->try_declaration_children($name, $start);
         if ($nested !== null) {
             return $nested;
         }
-
-        $midBuffer .= $postColonWhitespace;
-        $couldBeSelector = $postColonWhitespace === '' && $this->lookingAtInterpolatedIdentifier();
-
-        $beforeDeclaration = $this->scanner->getPosition();
-
+        $mid_buffer .= $post_colon_whitespace;
+        $could_be_selector = $post_colon_whitespace === '' && $this->looking_at_interpolated_identifier();
+        $before_declaration = $this->scanner->get_position();
         try {
             $value = $this->expression();
-
-            if ($this->lookingAtChildren()) {
+            if ($this->looking_at_children()) {
                 // Properties that are ambiguous with selectors can't have additional
                 // properties nested beneath them, so we force an error. This will be
                 // caught below and cause the text to be reparsed as a selector.
-                if ($couldBeSelector) {
-                    $this->expectStatementSeparator();
+                if ($could_be_selector) {
+                    $this->expect_statement_separator();
                 }
-            } elseif (!$this->atEndOfStatement()) {
+            } elseif (!$this->at_end_of_statement()) {
                 // Force an exception if there isn't a valid end-of-property character
                 // but don't consume that character. This will also cause the text to be
                 // reparsed.
-                $this->expectStatementSeparator();
+                $this->expect_statement_separator();
             }
-        } catch (FormatException $e) {
-            if (!$couldBeSelector) {
+        } catch (Format_Exception $e) {
+            if (!$could_be_selector) {
                 throw $e;
             }
-
             // If the value would be followed by a semicolon, it's definitely supposed
             // to be a property, not a selector.
-            $this->scanner->setPosition($beforeDeclaration);
-
-            $additional = $this->almostAnyValue();
-
-            if (!$this->isIndented() && $this->scanner->peekChar() === ';') {
+            $this->scanner->set_position($before_declaration);
+            $additional = $this->almost_any_value();
+            if (!$this->is_indented() && $this->scanner->peek_char() === ';') {
                 throw $e;
             }
-
-            $nameBuffer->write($midBuffer);
-            $nameBuffer->addInterpolation($additional);
-
-            return $nameBuffer;
+            $name_buffer->write($mid_buffer);
+            $name_buffer->add_interpolation($additional);
+            return $name_buffer;
         }
-
-        $nested = $this->tryDeclarationChildren($name, $start, $value);
+        $nested = $this->try_declaration_children($name, $start, $value);
         if ($nested !== null) {
             return $nested;
         }
-
-        $this->expectStatementSeparator();
-
-        return Declaration::create($name, $value, $this->scanner->spanFrom($start));
+        $this->expect_statement_separator();
+        return Declaration::create($name, $value, $this->scanner->span_from($start));
     }
-
     /**
      * Tries to parse a namespaced {@see VariableDeclaration}, and returns the value
      * parsed so far if it fails.
@@ -545,64 +447,50 @@ abstract class StylesheetParser extends Parser
      * parsing should be attempted; or it can return a {@see VariableDeclaration},
      * indicating that it successfully consumed a variable declaration.
      */
-    private function variableDeclarationOrInterpolation(): Interpolation|VariableDeclaration
+    private function variable_declaration_or_interpolation(): Interpolation|Variable_Declaration
     {
-        if (!$this->lookingAtIdentifier()) {
-            return $this->interpolatedIdentifier();
+        if (!$this->looking_at_identifier()) {
+            return $this->interpolated_identifier();
         }
-
-        $start = $this->scanner->getPosition();
+        $start = $this->scanner->get_position();
         $identifier = $this->identifier();
-
         if ($this->scanner->matches('.$')) {
-            $this->scanner->readChar();
-
-            return $this->variableDeclarationWithoutNamespace($identifier, $start);
+            $this->scanner->read_char();
+            return $this->variable_declaration_without_namespace($identifier, $start);
         }
-
-        $buffer = new InterpolationBuffer();
+        $buffer = new Interpolation_Buffer();
         $buffer->write($identifier);
-
         // Parse the rest of an interpolated identifier if one exists, so callers
         // don't have to.
-        if ($this->lookingAtInterpolatedIdentifierBody()) {
-            $buffer->addInterpolation($this->interpolatedIdentifier());
+        if ($this->looking_at_interpolated_identifier_body()) {
+            $buffer->add_interpolation($this->interpolated_identifier());
         }
-
-        return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+        return $buffer->build_interpolation($this->scanner->span_from($start));
     }
-
     /**
      * Consumes a StyleRule
      */
-    private function styleRule(?InterpolationBuffer $buffer = null, ?int $start = null): StyleRule
+    private function style_rule(?Interpolation_Buffer $buffer = null, ?int $start = null): Style_Rule
     {
-        $start ??= $this->scanner->getPosition();
-        $interpolation = $this->styleRuleSelector();
-
+        $start ??= $this->scanner->get_position();
+        $interpolation = $this->style_rule_selector();
         if ($buffer !== null) {
-            $buffer->addInterpolation($interpolation);
-            $interpolation = $buffer->buildInterpolation($this->scanner->spanFrom($start));
+            $buffer->add_interpolation($interpolation);
+            $interpolation = $buffer->build_interpolation($this->scanner->span_from($start));
         }
-
-        if (!$interpolation->getContents()) {
+        if (!$interpolation->get_contents()) {
             $this->scanner->error('expected "}".');
         }
-
-        $wasInStyleRule = $this->inStyleRule;
-        $this->inStyleRule = true;
-
-        return $this->withChildren($this->statement(...), $start, function (array $children) use ($wasInStyleRule, $start, $interpolation): \ScssPhp\ScssPhp\Ast\Sass\Statement\StyleRule {
-            if ($this->isIndented() && $children === []) {
-                $this->warn("This selector doesn't have any properties and won't be rendered.", $interpolation->getSpan());
+        $was_in_style_rule = $this->in_style_rule;
+        $this->in_style_rule = true;
+        return $this->with_children($this->statement(...), $start, function (array $children) use ($was_in_style_rule, $start, $interpolation): \Scss_Php\Scss_Php\Ast\Sass\Statement\Style_Rule {
+            if ($this->is_indented() && $children === []) {
+                $this->warn("This selector doesn't have any properties and won't be rendered.", $interpolation->get_span());
             }
-
-            $this->inStyleRule = $wasInStyleRule;
-
-            return new StyleRule($interpolation, $children, $this->scanner->spanFrom($start));
+            $this->in_style_rule = $was_in_style_rule;
+            return new Style_Rule($interpolation, $children, $this->scanner->span_from($start));
         });
     }
-
     /**
      * Consumes either a property declaration or a namespaced variable declaration.
      *
@@ -613,60 +501,47 @@ abstract class StylesheetParser extends Parser
      * If $parseCustomProperties is `true`, properties that begin with `--` will
      * be parsed using custom property parsing rules.
      */
-    private function propertyOrVariableDeclaration(bool $parseCustomProperties = true): Statement
+    private function property_or_variable_declaration(bool $parse_custom_properties = true): Statement
     {
-        $start = $this->scanner->getPosition();
-
+        $start = $this->scanner->get_position();
         // Allow the "*prop: val", ":prop: val", "#prop: val", and ".prop: val"
         // hacks.
-        $first = $this->scanner->peekChar();
-        if ($first === ':' || $first === '*' || $first === '.' || ($first === '#' && $this->scanner->peekChar(1) !== '{')) {
-            $nameBuffer = new InterpolationBuffer();
-            $nameBuffer->write($this->scanner->readChar());
-            $nameBuffer->write($this->rawText($this->whitespace(...)));
-            $nameBuffer->addInterpolation($this->interpolatedIdentifier());
-            $name = $nameBuffer->buildInterpolation($this->scanner->spanFrom($start));
-        } elseif (!$this->isPlainCss()) {
-            $variableOrInterpolation = $this->variableDeclarationOrInterpolation();
-
-            if ($variableOrInterpolation instanceof VariableDeclaration) {
-                return $variableOrInterpolation;
+        $first = $this->scanner->peek_char();
+        if ($first === ':' || $first === '*' || $first === '.' || $first === '#' && $this->scanner->peek_char(1) !== '{') {
+            $name_buffer = new Interpolation_Buffer();
+            $name_buffer->write($this->scanner->read_char());
+            $name_buffer->write($this->raw_text($this->whitespace(...)));
+            $name_buffer->add_interpolation($this->interpolated_identifier());
+            $name = $name_buffer->build_interpolation($this->scanner->span_from($start));
+        } elseif (!$this->is_plain_css()) {
+            $variable_or_interpolation = $this->variable_declaration_or_interpolation();
+            if ($variable_or_interpolation instanceof Variable_Declaration) {
+                return $variable_or_interpolation;
             }
-
-            $name = $variableOrInterpolation;
+            $name = $variable_or_interpolation;
         } else {
-            $name = $this->interpolatedIdentifier();
+            $name = $this->interpolated_identifier();
         }
-
         $this->whitespace();
-        $this->scanner->expectChar(':');
-
-        if ($parseCustomProperties && str_starts_with($name->getInitialPlain(), '--')) {
-            $value = new StringExpression($this->interpolatedDeclarationValue(silentComments: false));
-            $this->expectStatementSeparator('custom property');
-
-            return Declaration::create($name, $value, $this->scanner->spanFrom($start));
+        $this->scanner->expect_char(':');
+        if ($parse_custom_properties && str_starts_with($name->get_initial_plain(), '--')) {
+            $value = new String_Expression($this->interpolated_declaration_value(silentComments: false));
+            $this->expect_statement_separator('custom property');
+            return Declaration::create($name, $value, $this->scanner->span_from($start));
         }
-
         $this->whitespace();
-
-        $nested = $this->tryDeclarationChildren($name, $start);
+        $nested = $this->try_declaration_children($name, $start);
         if ($nested !== null) {
             return $nested;
         }
-
         $value = $this->expression();
-
-        $nested = $this->tryDeclarationChildren($name, $start, $value);
+        $nested = $this->try_declaration_children($name, $start, $value);
         if ($nested !== null) {
             return $nested;
         }
-
-        $this->expectStatementSeparator();
-
-        return Declaration::create($name, $value, $this->scanner->spanFrom($start));
+        $this->expect_statement_separator();
+        return Declaration::create($name, $value, $this->scanner->span_from($start));
     }
-
     /**
      * Tries parsing nested children of a declaration whose $name has already
      * been parsed, and returns `null` if it doesn't have any.
@@ -674,31 +549,26 @@ abstract class StylesheetParser extends Parser
      * If $value is passed, it's used as the value of the property without
      * nesting.
      */
-    private function tryDeclarationChildren(Interpolation $name, int $start, ?Expression $value = null): ?Declaration
+    private function try_declaration_children(Interpolation $name, int $start, ?Expression $value = null): ?Declaration
     {
-        if (!$this->lookingAtChildren()) {
+        if (!$this->looking_at_children()) {
             return null;
         }
-
-        if ($this->isPlainCss()) {
+        if ($this->is_plain_css()) {
             $this->scanner->error("Nested declarations aren't allowed in plain CSS.");
         }
-
-        return $this->withChildren($this->declarationChild(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\Declaration => Declaration::nested($name, $children, $span, $value));
+        return $this->with_children($this->declaration_child(...), $start, fn(array $children, File_Span $span): \Scss_Php\Scss_Php\Ast\Sass\Statement\Declaration => Declaration::nested($name, $children, $span, $value));
     }
-
     /**
      * Consumes a statement that's allowed within a declaration.
      */
-    private function declarationChild(): Statement
+    private function declaration_child(): Statement
     {
-        if ($this->scanner->peekChar() === '@') {
-            return $this->declarationAtRule();
+        if ($this->scanner->peek_char() === '@') {
+            return $this->declaration_at_rule();
         }
-
-        return $this->propertyOrVariableDeclaration(false);
+        return $this->property_or_variable_declaration(false);
     }
-
     /**
      * Consumes an at-rule.
      *
@@ -713,276 +583,240 @@ abstract class StylesheetParser extends Parser
      *
      * @param-immediately-invoked-callable $child
      */
-    protected function atRule(callable $child, bool $root = false): Statement
+    protected function at_rule(callable $child, bool $root = false): Statement
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('@', '@-rule');
-        $name = $this->interpolatedIdentifier();
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('@', '@-rule');
+        $name = $this->interpolated_identifier();
         $this->whitespace();
-
-        $wasUseAllowed = $this->isUseAllowed;
-        $this->isUseAllowed = false;
-
-        switch ($name->getAsPlain()) {
+        $was_use_allowed = $this->is_use_allowed;
+        $this->is_use_allowed = false;
+        switch ($name->get_as_plain()) {
             case 'at-root':
-                return $this->atRootRule($start);
+                return $this->at_root_rule($start);
             case 'content':
-                return $this->contentRule($start);
+                return $this->content_rule($start);
             case 'debug':
-                return $this->debugRule($start);
+                return $this->debug_rule($start);
             case 'each':
-                return $this->eachRule($start, $child);
+                return $this->each_rule($start, $child);
             case 'else':
-                $this->disallowedAtRule($start);
-                // no break
+                $this->disallowed_at_rule($start);
+            // no break
             case 'error':
-                return $this->errorRule($start);
+                return $this->error_rule($start);
             case 'extend':
-                return $this->extendRule($start);
+                return $this->extend_rule($start);
             case 'for':
-                return $this->forRule($start, $child);
+                return $this->for_rule($start, $child);
             case 'forward':
-                $this->isUseAllowed = $wasUseAllowed;
-
+                $this->is_use_allowed = $was_use_allowed;
                 if (!$root) {
-                    $this->disallowedAtRule($start);
+                    $this->disallowed_at_rule($start);
                 }
-
                 // TODO remove this when implementing modules
-                $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
-                // no break
+                $this->error('Sass modules are not implemented yet.', $this->scanner->span_from($start));
+            // no break
             case 'function':
-                return $this->functionRule($start);
+                return $this->function_rule($start);
             case 'if':
-                return $this->ifRule($start, $child);
+                return $this->if_rule($start, $child);
             case 'import':
-                return $this->importRule($start);
+                return $this->import_rule($start);
             case 'include':
-                return $this->includeRule($start);
+                return $this->include_rule($start);
             case 'media':
-                return $this->mediaRule($start);
+                return $this->media_rule($start);
             case 'mixin':
-                return $this->mixinRule($start);
+                return $this->mixin_rule($start);
             case '-moz-document':
-                return $this->mozDocumentRule($start, $name);
+                return $this->moz_document_rule($start, $name);
             case 'return':
-                $this->disallowedAtRule($start);
-                // no break
+                $this->disallowed_at_rule($start);
+            // no break
             case 'supports':
-                return $this->supportsRule($start);
+                return $this->supports_rule($start);
             case 'use':
-                $this->isUseAllowed = $wasUseAllowed;
-
+                $this->is_use_allowed = $was_use_allowed;
                 if (!$root) {
-                    $this->disallowedAtRule($start);
+                    $this->disallowed_at_rule($start);
                 }
-
                 // TODO remove this when implementing modules
-                $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
-                // no break
+                $this->error('Sass modules are not implemented yet.', $this->scanner->span_from($start));
+            // no break
             case 'warn':
-                return $this->warnRule($start);
+                return $this->warn_rule($start);
             case 'while':
-                return $this->whileRule($start, $child);
+                return $this->while_rule($start, $child);
             default:
-                return $this->unknownAtRule($start, $name);
+                return $this->unknown_at_rule($start, $name);
         }
     }
-
     /**
      * Consumes an at-rule allowed within a property declaration.
      */
-    private function declarationAtRule(): Statement
+    private function declaration_at_rule(): Statement
     {
-        $start = $this->scanner->getPosition();
-        $name = $this->plainAtRuleName();
-
+        $start = $this->scanner->get_position();
+        $name = $this->plain_at_rule_name();
         switch ($name) {
             case 'content':
-                return $this->contentRule($start);
+                return $this->content_rule($start);
             case 'debug':
-                return $this->debugRule($start);
+                return $this->debug_rule($start);
             case 'each':
-                return $this->eachRule($start, $this->declarationChild(...));
+                return $this->each_rule($start, $this->declaration_child(...));
             case 'else':
-                $this->disallowedAtRule($start);
-                // no break
+                $this->disallowed_at_rule($start);
+            // no break
             case 'error':
-                return $this->errorRule($start);
+                return $this->error_rule($start);
             case 'for':
-                return $this->forRule($start, $this->declarationChild(...));
+                return $this->for_rule($start, $this->declaration_child(...));
             case 'if':
-                return $this->ifRule($start, $this->declarationChild(...));
+                return $this->if_rule($start, $this->declaration_child(...));
             case 'include':
-                return $this->includeRule($start);
+                return $this->include_rule($start);
             case 'warn':
-                return $this->warnRule($start);
+                return $this->warn_rule($start);
             case 'while':
-                return $this->whileRule($start, $this->declarationChild(...));
+                return $this->while_rule($start, $this->declaration_child(...));
             default:
-                $this->disallowedAtRule($start);
+                $this->disallowed_at_rule($start);
         }
     }
-
     /**
      * Consumes a statement allowed within a function.
      */
-    private function functionChild(): Statement
+    private function function_child(): Statement
     {
-        if ($this->scanner->peekChar() !== '@') {
-            $start = $this->scanner->getPosition();
-
+        if ($this->scanner->peek_char() !== '@') {
+            $start = $this->scanner->get_position();
             try {
-                return $this->variableDeclarationWithNamespace();
-            } catch (FormatException $variableDeclarationError) {
+                return $this->variable_declaration_with_namespace();
+            } catch (Format_Exception $variable_declaration_error) {
                 // TODO remove this when implementing modules
-                if ($variableDeclarationError->getMessage() === 'Sass modules are not implemented yet.') {
-                    throw $variableDeclarationError;
+                if ($variable_declaration_error->get_message() === 'Sass modules are not implemented yet.') {
+                    throw $variable_declaration_error;
                 }
-
-                $this->scanner->setPosition($start);
-
+                $this->scanner->set_position($start);
                 // If a variable declaration failed to parse, it's possible the user
                 // thought they could write a style rule or property declaration in a
                 // function. If so, throw a more helpful error message.
                 try {
-                    $statement = $this->declarationOrStyleRule();
-                } catch (FormatException) {
-                    throw $variableDeclarationError;
+                    $statement = $this->declaration_or_style_rule();
+                } catch (Format_Exception) {
+                    throw $variable_declaration_error;
                 }
-
-                $this->error('@function rules may not contain ' . ($statement instanceof StyleRule ? 'style rules.' : 'declarations.'), $statement->getSpan());
+                $this->error('@function rules may not contain ' . ($statement instanceof Style_Rule ? 'style rules.' : 'declarations.'), $statement->get_span());
             }
         }
-
-        $start = $this->scanner->getPosition();
-
-        switch ($this->plainAtRuleName()) {
+        $start = $this->scanner->get_position();
+        switch ($this->plain_at_rule_name()) {
             case 'debug':
-                return $this->debugRule($start);
+                return $this->debug_rule($start);
             case 'each':
-                return $this->eachRule($start, $this->functionChild(...));
+                return $this->each_rule($start, $this->function_child(...));
             case 'else':
-                $this->disallowedAtRule($start);
-                // no break
+                $this->disallowed_at_rule($start);
+            // no break
             case 'error':
-                return $this->errorRule($start);
+                return $this->error_rule($start);
             case 'for':
-                return $this->forRule($start, $this->functionChild(...));
+                return $this->for_rule($start, $this->function_child(...));
             case 'if':
-                return $this->ifRule($start, $this->functionChild(...));
+                return $this->if_rule($start, $this->function_child(...));
             case 'return':
-                return $this->returnRule($start);
+                return $this->return_rule($start);
             case 'warn':
-                return $this->warnRule($start);
+                return $this->warn_rule($start);
             case 'while':
-                return $this->whileRule($start, $this->functionChild(...));
+                return $this->while_rule($start, $this->function_child(...));
             default:
-                $this->disallowedAtRule($start);
+                $this->disallowed_at_rule($start);
         }
     }
-
     /**
      * Consumes an at-rule's name, with interpolation disallowed.
      */
-    private function plainAtRuleName(): string
+    private function plain_at_rule_name(): string
     {
-        $this->scanner->expectChar('@', '@-rule');
-
+        $this->scanner->expect_char('@', '@-rule');
         $name = $this->identifier();
         $this->whitespace();
-
         return $name;
     }
-
     /**
      * Consumes an `@at-root` rule.
      *
      * $start should point before the `@`.
      */
-    private function atRootRule(int $start): AtRootRule
+    private function at_root_rule(int $start): At_Root_Rule
     {
-        if ($this->scanner->peekChar() === '(') {
-            $query = $this->atRootQuery();
+        if ($this->scanner->peek_char() === '(') {
+            $query = $this->at_root_query();
             $this->whitespace();
-
-            return $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule => new AtRootRule($children, $span, $query));
+            return $this->with_children($this->statement(...), $start, fn(array $children, File_Span $span): \Scss_Php\Scss_Php\Ast\Sass\Statement\At_Root_Rule => new At_Root_Rule($children, $span, $query));
         }
-
-        if ($this->lookingAtChildren() || ($this->isIndented() && $this->atEndOfStatement())) {
-            return $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRootRule => new AtRootRule($children, $span));
+        if ($this->looking_at_children() || $this->is_indented() && $this->at_end_of_statement()) {
+            return $this->with_children($this->statement(...), $start, fn(array $children, File_Span $span): \Scss_Php\Scss_Php\Ast\Sass\Statement\At_Root_Rule => new At_Root_Rule($children, $span));
         }
-
-        $child = $this->styleRule();
-
-        return new AtRootRule([$child], $this->scanner->spanFrom($start));
+        $child = $this->style_rule();
+        return new At_Root_Rule([$child], $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a query expression of the form `(foo: bar)`.
      */
-    private function atRootQuery(): Interpolation
+    private function at_root_query(): Interpolation
     {
-        $start = $this->scanner->getPosition();
-        $buffer = new InterpolationBuffer();
-        $this->scanner->expectChar('(');
+        $start = $this->scanner->get_position();
+        $buffer = new Interpolation_Buffer();
+        $this->scanner->expect_char('(');
         $buffer->write('(');
         $this->whitespace();
-
-        $this->addOrInject($buffer, $this->expression());
-
-        if ($this->scanner->scanChar(':')) {
+        $this->add_or_inject($buffer, $this->expression());
+        if ($this->scanner->scan_char(':')) {
             $this->whitespace();
             $buffer->write(': ');
-            $this->addOrInject($buffer, $this->expression());
+            $this->add_or_inject($buffer, $this->expression());
         }
-
-        $this->scanner->expectChar(')');
+        $this->scanner->expect_char(')');
         $this->whitespace();
         $buffer->write(')');
-
-        return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+        return $buffer->build_interpolation($this->scanner->span_from($start));
     }
-
     /**
      * Consumes a `@content` rule.
      *
      * $start should point before the `@`.
      */
-    private function contentRule(int $start): ContentRule
+    private function content_rule(int $start): Content_Rule
     {
-        if (!$this->inMixin) {
-            $this->error('@content is only allowed within mixin declarations.', $this->scanner->spanFrom($start));
+        if (!$this->in_mixin) {
+            $this->error('@content is only allowed within mixin declarations.', $this->scanner->span_from($start));
         }
-
-        $beforeWhitespace = $this->scanner->getLocation();
+        $before_whitespace = $this->scanner->get_location();
         $this->whitespace();
-
-        if ($this->scanner->peekChar() === '(') {
-            $arguments = $this->argumentInvocation(true);
+        if ($this->scanner->peek_char() === '(') {
+            $arguments = $this->argument_invocation(true);
             $this->whitespace();
         } else {
-            $arguments = ArgumentInvocation::createEmpty($beforeWhitespace->pointSpan());
+            $arguments = Argument_Invocation::create_empty($before_whitespace->point_span());
         }
-
-        $this->expectStatementSeparator('@content rule');
-
-        return new ContentRule($arguments, $this->scanner->spanFrom($start));
+        $this->expect_statement_separator('@content rule');
+        return new Content_Rule($arguments, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a `@debug` rule.
      *
      * $start should point before the `@`.
      */
-    private function debugRule(int $start): DebugRule
+    private function debug_rule(int $start): Debug_Rule
     {
         $value = $this->expression();
-        $this->expectStatementSeparator('@debug rule');
-
-        return new DebugRule($value, $this->scanner->spanFrom($start));
+        $this->expect_statement_separator('@debug rule');
+        return new Debug_Rule($value, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a `@each` rule.
      *
@@ -993,102 +827,77 @@ abstract class StylesheetParser extends Parser
      *
      * @param-immediately-invoked-callable $child
      */
-    private function eachRule(int $start, callable $child): EachRule
+    private function each_rule(int $start, callable $child): Each_Rule
     {
-        $wasInControlDirective = $this->inControlDirective;
-        $this->inControlDirective = true;
-
-        $variables = [$this->variableName()];
+        $was_in_control_directive = $this->in_control_directive;
+        $this->in_control_directive = true;
+        $variables = [$this->variable_name()];
         $this->whitespace();
-
-        while ($this->scanner->scanChar(',')) {
+        while ($this->scanner->scan_char(',')) {
             $this->whitespace();
-            $variables[] = $this->variableName();
+            $variables[] = $this->variable_name();
             $this->whitespace();
         }
-
-        $this->expectIdentifier('in');
+        $this->expect_identifier('in');
         $this->whitespace();
-
         $list = $this->expression();
-
-        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($variables, $wasInControlDirective, $list): \ScssPhp\ScssPhp\Ast\Sass\Statement\EachRule {
-            $this->inControlDirective = $wasInControlDirective;
-
-            return new EachRule($variables, $list, $children, $span);
+        return $this->with_children($child, $start, function (array $children, File_Span $span) use ($variables, $was_in_control_directive, $list): \Scss_Php\Scss_Php\Ast\Sass\Statement\Each_Rule {
+            $this->in_control_directive = $was_in_control_directive;
+            return new Each_Rule($variables, $list, $children, $span);
         });
     }
-
     /**
      * Consumes a `@error` rule.
      *
      * $start should point before the `@`.
      */
-    private function errorRule(int $start): ErrorRule
+    private function error_rule(int $start): Error_Rule
     {
         $value = $this->expression();
-        $this->expectStatementSeparator('@error rule');
-
-        return new ErrorRule($value, $this->scanner->spanFrom($start));
+        $this->expect_statement_separator('@error rule');
+        return new Error_Rule($value, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a `@extend` rule.
      *
      * $start should point before the `@`.
      */
-    private function extendRule(int $start): ExtendRule
+    private function extend_rule(int $start): Extend_Rule
     {
-        if (!$this->inStyleRule && !$this->inMixin && !$this->inContentBlock) {
-            $this->error('@extend may only be used within style rules.', $this->scanner->spanFrom($start));
+        if (!$this->in_style_rule && !$this->in_mixin && !$this->in_content_block) {
+            $this->error('@extend may only be used within style rules.', $this->scanner->span_from($start));
         }
-
-        $value = $this->almostAnyValue();
-        $optional = $this->scanner->scanChar('!');
-
+        $value = $this->almost_any_value();
+        $optional = $this->scanner->scan_char('!');
         if ($optional) {
-            $this->expectIdentifier('optional');
+            $this->expect_identifier('optional');
             $this->whitespace();
         }
-
-        $this->expectStatementSeparator('@extend rule');
-
-        return new ExtendRule($value, $this->scanner->spanFrom($start), $optional);
+        $this->expect_statement_separator('@extend rule');
+        return new Extend_Rule($value, $this->scanner->span_from($start), $optional);
     }
-
     /**
      * Consumes a function declaration.
      *
      * $start should point before the `@`.
      */
-    private function functionRule(int $start): FunctionRule
+    private function function_rule(int $start): Function_Rule
     {
-        $precedingComment = $this->lastSilentComment;
-        $this->lastSilentComment = null;
-
-        $beforeName = $this->scanner->getPosition();
+        $preceding_comment = $this->last_silent_comment;
+        $this->last_silent_comment = null;
+        $before_name = $this->scanner->get_position();
         $name = $this->identifier();
-
         if (str_starts_with($name, '--')) {
-            LoggerUtil::warnForDeprecation(
-                $this->logger,
-                Deprecation::cssFunctionMixin,
-                "Sass @function names beginning with -- are deprecated for forward-compatibility with plain CSS mixins.\n\nFor details, see https://sass-lang.com/d/css-function-mixin",
-                $this->scanner->spanFrom($beforeName)
-            );
+            Logger_Util::warn_for_deprecation($this->logger, Deprecation::cssFunctionMixin, "Sass @function names beginning with -- are deprecated for forward-compatibility with plain CSS mixins.\n\nFor details, see https://sass-lang.com/d/css-function-mixin", $this->scanner->span_from($before_name));
         }
-
         $this->whitespace();
-        $arguments = $this->argumentDeclaration();
-
-        if ($this->inMixin || $this->inContentBlock) {
-            $this->error('Mixins may not contain function declarations.', $this->scanner->spanFrom($start));
+        $arguments = $this->argument_declaration();
+        if ($this->in_mixin || $this->in_content_block) {
+            $this->error('Mixins may not contain function declarations.', $this->scanner->span_from($start));
         }
-
-        if ($this->inControlDirective) {
-            $this->error('Functions may not be declared in control directives.', $this->scanner->spanFrom($start));
+        if ($this->in_control_directive) {
+            $this->error('Functions may not be declared in control directives.', $this->scanner->span_from($start));
         }
-
         switch (Util::unvendor($name)) {
             case 'calc':
             case 'element':
@@ -1098,18 +907,11 @@ abstract class StylesheetParser extends Parser
             case 'or':
             case 'not':
             case 'clamp':
-                $this->error('Invalid function name.', $this->scanner->spanFrom($start));
+                $this->error('Invalid function name.', $this->scanner->span_from($start));
         }
-
         $this->whitespace();
-
-        return $this->withChildren(
-            $this->functionChild(...),
-            $start,
-            fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\FunctionRule => new FunctionRule($name, $arguments, $span, $children, $precedingComment)
-        );
+        return $this->with_children($this->function_child(...), $start, fn(array $children, File_Span $span): \Scss_Php\Scss_Php\Ast\Sass\Statement\Function_Rule => new Function_Rule($name, $arguments, $span, $children, $preceding_comment));
     }
-
     /**
      * Consumes a `@for` rule.
      *
@@ -1120,52 +922,39 @@ abstract class StylesheetParser extends Parser
      *
      * @param-immediately-invoked-callable $child
      */
-    private function forRule(int $start, callable $child): ForRule
+    private function for_rule(int $start, callable $child): For_Rule
     {
-        $wasInControlDirective = $this->inControlDirective;
-        $this->inControlDirective = true;
-
-        $variable = $this->variableName();
+        $was_in_control_directive = $this->in_control_directive;
+        $this->in_control_directive = true;
+        $variable = $this->variable_name();
         $this->whitespace();
-
-        $this->expectIdentifier('from');
+        $this->expect_identifier('from');
         $this->whitespace();
-
         $exclusive = null;
         $from = $this->expression(function () use (&$exclusive): bool {
-            if (!$this->lookingAtIdentifier()) {
+            if (!$this->looking_at_identifier()) {
                 return false;
             }
-
-            if ($this->scanIdentifier('to')) {
+            if ($this->scan_identifier('to')) {
                 $exclusive = true;
-
                 return true;
             }
-
-            if ($this->scanIdentifier('through')) {
+            if ($this->scan_identifier('through')) {
                 $exclusive = false;
-
                 return true;
             }
-
             return false;
         });
-
         if ($exclusive === null) {
             $this->scanner->error('Expected "to" or "through".');
         }
-
         $this->whitespace();
         $to = $this->expression();
-
-        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($variable, $from, $to, $exclusive, $wasInControlDirective): \ScssPhp\ScssPhp\Ast\Sass\Statement\ForRule {
-            $this->inControlDirective = $wasInControlDirective;
-
-            return new ForRule($variable, $from, $to, $children, $span, $exclusive);
+        return $this->with_children($child, $start, function (array $children, File_Span $span) use ($variable, $from, $to, $exclusive, $was_in_control_directive): \Scss_Php\Scss_Php\Ast\Sass\Statement\For_Rule {
+            $this->in_control_directive = $was_in_control_directive;
+            return new For_Rule($variable, $from, $to, $children, $span, $exclusive);
         });
     }
-
     /**
      * Consumes a `@if` rule.
      *
@@ -1176,372 +965,292 @@ abstract class StylesheetParser extends Parser
      *
      * @param-immediately-invoked-callable $child
      */
-    private function ifRule(int $start, callable $child): IfRule
+    private function if_rule(int $start, callable $child): If_Rule
     {
-        $ifIndentation = $this->getCurrentIndentation();
-        $wasInControlDirective = $this->inControlDirective;
-        $this->inControlDirective = true;
-
+        $if_indentation = $this->get_current_indentation();
+        $was_in_control_directive = $this->in_control_directive;
+        $this->in_control_directive = true;
         $condition = $this->expression();
         $children = $this->children($child);
-        $this->whitespaceWithoutComments();
-
-        $clauses = [new IfClause($condition, $children)];
-        $lastClause = null;
-
-        while ($this->scanElse($ifIndentation)) {
+        $this->whitespace_without_comments();
+        $clauses = [new If_Clause($condition, $children)];
+        $last_clause = null;
+        while ($this->scan_else($if_indentation)) {
             $this->whitespace();
-
-            if ($this->scanIdentifier('if')) {
+            if ($this->scan_identifier('if')) {
                 $this->whitespace();
-                $clauses[] = new IfClause($this->expression(), $this->children($child));
+                $clauses[] = new If_Clause($this->expression(), $this->children($child));
             } else {
-                $lastClause = new ElseClause($this->children($child));
+                $last_clause = new Else_Clause($this->children($child));
                 break;
             }
         }
-
-        $this->inControlDirective = $wasInControlDirective;
-        $span = $this->scanner->spanFrom($start);
-        $this->whitespaceWithoutComments();
-
-        return new IfRule($clauses, $span, $lastClause);
+        $this->in_control_directive = $was_in_control_directive;
+        $span = $this->scanner->span_from($start);
+        $this->whitespace_without_comments();
+        return new If_Rule($clauses, $span, $last_clause);
     }
-
     /**
      * Consumes an `@import` rule.
      *
      * $start should point before the `@`.
      */
-    private function importRule(int $start): ImportRule
+    private function import_rule(int $start): Import_Rule
     {
         $imports = [];
-
         do {
             $this->whitespace();
-            $argument = $this->importArgument();
-
-            if (($this->inControlDirective || $this->inMixin) && $argument instanceof DynamicImport) {
-                $this->disallowedAtRule($start);
+            $argument = $this->import_argument();
+            if (($this->in_control_directive || $this->in_mixin) && $argument instanceof Dynamic_Import) {
+                $this->disallowed_at_rule($start);
             }
-
             $imports[] = $argument;
             $this->whitespace();
-        } while ($this->scanner->scanChar(','));
-
-        $this->expectStatementSeparator('@import rule');
-
-        return new ImportRule($imports, $this->scanner->spanFrom($start));
+        } while ($this->scanner->scan_char(','));
+        $this->expect_statement_separator('@import rule');
+        return new Import_Rule($imports, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes an argument to an `@import` rule.
      */
-    protected function importArgument(): Import
+    protected function import_argument(): Import
     {
-        $start = $this->scanner->getPosition();
-        $next = $this->scanner->peekChar();
-
+        $start = $this->scanner->get_position();
+        $next = $this->scanner->peek_char();
         if ($next === 'u' || $next === 'U') {
-            $url = $this->dynamicUrl();
+            $url = $this->dynamic_url();
             $this->whitespace();
-            $modifiers = $this->tryImportModifiers();
-
-            return new StaticImport(new Interpolation([$url], $this->scanner->spanFrom($start)), $this->scanner->spanFrom($start), $modifiers);
+            $modifiers = $this->try_import_modifiers();
+            return new Static_Import(new Interpolation([$url], $this->scanner->span_from($start)), $this->scanner->span_from($start), $modifiers);
         }
-
         $url = $this->string();
-        $urlSpan = $this->scanner->spanFrom($start);
+        $url_span = $this->scanner->span_from($start);
         $this->whitespace();
-        $modifiers = $this->tryImportModifiers();
-
-        if ($this->isPlainImportUrl($url) || $modifiers !== null) {
-            return new StaticImport(new Interpolation([$urlSpan->getText()], $urlSpan), $this->scanner->spanFrom($start), $modifiers);
+        $modifiers = $this->try_import_modifiers();
+        if ($this->is_plain_import_url($url) || $modifiers !== null) {
+            return new Static_Import(new Interpolation([$url_span->get_text()], $url_span), $this->scanner->span_from($start), $modifiers);
         }
-
         try {
-            return new DynamicImport($this->parseImportUrl($url), $urlSpan);
-        } catch (SyntaxError $e) {
-            $this->error('Invalid URL: ' . $e->getMessage(), $urlSpan, $e);
+            return new Dynamic_Import($this->parse_import_url($url), $url_span);
+        } catch (Syntax_Error $e) {
+            $this->error('Invalid URL: ' . $e->get_message(), $url_span, $e);
         }
     }
-
     /**
      * Parses $url as an import URL.
      *
      * @throws SyntaxError
      */
-    protected function parseImportUrl(string $url): string
+    protected function parse_import_url(string $url): string
     {
         // Backwards-compatibility for implementations that allow absolute Windows
         // paths in imports.
-        if (Path::isWindowsAbsolute($url) && !self::isRootRelativeUrl($url)) {
-            return (string) Uri::fromWindowsPath($url);
+        if (Path::is_windows_absolute($url) && !self::is_root_relative_url($url)) {
+            return (string) Uri::from_windows_path($url);
         }
-
         Uri::new($url);
         return $url;
     }
-
-    private static function isRootRelativeUrl(string $path): bool
+    private static function is_root_relative_url(string $path): bool
     {
         return $path !== '' && $path[0] === '/';
     }
-
     /**
      * Returns whether $url indicates that an `@import` is a plain CSS import.
      */
-    protected function isPlainImportUrl(string $url): bool
+    protected function is_plain_import_url(string $url): bool
     {
         if (\strlen($url) < 5) {
             return false;
         }
-
         if (str_ends_with($url, '.css')) {
             return true;
         }
-
         if ($url[0] === '/') {
             return $url[1] === '/';
         }
-
         if ($url[0] !== 'h') {
             return false;
         }
-
         return str_starts_with($url, 'http://') || str_starts_with($url, 'https://');
     }
-
     /**
      * Returns `null` if there are no modifiers.
      */
-    protected function tryImportModifiers(): ?Interpolation
+    protected function try_import_modifiers(): ?Interpolation
     {
         // Exit before allocating anything if we're not looking at any modifiers, as
         // is the most common case.
-        if (!$this->lookingAtInterpolatedIdentifier() && $this->scanner->peekChar() !== '(') {
+        if (!$this->looking_at_interpolated_identifier() && $this->scanner->peek_char() !== '(') {
             return null;
         }
-
-        $start = $this->scanner->getPosition();
-        $buffer = new InterpolationBuffer();
-
+        $start = $this->scanner->get_position();
+        $buffer = new Interpolation_Buffer();
         while (true) {
-            if ($this->lookingAtInterpolatedIdentifier()) {
-                if (!$buffer->isEmpty()) {
+            if ($this->looking_at_interpolated_identifier()) {
+                if (!$buffer->is_empty()) {
                     $buffer->write(' ');
                 }
-
-                $identifier = $this->interpolatedIdentifier();
-                $buffer->addInterpolation($identifier);
-
-                $name = $identifier->getAsPlain() !== null ? strtolower($identifier->getAsPlain()) : null;
-
-                if ($name !== 'and' && $this->scanner->scanChar('(')) {
+                $identifier = $this->interpolated_identifier();
+                $buffer->add_interpolation($identifier);
+                $name = $identifier->get_as_plain() !== null ? strtolower($identifier->get_as_plain()) : null;
+                if ($name !== 'and' && $this->scanner->scan_char('(')) {
                     if ($name === 'supports') {
-                        $query = $this->importSupportsQuery();
-
-                        if (!$query instanceof SupportsDeclaration) {
+                        $query = $this->import_supports_query();
+                        if (!$query instanceof Supports_Declaration) {
                             $buffer->write('(');
                         }
-
-                        $buffer->add(new SupportsExpression($query));
-
-                        if (!$query instanceof SupportsDeclaration) {
+                        $buffer->add(new Supports_Expression($query));
+                        if (!$query instanceof Supports_Declaration) {
                             $buffer->write(')');
                         }
                     } else {
                         $buffer->write('(');
-                        $buffer->addInterpolation($this->interpolatedDeclarationValue(true, true));
+                        $buffer->add_interpolation($this->interpolated_declaration_value(true, true));
                         $buffer->write(')');
                     }
-
-                    $this->scanner->expectChar(')');
+                    $this->scanner->expect_char(')');
                     $this->whitespace();
                 } else {
                     $this->whitespace();
-                    if ($this->scanner->scanChar(',')) {
+                    if ($this->scanner->scan_char(',')) {
                         $buffer->write(', ');
-                        $buffer->addInterpolation($this->mediaQueryList());
-
-                        return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+                        $buffer->add_interpolation($this->media_query_list());
+                        return $buffer->build_interpolation($this->scanner->span_from($start));
                     }
                 }
-            } elseif ($this->scanner->peekChar() === '(') {
-                if (!$buffer->isEmpty()) {
+            } elseif ($this->scanner->peek_char() === '(') {
+                if (!$buffer->is_empty()) {
                     $buffer->write(' ');
                 }
-                $buffer->addInterpolation($this->mediaQueryList());
-
-                return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+                $buffer->add_interpolation($this->media_query_list());
+                return $buffer->build_interpolation($this->scanner->span_from($start));
             } else {
-                return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+                return $buffer->build_interpolation($this->scanner->span_from($start));
             }
         }
     }
-
     /**
      * Consumes the contents of a `supports()` function after an `@import` rule
      * (but not the function name or parentheses).
      */
-    private function importSupportsQuery(): SupportsCondition
+    private function import_supports_query(): Supports_Condition
     {
-        if ($this->scanIdentifier('not')) {
+        if ($this->scan_identifier('not')) {
             $this->whitespace();
-            $start = $this->scanner->getPosition();
-
-            return new SupportsNegation($this->supportsConditionInParens(), $this->scanner->spanFrom($start));
+            $start = $this->scanner->get_position();
+            return new Supports_Negation($this->supports_condition_in_parens(), $this->scanner->span_from($start));
         }
-
-        if ($this->scanner->peekChar() === '(') {
-            return $this->supportsCondition();
+        if ($this->scanner->peek_char() === '(') {
+            return $this->supports_condition();
         }
-
-        $function = $this->tryImportSupportsFunction();
-
+        $function = $this->try_import_supports_function();
         if ($function !== null) {
             return $function;
         }
-
-        $start = $this->scanner->getPosition();
+        $start = $this->scanner->get_position();
         $name = $this->expression();
-        $this->scanner->expectChar(':');
-
-        return $this->supportsDeclarationValue($name, $start);
+        $this->scanner->expect_char(':');
+        return $this->supports_declaration_value($name, $start);
     }
-
     /**
      * Consumes a function call within a `supports()` function after an
      * `@import` if available.
      */
-    private function tryImportSupportsFunction(): ?SupportsCondition
+    private function try_import_supports_function(): ?Supports_Condition
     {
-        if (!$this->lookingAtInterpolatedIdentifier()) {
+        if (!$this->looking_at_interpolated_identifier()) {
             return null;
         }
-
-        $start = $this->scanner->getPosition();
-        $name = $this->interpolatedIdentifier();
-        assert($name->getAsPlain() !== 'not');
-
-        if (!$this->scanner->scanChar('(')) {
-            $this->scanner->setPosition($start);
-
+        $start = $this->scanner->get_position();
+        $name = $this->interpolated_identifier();
+        assert($name->get_as_plain() !== 'not');
+        if (!$this->scanner->scan_char('(')) {
+            $this->scanner->set_position($start);
             return null;
         }
-
-        $value = $this->interpolatedDeclarationValue(true, true);
-        $this->scanner->expectChar(')');
-
-        return new SupportsFunction($name, $value, $this->scanner->spanFrom($start));
+        $value = $this->interpolated_declaration_value(true, true);
+        $this->scanner->expect_char(')');
+        return new Supports_Function($name, $value, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a `@include` rule.
      *
      * $start should point before the `@`.
      */
-    private function includeRule(int $start): IncludeRule
+    private function include_rule(int $start): Include_Rule
     {
         $namespace = null;
         $name = $this->identifier();
-
-        if ($this->scanner->scanChar('.')) {
+        if ($this->scanner->scan_char('.')) {
             $namespace = $name;
-            $name = $this->publicIdentifier();
+            $name = $this->public_identifier();
         }
-
         $this->whitespace();
-
-        $arguments = $this->scanner->peekChar() === '(' ? $this->argumentInvocation(true) : ArgumentInvocation::createEmpty($this->scanner->getEmptySpan());
+        $arguments = $this->scanner->peek_char() === '(' ? $this->argument_invocation(true) : Argument_Invocation::create_empty($this->scanner->get_empty_span());
         $this->whitespace();
-
-        $contentArguments = null;
-        if ($this->scanIdentifier('using')) {
+        $content_arguments = null;
+        if ($this->scan_identifier('using')) {
             $this->whitespace();
-            $contentArguments = $this->argumentDeclaration();
+            $content_arguments = $this->argument_declaration();
             $this->whitespace();
         }
-
         $content = null;
-        if ($contentArguments !== null || $this->lookingAtChildren()) {
-            $contentArguments ??= ArgumentDeclaration::createEmpty($this->scanner->getEmptySpan());
-            $wasInContentBlock = $this->inContentBlock;
-            $this->inContentBlock = true;
-
-            $content = $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\ContentBlock => new ContentBlock($contentArguments, $children, $span));
-
-            $this->inContentBlock = $wasInContentBlock;
+        if ($content_arguments !== null || $this->looking_at_children()) {
+            $content_arguments ??= Argument_Declaration::create_empty($this->scanner->get_empty_span());
+            $was_in_content_block = $this->in_content_block;
+            $this->in_content_block = true;
+            $content = $this->with_children($this->statement(...), $start, fn(array $children, File_Span $span): \Scss_Php\Scss_Php\Ast\Sass\Statement\Content_Block => new Content_Block($content_arguments, $children, $span));
+            $this->in_content_block = $was_in_content_block;
         } else {
-            $this->expectStatementSeparator();
+            $this->expect_statement_separator();
         }
-
-        $span = $this->scanner->spanFrom($start, $start)->expand(($content ?? $arguments)->getSpan());
-
+        $span = $this->scanner->span_from($start, $start)->expand(($content ?? $arguments)->get_span());
         // TODO remove this when implementing modules
         if ($namespace !== null) {
-            $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
+            $this->error('Sass modules are not implemented yet.', $this->scanner->span_from($start));
         }
-
-        return new IncludeRule($name, $arguments, $span, $namespace, $content);
+        return new Include_Rule($name, $arguments, $span, $namespace, $content);
     }
-
     /**
      * Consumes a `@media` rule.
      *
      * $start should point before the `@`.
      */
-    protected function mediaRule(int $start): MediaRule
+    protected function media_rule(int $start): Media_Rule
     {
-        $query = $this->mediaQueryList();
-
-        return $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\MediaRule => new MediaRule($query, $children, $span));
+        $query = $this->media_query_list();
+        return $this->with_children($this->statement(...), $start, fn(array $children, File_Span $span): \Scss_Php\Scss_Php\Ast\Sass\Statement\Media_Rule => new Media_Rule($query, $children, $span));
     }
-
     /**
      * Consumes a mixin declaration.
      *
      * $start should point before the `@`.
      */
-    private function mixinRule(int $start): MixinRule
+    private function mixin_rule(int $start): Mixin_Rule
     {
-        $precedingComment = $this->lastSilentComment;
-        $this->lastSilentComment = null;
-
-        $beforeName = $this->scanner->getPosition();
+        $preceding_comment = $this->last_silent_comment;
+        $this->last_silent_comment = null;
+        $before_name = $this->scanner->get_position();
         $name = $this->identifier();
-
         if (str_starts_with($name, '--')) {
-            LoggerUtil::warnForDeprecation(
-                $this->logger,
-                Deprecation::cssFunctionMixin,
-                "Sass @mixin names beginning with -- are deprecated for forward-compatibility with plain CSS mixins.\n\nFor details, see https://sass-lang.com/d/css-function-mixin",
-                $this->scanner->spanFrom($beforeName)
-            );
+            Logger_Util::warn_for_deprecation($this->logger, Deprecation::cssFunctionMixin, "Sass @mixin names beginning with -- are deprecated for forward-compatibility with plain CSS mixins.\n\nFor details, see https://sass-lang.com/d/css-function-mixin", $this->scanner->span_from($before_name));
         }
-
         $this->whitespace();
-
-        $arguments = $this->scanner->peekChar() === '(' ? $this->argumentDeclaration() : ArgumentDeclaration::createEmpty($this->scanner->getEmptySpan());
-
-        if ($this->inMixin || $this->inContentBlock) {
-            $this->error('Mixins may not contain mixin declarations.', $this->scanner->spanFrom($start));
+        $arguments = $this->scanner->peek_char() === '(' ? $this->argument_declaration() : Argument_Declaration::create_empty($this->scanner->get_empty_span());
+        if ($this->in_mixin || $this->in_content_block) {
+            $this->error('Mixins may not contain mixin declarations.', $this->scanner->span_from($start));
         }
-
-        if ($this->inControlDirective) {
-            $this->error('Mixins may not be declared in control directives.', $this->scanner->spanFrom($start));
+        if ($this->in_control_directive) {
+            $this->error('Mixins may not be declared in control directives.', $this->scanner->span_from($start));
         }
-
         $this->whitespace();
-        $this->inMixin = true;
-
-        return $this->withChildren($this->statement(...), $start, function (array $children, FileSpan $span) use ($name, $arguments, $precedingComment): \ScssPhp\ScssPhp\Ast\Sass\Statement\MixinRule {
-            $this->inMixin = false;
-
-            return new MixinRule($name, $arguments, $span, $children, $precedingComment);
+        $this->in_mixin = true;
+        return $this->with_children($this->statement(...), $start, function (array $children, File_Span $span) use ($name, $arguments, $preceding_comment): \Scss_Php\Scss_Php\Ast\Sass\Statement\Mixin_Rule {
+            $this->in_mixin = false;
+            return new Mixin_Rule($name, $arguments, $span, $children, $preceding_comment);
         });
     }
-
     /**
      * Consumes a `@moz-document` rule.
      *
@@ -1551,122 +1260,102 @@ abstract class StylesheetParser extends Parser
      *
      * [the specification]: https://www.w3.org/TR/css3-conditional/
      */
-    protected function mozDocumentRule(int $start, Interpolation $name): AtRule
+    protected function moz_document_rule(int $start, Interpolation $name): At_Rule
     {
-        $valueStart = $this->scanner->getPosition();
-        $buffer = new InterpolationBuffer();
-        $needsDeprecationWarning = false;
-
+        $value_start = $this->scanner->get_position();
+        $buffer = new Interpolation_Buffer();
+        $needs_deprecation_warning = false;
         while (true) {
-            if ($this->scanner->peekChar() === '#') {
-                $buffer->add($this->singleInterpolation());
-                $needsDeprecationWarning = true;
+            if ($this->scanner->peek_char() === '#') {
+                $buffer->add($this->single_interpolation());
+                $needs_deprecation_warning = true;
             } else {
-                $identifierStart = $this->scanner->getPosition();
+                $identifier_start = $this->scanner->get_position();
                 $identifier = $this->identifier();
-
                 switch ($identifier) {
                     case 'url':
                     case 'url-prefix':
                     case 'domain':
-                        $contents = $this->tryUrlContents($identifierStart, $identifier);
-
+                        $contents = $this->try_url_contents($identifier_start, $identifier);
                         if ($contents !== null) {
-                            $buffer->addInterpolation($contents);
+                            $buffer->add_interpolation($contents);
                         } else {
-                            $this->scanner->expectChar('(');
+                            $this->scanner->expect_char('(');
                             $this->whitespace();
-                            $argument = $this->interpolatedString();
-                            $this->scanner->expectChar(')');
-
+                            $argument = $this->interpolated_string();
+                            $this->scanner->expect_char(')');
                             $buffer->write($identifier);
                             $buffer->write('(');
-                            $buffer->addInterpolation($argument->asInterpolation());
+                            $buffer->add_interpolation($argument->as_interpolation());
                             $buffer->write(')');
                         }
-
                         // A url-prefix with no argument, or with an empty string as an
                         // argument, is not (yet) deprecated.
-                        $trailing = $buffer->getTrailingString();
+                        $trailing = $buffer->get_trailing_string();
                         if (!str_ends_with($trailing, 'url-prefix()') && !str_ends_with($trailing, "url-prefix('')") && !str_ends_with($trailing, 'url-prefix("")')) {
-                            $needsDeprecationWarning = true;
+                            $needs_deprecation_warning = true;
                         }
                         break;
-
                     case 'regexp':
                         $buffer->write('regexp(');
-                        $this->scanner->expectChar('(');
-                        $buffer->addInterpolation($this->interpolatedString()->asInterpolation());
-                        $this->scanner->expectChar(')');
+                        $this->scanner->expect_char('(');
+                        $buffer->add_interpolation($this->interpolated_string()->as_interpolation());
+                        $this->scanner->expect_char(')');
                         $buffer->write(')');
-                        $needsDeprecationWarning = true;
+                        $needs_deprecation_warning = true;
                         break;
-
                     default:
-                        $this->error('Invalid function name.', $this->scanner->spanFrom($identifierStart));
+                        $this->error('Invalid function name.', $this->scanner->span_from($identifier_start));
                 }
             }
-
             $this->whitespace();
-
-            if (!$this->scanner->scanChar(',')) {
+            if (!$this->scanner->scan_char(',')) {
                 break;
             }
-
             $buffer->write(',');
-            $buffer->write($this->rawText($this->whitespace(...)));
+            $buffer->write($this->raw_text($this->whitespace(...)));
         }
-
-        $value = $buffer->buildInterpolation($this->scanner->spanFrom($valueStart));
-
-        return $this->withChildren($this->statement(...), $start, function (array $children, FileSpan $span) use ($name, $value, $needsDeprecationWarning): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule {
-            if ($needsDeprecationWarning) {
-                LoggerUtil::warnForDeprecation($this->logger, Deprecation::mozDocument, "@-moz-document is deprecated and support will be removed in Dart Sass 2.0.0.\n\nFor details, see https://sass-lang.com/d/moz-document.", $span);
+        $value = $buffer->build_interpolation($this->scanner->span_from($value_start));
+        return $this->with_children($this->statement(...), $start, function (array $children, File_Span $span) use ($name, $value, $needs_deprecation_warning): \Scss_Php\Scss_Php\Ast\Sass\Statement\At_Rule {
+            if ($needs_deprecation_warning) {
+                Logger_Util::warn_for_deprecation($this->logger, Deprecation::mozDocument, "@-moz-document is deprecated and support will be removed in Dart Sass 2.0.0.\n\nFor details, see https://sass-lang.com/d/moz-document.", $span);
             }
-
-            return new AtRule($name, $span, $value, $children);
+            return new At_Rule($name, $span, $value, $children);
         });
     }
-
     /**
      * Consumes a `@return` rule.
      *
      * $start should point before the `@`.
      */
-    private function returnRule(int $start): ReturnRule
+    private function return_rule(int $start): Return_Rule
     {
         $value = $this->expression();
-        $this->expectStatementSeparator('@return rule');
-
-        return new ReturnRule($value, $this->scanner->spanFrom($start));
+        $this->expect_statement_separator('@return rule');
+        return new Return_Rule($value, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a `@supports` rule.
      *
      * $start should point before the `@`.
      */
-    protected function supportsRule(int $start): SupportsRule
+    protected function supports_rule(int $start): Supports_Rule
     {
-        $condition = $this->supportsCondition();
+        $condition = $this->supports_condition();
         $this->whitespace();
-
-        return $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\SupportsRule => new SupportsRule($condition, $children, $span));
+        return $this->with_children($this->statement(...), $start, fn(array $children, File_Span $span): \Scss_Php\Scss_Php\Ast\Sass\Statement\Supports_Rule => new Supports_Rule($condition, $children, $span));
     }
-
     /**
      * Consumes a `@warn` rule.
      *
      * $start should point before the `@`.
      */
-    private function warnRule(int $start): WarnRule
+    private function warn_rule(int $start): Warn_Rule
     {
         $value = $this->expression();
-        $this->expectStatementSeparator('@warn rule');
-
-        return new WarnRule($value, $this->scanner->spanFrom($start));
+        $this->expect_statement_separator('@warn rule');
+        return new Warn_Rule($value, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a `@while` rule.
      *
@@ -1677,108 +1366,88 @@ abstract class StylesheetParser extends Parser
      *
      * @param-immediately-invoked-callable $child
      */
-    private function whileRule(int $start, callable $child): WhileRule
+    private function while_rule(int $start, callable $child): While_Rule
     {
-        $wasInControlDirective = $this->inControlDirective;
-        $this->inControlDirective = true;
-
+        $was_in_control_directive = $this->in_control_directive;
+        $this->in_control_directive = true;
         $condition = $this->expression();
-
-        return $this->withChildren($child, $start, function (array $children, FileSpan $span) use ($condition, $wasInControlDirective): \ScssPhp\ScssPhp\Ast\Sass\Statement\WhileRule {
-            $this->inControlDirective = $wasInControlDirective;
-
-            return new WhileRule($condition, $children, $span);
+        return $this->with_children($child, $start, function (array $children, File_Span $span) use ($condition, $was_in_control_directive): \Scss_Php\Scss_Php\Ast\Sass\Statement\While_Rule {
+            $this->in_control_directive = $was_in_control_directive;
+            return new While_Rule($condition, $children, $span);
         });
     }
-
     /**
      * Consumes an at-rule that's not explicitly supported by Sass.
      *
      * $start should point before the `@`. $name is the name of the at-rule.
      */
-    protected function unknownAtRule(int $start, Interpolation $name): AtRule
+    protected function unknown_at_rule(int $start, Interpolation $name): At_Rule
     {
-        $wasInUnknownAtRule = $this->inUnknownAtRule;
-        $this->inUnknownAtRule = true;
-
+        $was_in_unknown_at_rule = $this->in_unknown_at_rule;
+        $this->in_unknown_at_rule = true;
         $value = null;
-        $next = $this->scanner->peekChar();
-        if ($next !== '!' && !$this->atEndOfStatement()) {
-            $value = $this->interpolatedDeclarationValue(allowOpenBrace: false);
+        $next = $this->scanner->peek_char();
+        if ($next !== '!' && !$this->at_end_of_statement()) {
+            $value = $this->interpolated_declaration_value(allowOpenBrace: false);
         }
-
-        if ($this->lookingAtChildren()) {
-            $rule = $this->withChildren($this->statement(...), $start, fn (array $children, FileSpan $span): \ScssPhp\ScssPhp\Ast\Sass\Statement\AtRule => new AtRule($name, $span, $value, $children));
+        if ($this->looking_at_children()) {
+            $rule = $this->with_children($this->statement(...), $start, fn(array $children, File_Span $span): \Scss_Php\Scss_Php\Ast\Sass\Statement\At_Rule => new At_Rule($name, $span, $value, $children));
         } else {
-            $this->expectStatementSeparator();
-            $rule = new AtRule($name, $this->scanner->spanFrom($start), $value);
+            $this->expect_statement_separator();
+            $rule = new At_Rule($name, $this->scanner->span_from($start), $value);
         }
-
-        $this->inUnknownAtRule = $wasInUnknownAtRule;
-
+        $this->in_unknown_at_rule = $was_in_unknown_at_rule;
         return $rule;
     }
-
     /**
      * Throws an exception indicating that the at-rule starting at $start is
      * not allowed in the current context.
      */
-    private function disallowedAtRule(int $start): never
+    private function disallowed_at_rule(int $start): never
     {
-        $this->interpolatedDeclarationValue(allowEmpty: true, allowOpenBrace: false);
-        $this->error('This at-rule is not allowed here.', $this->scanner->spanFrom($start));
+        $this->interpolated_declaration_value(allowEmpty: true, allowOpenBrace: false);
+        $this->error('This at-rule is not allowed here.', $this->scanner->span_from($start));
     }
-
     /**
      * Consumes an argument declaration.
      */
-    private function argumentDeclaration(): ArgumentDeclaration
+    private function argument_declaration(): Argument_Declaration
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('(');
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('(');
         $this->whitespace();
-
         $arguments = [];
         $named = [];
-        $restArgument = null;
-
-        while ($this->scanner->peekChar() === '$') {
-            $variableStart = $this->scanner->getPosition();
-            $name = $this->variableName();
+        $rest_argument = null;
+        while ($this->scanner->peek_char() === '$') {
+            $variable_start = $this->scanner->get_position();
+            $name = $this->variable_name();
             $this->whitespace();
-
-            $defaultValue = null;
-
-            if ($this->scanner->scanChar(':')) {
+            $default_value = null;
+            if ($this->scanner->scan_char(':')) {
                 $this->whitespace();
-                $defaultValue = $this->expressionUntilComma();
-            } elseif ($this->scanner->scanChar('.')) {
-                $this->scanner->expectChar('.');
-                $this->scanner->expectChar('.');
+                $default_value = $this->expression_until_comma();
+            } elseif ($this->scanner->scan_char('.')) {
+                $this->scanner->expect_char('.');
+                $this->scanner->expect_char('.');
                 $this->whitespace();
-                $restArgument = $name;
+                $rest_argument = $name;
                 break;
             }
-
-            $argument = new Argument($name, $this->scanner->spanFrom($variableStart), $defaultValue);
+            $argument = new Argument($name, $this->scanner->span_from($variable_start), $default_value);
             $arguments[] = $argument;
-
             if (isset($named[$name])) {
-                $this->error('Duplicate argument.', $argument->getSpan());
+                $this->error('Duplicate argument.', $argument->get_span());
             }
             $named[$name] = true;
-
-            if (!$this->scanner->scanChar(',')) {
+            if (!$this->scanner->scan_char(',')) {
                 break;
             }
             $this->whitespace();
         }
-
-        $this->scanner->expectChar(')');
-
-        return new ArgumentDeclaration($arguments, $this->scanner->spanFrom($start), $restArgument);
+        $this->scanner->expect_char(')');
+        return new Argument_Declaration($arguments, $this->scanner->span_from($start), $rest_argument);
     }
-
     /**
      * Consumes an argument invocation.
      *
@@ -1790,101 +1459,84 @@ abstract class StylesheetParser extends Parser
      * omitted, in which case an unquoted empty string will be passed in its
      * place.
      */
-    private function argumentInvocation(bool $mixin = false, bool $allowEmptySecondArg = false): ArgumentInvocation
+    private function argument_invocation(bool $mixin = false, bool $allow_empty_second_arg = false): Argument_Invocation
     {
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('(');
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('(');
         $this->whitespace();
-
         $positional = [];
         $named = [];
         $rest = null;
-        $keywordRest = null;
-
-        while ($this->lookingAtExpression()) {
-            $expression = $this->expressionUntilComma(!$mixin);
+        $keyword_rest = null;
+        while ($this->looking_at_expression()) {
+            $expression = $this->expression_until_comma(!$mixin);
             $this->whitespace();
-
-            if ($expression instanceof VariableExpression && $this->scanner->scanChar(':')) {
+            if ($expression instanceof Variable_Expression && $this->scanner->scan_char(':')) {
                 $this->whitespace();
-
-                if (isset($named[$expression->getName()])) {
-                    $this->error('Duplicate argument.', $expression->getSpan());
+                if (isset($named[$expression->get_name()])) {
+                    $this->error('Duplicate argument.', $expression->get_span());
                 }
-
-                $named[$expression->getName()] = $this->expressionUntilComma(!$mixin);
-            } elseif ($this->scanner->scanChar('.')) {
-                $this->scanner->expectChar('.');
-                $this->scanner->expectChar('.');
-
+                $named[$expression->get_name()] = $this->expression_until_comma(!$mixin);
+            } elseif ($this->scanner->scan_char('.')) {
+                $this->scanner->expect_char('.');
+                $this->scanner->expect_char('.');
                 if ($rest === null) {
                     $rest = $expression;
                 } else {
-                    $keywordRest = $expression;
+                    $keyword_rest = $expression;
                     $this->whitespace();
                     break;
                 }
             } elseif ($named) {
-                $this->error('Positional arguments must come before keyword arguments.', $expression->getSpan());
+                $this->error('Positional arguments must come before keyword arguments.', $expression->get_span());
             } else {
                 $positional[] = $expression;
             }
-
             $this->whitespace();
-
-            if (!$this->scanner->scanChar(',')) {
+            if (!$this->scanner->scan_char(',')) {
                 break;
             }
             $this->whitespace();
-
-            if ($allowEmptySecondArg && \count($positional) === 1 && \count($named) === 0 && $rest === null && $this->scanner->peekChar() === ')') {
-                $positional[] = StringExpression::plain('', $this->scanner->getEmptySpan());
+            if ($allow_empty_second_arg && \count($positional) === 1 && \count($named) === 0 && $rest === null && $this->scanner->peek_char() === ')') {
+                $positional[] = String_Expression::plain('', $this->scanner->get_empty_span());
                 break;
             }
         }
-
-        $this->scanner->expectChar(')');
-
-        return new ArgumentInvocation($positional, $named, $this->scanner->spanFrom($start), $rest, $keywordRest);
+        $this->scanner->expect_char(')');
+        return new Argument_Invocation($positional, $named, $this->scanner->span_from($start), $rest, $keyword_rest);
     }
-
     /**
      * Consumes an expression.
      *
      * @param (callable(): bool)|null $until
      * @phpstan-impure
      */
-    private function expression(?callable $until = null, bool $singleEquals = false, bool $bracketList = false): Expression
+    private function expression(?callable $until = null, bool $single_equals = false, bool $bracket_list = false): Expression
     {
         if ($until !== null && $until()) {
             $this->scanner->error('Expected expression.');
         }
-
-        $beforeBracket = null;
-
-        if ($bracketList) {
-            $beforeBracket = $this->scanner->getPosition();
-            $this->scanner->expectChar('[');
+        $before_bracket = null;
+        if ($bracket_list) {
+            $before_bracket = $this->scanner->get_position();
+            $this->scanner->expect_char('[');
             $this->whitespace();
-
-            if ($this->scanner->scanChar(']')) {
-                return new ListExpression([], ListSeparator::UNDECIDED, $this->scanner->spanFrom($beforeBracket), true);
+            if ($this->scanner->scan_char(']')) {
+                return new List_Expression([], List_Separator::UNDECIDED, $this->scanner->span_from($before_bracket), true);
             }
         }
-
-        $start = $this->scanner->getPosition();
-        $wasInExpression = $this->inExpression;
-        $wasInParentheses = $this->inParentheses;
-        $this->inExpression = true;
-
+        $start = $this->scanner->get_position();
+        $was_in_expression = $this->in_expression;
+        $was_in_parentheses = $this->in_parentheses;
+        $this->in_expression = true;
         /**
          * @var list<Expression>|null $commaExpressions
          */
-        $commaExpressions = null;
+        $comma_expressions = null;
         /**
          * @var list<Expression>|null $spaceExpressions
          */
-        $spaceExpressions = null;
+        $space_expressions = null;
         /**
          * Operators whose right-hand $operands are not fully parsed yet, in order of
          * appearance in the document. Because a low-precedence operator will cause
@@ -1901,13 +1553,11 @@ abstract class StylesheetParser extends Parser
          * @var list<Expression>|null $operands
          */
         $operands = null;
-
         /**
          * Whether the single expression parsed so far may be interpreted as
          * slash-separated numbers.
          */
-        $allowSlash = true;
-
+        $allow_slash = true;
         /**
          * The leftmost expression that's been fully-parsed. This can be null in
          * special cases where the expression begins with a sub-expression but has
@@ -1919,274 +1569,211 @@ abstract class StylesheetParser extends Parser
          *
          * @var Expression|null $singleExpression
          */
-        $singleExpression = $this->singleExpression();
-
+        $single_expression = $this->single_expression();
         /**
          * Resets the scanner state to the state it was at the beginning of the
          * expression, except for {@see $inParentheses}.
          */
-        $resetState = function () use (&$commaExpressions, &$spaceExpressions, &$operators, &$operands, &$allowSlash, &$singleExpression, $start): void {
-            $commaExpressions = null;
-            $spaceExpressions = null;
+        $reset_state = function () use (&$comma_expressions, &$space_expressions, &$operators, &$operands, &$allow_slash, &$single_expression, $start): void {
+            $comma_expressions = null;
+            $space_expressions = null;
             $operators = null;
             $operands = null;
-            $this->scanner->setPosition($start);
-            $allowSlash = true;
-            $singleExpression = $this->singleExpression();
+            $this->scanner->set_position($start);
+            $allow_slash = true;
+            $single_expression = $this->single_expression();
         };
-
-        $resolveOneOperation = function () use (&$operands, &$operators, &$singleExpression, &$allowSlash): void {
+        $resolve_one_operation = function () use (&$operands, &$operators, &$single_expression, &$allow_slash): void {
             assert($operands !== null);
             assert($operators !== null);
             $operator = array_pop($operators);
             assert($operator !== null, 'The list of operators must not be empty');
-
             $left = array_pop($operands);
             assert($left !== null, 'The list of operands must not be empty');
-
-            $right = $singleExpression;
-
+            $right = $single_expression;
             if ($right === null) {
-                $this->scanner->error('Expected expression.', $this->scanner->getPosition() - \strlen($operator->getOperator()), \strlen($operator->getOperator()));
+                $this->scanner->error('Expected expression.', $this->scanner->get_position() - \strlen($operator->get_operator()), \strlen($operator->get_operator()));
             }
-
-            if ($allowSlash && !$this->inParentheses && $operator === BinaryOperator::DIVIDED_BY && self::isSlashOperand($left) && self::isSlashOperand($right)) {
-                $singleExpression = BinaryOperationExpression::slash($left, $right);
+            if ($allow_slash && !$this->in_parentheses && $operator === Binary_Operator::DIVIDED_BY && self::is_slash_operand($left) && self::is_slash_operand($right)) {
+                $single_expression = Binary_Operation_Expression::slash($left, $right);
             } else {
-                $singleExpression = new BinaryOperationExpression($operator, $left, $right);
-                $allowSlash = false;
-
-                if ($operator === BinaryOperator::PLUS || $operator === BinaryOperator::MINUS) {
-                    if (
-                        $this->scanner->substring($right->getSpan()->getStart()->getOffset() - 1, $right->getSpan()->getStart()->getOffset()) === $operator->getOperator()
-                        && Character::isWhitespace($this->scanner->getString()[$left->getSpan()->getEnd()->getOffset()])
-                    ) {
-                        $operatorText = $operator->getOperator();
+                $single_expression = new Binary_Operation_Expression($operator, $left, $right);
+                $allow_slash = false;
+                if ($operator === Binary_Operator::PLUS || $operator === Binary_Operator::MINUS) {
+                    if ($this->scanner->substring($right->get_span()->get_start()->get_offset() - 1, $right->get_span()->get_start()->get_offset()) === $operator->get_operator() && Character::is_whitespace($this->scanner->get_string()[$left->get_span()->get_end()->get_offset()])) {
+                        $operator_text = $operator->get_operator();
                         $message = <<<WARNING
-This operation is parsed as:
-
-    $left $operatorText $right
-
-but you may have intended it to mean:
-
-    $left ($operatorText$right)
-
-Add a space after $operatorText to clarify that it's meant to be a binary operation, or wrap
-it in parentheses to make it a unary operation. This will be an error in future
-versions of Sass.
-
-More info and automated migrator: https://sass-lang.com/d/strict-unary
-WARNING;
-
-                        LoggerUtil::warnForDeprecation($this->logger, Deprecation::strictUnary, $message, $singleExpression->getSpan());
+                        This operation is parsed as:
+                        
+                            {$left} {$operator_text} {$right}
+                        
+                        but you may have intended it to mean:
+                        
+                            {$left} ({$operator_text}{$right})
+                        
+                        Add a space after {$operator_text} to clarify that it's meant to be a binary operation, or wrap
+                        it in parentheses to make it a unary operation. This will be an error in future
+                        versions of Sass.
+                        
+                        More info and automated migrator: https://sass-lang.com/d/strict-unary
+                        WARNING;
+                        Logger_Util::warn_for_deprecation($this->logger, Deprecation::strictUnary, $message, $single_expression->get_span());
                     }
                 }
             }
         };
-
-        $resolveOperations = function () use (&$operators, $resolveOneOperation): void {
+        $resolve_operations = function () use (&$operators, $resolve_one_operation): void {
             if ($operators === null) {
                 return;
             }
-
             while ($operators) {
-                $resolveOneOperation();
+                $resolve_one_operation();
             }
         };
-
-        $addSingleExpression = function (Expression $expression) use (&$singleExpression, &$allowSlash, &$spaceExpressions, $resetState, $resolveOperations): void {
-            if ($singleExpression !== null) {
+        $add_single_expression = function (Expression $expression) use (&$single_expression, &$allow_slash, &$space_expressions, $reset_state, $resolve_operations): void {
+            if ($single_expression !== null) {
                 // If we discover we're parsing a list whose first element is a division
                 // operation, and we're in parentheses, reparse outside of a paren
                 // context. This ensures that `(1/2 1)` doesn't perform division on its
                 // first element.
-                if ($this->inParentheses) {
-                    $this->inParentheses = false;
-
-                    if ($allowSlash) {
-                        $resetState();
+                if ($this->in_parentheses) {
+                    $this->in_parentheses = false;
+                    if ($allow_slash) {
+                        $reset_state();
                         return;
                     }
                 }
-
-                $spaceExpressions ??= [];
-                $resolveOperations();
-
-                $spaceExpressions[] = $singleExpression;
-                $allowSlash = true;
+                $space_expressions ??= [];
+                $resolve_operations();
+                $space_expressions[] = $single_expression;
+                $allow_slash = true;
             }
-
-            $singleExpression = $expression;
+            $single_expression = $expression;
         };
-
-        $addOperator = function (BinaryOperator $operator) use (&$allowSlash, &$operators, &$operands, &$singleExpression, $resolveOneOperation): void {
-            if (
-                $this->isPlainCss()
-                && $operator !== BinaryOperator::SINGLE_EQUALS
-                // These are allowed in calculations, so we have to check them at
-                // evaluation time.
-                && $operator !== BinaryOperator::PLUS
-                && $operator !== BinaryOperator::MINUS
-                && $operator !== BinaryOperator::TIMES
-                && $operator !== BinaryOperator::DIVIDED_BY
-            ) {
-                $this->scanner->error("Operators aren't allowed in plain CSS.", $this->scanner->getPosition() - \strlen($operator->getOperator()), \strlen($operator->getOperator()));
+        $add_operator = function (Binary_Operator $operator) use (&$allow_slash, &$operators, &$operands, &$single_expression, $resolve_one_operation): void {
+            if ($this->is_plain_css() && $operator !== Binary_Operator::SINGLE_EQUALS && $operator !== Binary_Operator::PLUS && $operator !== Binary_Operator::MINUS && $operator !== Binary_Operator::TIMES && $operator !== Binary_Operator::DIVIDED_BY) {
+                $this->scanner->error("Operators aren't allowed in plain CSS.", $this->scanner->get_position() - \strlen($operator->get_operator()), \strlen($operator->get_operator()));
             }
-
-            $allowSlash = $allowSlash && $operator === BinaryOperator::DIVIDED_BY;
-
+            $allow_slash = $allow_slash && $operator === Binary_Operator::DIVIDED_BY;
             $operators ??= [];
             $operands ??= [];
-
-            $precedence = $operator->getPrecedence();
-
-            while ($operators && $operators[\count($operators) - 1]->getPrecedence() >= $precedence) {
-                $resolveOneOperation();
+            $precedence = $operator->get_precedence();
+            while ($operators && $operators[\count($operators) - 1]->get_precedence() >= $precedence) {
+                $resolve_one_operation();
             }
-
             $operators[] = $operator;
-
-            if ($singleExpression === null) {
-                $this->scanner->error('Expected expression.', $this->scanner->getPosition() - \strlen($operator->getOperator()), \strlen($operator->getOperator()));
+            if ($single_expression === null) {
+                $this->scanner->error('Expected expression.', $this->scanner->get_position() - \strlen($operator->get_operator()), \strlen($operator->get_operator()));
             }
-
-            $operands[] = $singleExpression;
-
+            $operands[] = $single_expression;
             $this->whitespace();
-            $singleExpression = $this->singleExpression();
+            $single_expression = $this->single_expression();
         };
-
-        $resolveSpaceExpressions = function () use (&$spaceExpressions, &$singleExpression, $resolveOperations): void {
-            $resolveOperations();
-
-            if ($spaceExpressions !== null) {
-                if ($singleExpression === null) {
+        $resolve_space_expressions = function () use (&$space_expressions, &$single_expression, $resolve_operations): void {
+            $resolve_operations();
+            if ($space_expressions !== null) {
+                if ($single_expression === null) {
                     $this->scanner->error('Expected expression.');
                 }
-
-                $spaceExpressions[] = $singleExpression;
-                $singleExpression = new ListExpression(
-                    $spaceExpressions,
-                    ListSeparator::SPACE,
-                    $spaceExpressions[0]->getSpan()->expand($spaceExpressions[\count($spaceExpressions) - 1]->getSpan())
-                );
-                $spaceExpressions = null;
+                $space_expressions[] = $single_expression;
+                $single_expression = new List_Expression($space_expressions, List_Separator::SPACE, $space_expressions[0]->get_span()->expand($space_expressions[\count($space_expressions) - 1]->get_span()));
+                $space_expressions = null;
             }
         };
-
         while (true) {
             $this->whitespace();
-
             if ($until !== null && $until()) {
                 break;
             }
-
-            $first = $this->scanner->peekChar();
-
+            $first = $this->scanner->peek_char();
             switch ($first) {
                 case '(':
                     // Parenthesized numbers can't be slash-separated.
-                    $addSingleExpression($this->parentheses());
+                    $add_single_expression($this->parentheses());
                     break;
-
                 case '[':
-                    $addSingleExpression($this->expression(null, false, true));
+                    $add_single_expression($this->expression(null, false, true));
                     break;
-
                 case '$':
-                    $addSingleExpression($this->variable());
+                    $add_single_expression($this->variable());
                     break;
-
                 case '&':
-                    $addSingleExpression($this->selector());
+                    $add_single_expression($this->selector());
                     break;
-
                 case "'":
                 case '"':
-                    $addSingleExpression($this->interpolatedString());
+                    $add_single_expression($this->interpolated_string());
                     break;
-
                 case '#':
-                    $addSingleExpression($this->hashExpression());
+                    $add_single_expression($this->hash_expression());
                     break;
-
                 case '=':
-                    $this->scanner->readChar();
-                    if ($singleEquals && $this->scanner->peekChar() !== '=') {
-                        $addOperator(BinaryOperator::SINGLE_EQUALS);
+                    $this->scanner->read_char();
+                    if ($single_equals && $this->scanner->peek_char() !== '=') {
+                        $add_operator(Binary_Operator::SINGLE_EQUALS);
                     } else {
-                        $this->scanner->expectChar('=');
-                        $addOperator(BinaryOperator::EQUALS);
+                        $this->scanner->expect_char('=');
+                        $add_operator(Binary_Operator::EQUALS);
                     }
                     break;
-
                 case '!':
-                    $next = $this->scanner->peekChar(1);
-
+                    $next = $this->scanner->peek_char(1);
                     if ($next === '=') {
-                        $this->scanner->readChar();
-                        $this->scanner->readChar();
-                        $addOperator(BinaryOperator::NOT_EQUALS);
-                    } elseif ($next === null || $next === 'i' || $next === 'I' || Character::isWhitespace($next)) {
-                        $addSingleExpression($this->importantExpression());
+                        $this->scanner->read_char();
+                        $this->scanner->read_char();
+                        $add_operator(Binary_Operator::NOT_EQUALS);
+                    } elseif ($next === null || $next === 'i' || $next === 'I' || Character::is_whitespace($next)) {
+                        $add_single_expression($this->important_expression());
                     } else {
                         break 2;
                     }
                     break;
-
                 case '<':
-                    $this->scanner->readChar();
-                    $addOperator($this->scanner->scanChar('=') ? BinaryOperator::LESS_THAN_OR_EQUALS : BinaryOperator::LESS_THAN);
+                    $this->scanner->read_char();
+                    $add_operator($this->scanner->scan_char('=') ? Binary_Operator::LESS_THAN_OR_EQUALS : Binary_Operator::LESS_THAN);
                     break;
-
                 case '>':
-                    $this->scanner->readChar();
-                    $addOperator($this->scanner->scanChar('=') ? BinaryOperator::GREATER_THAN_OR_EQUALS : BinaryOperator::GREATER_THAN);
+                    $this->scanner->read_char();
+                    $add_operator($this->scanner->scan_char('=') ? Binary_Operator::GREATER_THAN_OR_EQUALS : Binary_Operator::GREATER_THAN);
                     break;
-
                 case '*':
-                    $this->scanner->readChar();
-                    $addOperator(BinaryOperator::TIMES);
+                    $this->scanner->read_char();
+                    $add_operator(Binary_Operator::TIMES);
                     break;
-
                 case '+':
-                    if ($singleExpression === null) {
-                        $addSingleExpression($this->unaryOperation());
+                    if ($single_expression === null) {
+                        $add_single_expression($this->unary_operation());
                     } else {
-                        $this->scanner->readChar();
-                        $addOperator(BinaryOperator::PLUS);
+                        $this->scanner->read_char();
+                        $add_operator(Binary_Operator::PLUS);
                     }
                     break;
-
                 case '-':
-                    $next = $this->scanner->peekChar(1);
+                    $next = $this->scanner->peek_char(1);
                     // Make sure `1-2` parses as `1 - 2`, not `1 (-2)`.
-                    if ((Character::isDigit($next) || $next === '.') && ($singleExpression === null || Character::isWhitespace($this->scanner->peekChar(-1)))) {
-                        $addSingleExpression($this->number());
-                    } elseif ($this->lookingAtInterpolatedIdentifier()) {
-                        $addSingleExpression($this->identifierLike());
-                    } elseif ($singleExpression === null) {
-                        $addSingleExpression($this->unaryOperation());
+                    if ((Character::is_digit($next) || $next === '.') && ($single_expression === null || Character::is_whitespace($this->scanner->peek_char(-1)))) {
+                        $add_single_expression($this->number());
+                    } elseif ($this->looking_at_interpolated_identifier()) {
+                        $add_single_expression($this->identifier_like());
+                    } elseif ($single_expression === null) {
+                        $add_single_expression($this->unary_operation());
                     } else {
-                        $this->scanner->readChar();
-                        $addOperator(BinaryOperator::MINUS);
+                        $this->scanner->read_char();
+                        $add_operator(Binary_Operator::MINUS);
                     }
                     break;
-
                 case '/':
-                    if ($singleExpression === null) {
-                        $addSingleExpression($this->unaryOperation());
+                    if ($single_expression === null) {
+                        $add_single_expression($this->unary_operation());
                     } else {
-                        $this->scanner->readChar();
-                        $addOperator(BinaryOperator::DIVIDED_BY);
+                        $this->scanner->read_char();
+                        $add_operator(Binary_Operator::DIVIDED_BY);
                     }
                     break;
-
                 case '%':
-                    $this->scanner->readChar();
-                    $addOperator(BinaryOperator::MODULO);
+                    $this->scanner->read_char();
+                    $add_operator(Binary_Operator::MODULO);
                     break;
-
                 case '0':
                 case '1':
                 case '2':
@@ -2197,42 +1784,36 @@ WARNING;
                 case '7':
                 case '8':
                 case '9':
-                    $addSingleExpression($this->number());
+                    $add_single_expression($this->number());
                     break;
-
                 case '.':
-                    if ($this->scanner->peekChar(1) === '.') {
+                    if ($this->scanner->peek_char(1) === '.') {
                         break 2;
                     }
-
-                    $addSingleExpression($this->number());
+                    $add_single_expression($this->number());
                     break;
-
                 case 'a':
-                    if (!$this->isPlainCss() && $this->scanIdentifier('and')) {
-                        $addOperator(BinaryOperator::AND);
+                    if (!$this->is_plain_css() && $this->scan_identifier('and')) {
+                        $add_operator(Binary_Operator::AND);
                     } else {
-                        $addSingleExpression($this->identifierLike());
+                        $add_single_expression($this->identifier_like());
                     }
                     break;
-
                 case 'o':
-                    if (!$this->isPlainCss() && $this->scanIdentifier('or')) {
-                        $addOperator(BinaryOperator::OR);
+                    if (!$this->is_plain_css() && $this->scan_identifier('or')) {
+                        $add_operator(Binary_Operator::OR);
                     } else {
-                        $addSingleExpression($this->identifierLike());
+                        $add_single_expression($this->identifier_like());
                     }
                     break;
-
                 case 'u':
                 case 'U':
-                    if ($this->scanner->peekChar(1) === '+') {
-                        $addSingleExpression($this->unicodeRange());
+                    if ($this->scanner->peek_char(1) === '+') {
+                        $add_single_expression($this->unicode_range());
                     } else {
-                        $addSingleExpression($this->identifierLike());
+                        $add_single_expression($this->identifier_like());
                     }
                     break;
-
                 case 'b':
                 case 'c':
                 case 'd':
@@ -2283,85 +1864,66 @@ WARNING;
                 case 'Z':
                 case '_':
                 case '\\':
-                    $addSingleExpression($this->identifierLike());
+                    $add_single_expression($this->identifier_like());
                     break;
-
                 case ',':
                     // If we discover we're parsing a list whose first element is a
                     // division operation, and we're in parentheses, reparse outside of a
                     // paren context. This ensures that `(1/2, 1)` doesn't perform division
                     // on its first element.
-                    if ($this->inParentheses) {
-                        $this->inParentheses = false;
-
-                        if ($allowSlash) {
-                            $resetState();
+                    if ($this->in_parentheses) {
+                        $this->in_parentheses = false;
+                        if ($allow_slash) {
+                            $reset_state();
                             break;
                         }
                     }
-
-                    $commaExpressions ??= [];
-
-                    if ($singleExpression === null) {
+                    $comma_expressions ??= [];
+                    if ($single_expression === null) {
                         $this->scanner->error('Expected expression.');
                     }
-                    $resolveSpaceExpressions();
-
-                    $commaExpressions[] = $singleExpression;
-
-                    $this->scanner->readChar();
-                    $allowSlash = true;
-                    $singleExpression = null;
+                    $resolve_space_expressions();
+                    $comma_expressions[] = $single_expression;
+                    $this->scanner->read_char();
+                    $allow_slash = true;
+                    $single_expression = null;
                     break;
-
                 default:
                     if ($first !== null && \ord($first) >= 0x80) {
-                        $addSingleExpression($this->identifierLike());
+                        $add_single_expression($this->identifier_like());
                         break;
                     }
-
                     break 2;
             }
         }
-
-        if ($bracketList) {
-            $this->scanner->expectChar(']');
+        if ($bracket_list) {
+            $this->scanner->expect_char(']');
         }
-
-        if ($commaExpressions !== null) {
-            $resolveSpaceExpressions();
-            $this->inParentheses = $wasInParentheses;
-
-            if ($singleExpression !== null) {
-                $commaExpressions[] = $singleExpression;
+        if ($comma_expressions !== null) {
+            $resolve_space_expressions();
+            $this->in_parentheses = $was_in_parentheses;
+            if ($single_expression !== null) {
+                $comma_expressions[] = $single_expression;
             }
-
-            $this->inExpression = $wasInExpression;
-
-            return new ListExpression($commaExpressions, ListSeparator::COMMA, $this->scanner->spanFrom($beforeBracket ?? $start), $bracketList);
+            $this->in_expression = $was_in_expression;
+            return new List_Expression($comma_expressions, List_Separator::COMMA, $this->scanner->span_from($before_bracket ?? $start), $bracket_list);
         }
-
-        if ($bracketList && $spaceExpressions !== null) {
-            $resolveOperations();
-            $this->inExpression = $wasInExpression;
-            assert($singleExpression !== null);
-            $spaceExpressions[] = $singleExpression;
-
-            return new ListExpression($spaceExpressions, ListSeparator::SPACE, $this->scanner->spanFrom($beforeBracket), true);
+        if ($bracket_list && $space_expressions !== null) {
+            $resolve_operations();
+            $this->in_expression = $was_in_expression;
+            assert($single_expression !== null);
+            $space_expressions[] = $single_expression;
+            return new List_Expression($space_expressions, List_Separator::SPACE, $this->scanner->span_from($before_bracket), true);
         }
-
-        $resolveSpaceExpressions();
-        assert($singleExpression !== null);
-
-        if ($bracketList) {
-            assert($beforeBracket !== null);
-            $singleExpression = new ListExpression([$singleExpression], ListSeparator::UNDECIDED, $this->scanner->spanFrom($beforeBracket), true);
+        $resolve_space_expressions();
+        assert($single_expression !== null);
+        if ($bracket_list) {
+            assert($before_bracket !== null);
+            $single_expression = new List_Expression([$single_expression], List_Separator::UNDECIDED, $this->scanner->span_from($before_bracket), true);
         }
-        $this->inExpression = $wasInExpression;
-
-        return $singleExpression;
+        $this->in_expression = $was_in_expression;
+        return $single_expression;
     }
-
     /**
      * Consumes an expression until it reaches a top-level comma.
      *
@@ -2370,32 +1932,29 @@ WARNING;
      *
      * @phpstan-impure
      */
-    protected function expressionUntilComma(bool $singleEquals = false): Expression
+    protected function expression_until_comma(bool $single_equals = false): Expression
     {
-        return $this->expression(fn (): bool => $this->scanner->peekChar() === ',', $singleEquals);
+        return $this->expression(fn(): bool => $this->scanner->peek_char() === ',', $single_equals);
     }
-
     /**
      * Whether $expression is allowed as an operand of a `/` expression that
      * produces a potentially slash-separated number.
      */
-    private static function isSlashOperand(Expression $expression): bool
+    private static function is_slash_operand(Expression $expression): bool
     {
-        return $expression instanceof NumberExpression || $expression instanceof FunctionExpression || ($expression instanceof BinaryOperationExpression && $expression->allowsSlash());
+        return $expression instanceof Number_Expression || $expression instanceof Function_Expression || $expression instanceof Binary_Operation_Expression && $expression->allows_slash();
     }
-
     /**
      * Consumes an expression that doesn't contain any top-level whitespace.
      */
-    private function singleExpression(): Expression
+    private function single_expression(): Expression
     {
-        $first = $this->scanner->peekChar();
-
+        $first = $this->scanner->peek_char();
         switch ($first) {
             case '(':
                 return $this->parentheses();
             case '/':
-                return $this->unaryOperation();
+                return $this->unary_operation();
             case '.':
             case '0':
             case '1':
@@ -2414,31 +1973,23 @@ WARNING;
                 return $this->variable();
             case '&':
                 return $this->selector();
-
             case "'":
             case '"':
-                return $this->interpolatedString();
-
+                return $this->interpolated_string();
             case '#':
-                return $this->hashExpression();
-
+                return $this->hash_expression();
             case '+':
-                return $this->plusExpression();
-
+                return $this->plus_expression();
             case '-':
-                return $this->minusExpression();
-
+                return $this->minus_expression();
             case '!':
-                return $this->importantExpression();
-
+                return $this->important_expression();
             case 'u':
             case 'U':
-                if ($this->scanner->peekChar(1) === '+') {
-                    return $this->unicodeRange();
+                if ($this->scanner->peek_char(1) === '+') {
+                    return $this->unicode_range();
                 }
-
-                return $this->identifierLike();
-
+                return $this->identifier_like();
             case 'a':
             case 'b':
             case 'c':
@@ -2491,80 +2042,59 @@ WARNING;
             case 'Z':
             case '_':
             case '\\':
-                return $this->identifierLike();
-
+                return $this->identifier_like();
             default:
                 if ($first !== null && \ord($first) >= 0x80) {
-                    return $this->identifierLike();
+                    return $this->identifier_like();
                 }
-
                 $this->scanner->error('Expected expression.');
         }
     }
-
     /**
      * Consumes a parenthesized expression.
      */
     protected function parentheses(): Expression
     {
-        if ($this->isPlainCss()) {
+        if ($this->is_plain_css()) {
             $this->scanner->error("Parentheses aren't allowed in plain CSS.");
         }
-
-        $wasInParentheses = $this->inParentheses;
-        $this->inParentheses = true;
-
+        $was_in_parentheses = $this->in_parentheses;
+        $this->in_parentheses = true;
         try {
-            $start = $this->scanner->getPosition();
-            $this->scanner->expectChar('(');
+            $start = $this->scanner->get_position();
+            $this->scanner->expect_char('(');
             $this->whitespace();
-
-            if (!$this->lookingAtExpression()) {
-                $this->scanner->expectChar(')');
-
-                return new ListExpression([], ListSeparator::UNDECIDED, $this->scanner->spanFrom($start));
+            if (!$this->looking_at_expression()) {
+                $this->scanner->expect_char(')');
+                return new List_Expression([], List_Separator::UNDECIDED, $this->scanner->span_from($start));
             }
-
-            $first = $this->expressionUntilComma();
-
-            if ($this->scanner->scanChar(':')) {
+            $first = $this->expression_until_comma();
+            if ($this->scanner->scan_char(':')) {
                 $this->whitespace();
-
                 return $this->map($first, $start);
             }
-
-            if (!$this->scanner->scanChar(',')) {
-                $this->scanner->expectChar(')');
-
-                return new ParenthesizedExpression($first, $this->scanner->spanFrom($start));
+            if (!$this->scanner->scan_char(',')) {
+                $this->scanner->expect_char(')');
+                return new Parenthesized_Expression($first, $this->scanner->span_from($start));
             }
-
             $this->whitespace();
-
             $expressions = [$first];
-
             while (true) {
-                if (!$this->lookingAtExpression()) {
+                if (!$this->looking_at_expression()) {
                     break;
                 }
-
-                $expressions[] = $this->expressionUntilComma();
-
-                if (!$this->scanner->scanChar(',')) {
+                $expressions[] = $this->expression_until_comma();
+                if (!$this->scanner->scan_char(',')) {
                     break;
                 }
-
                 $this->whitespace();
             }
-
-            $this->scanner->expectChar(')');
-
-            return new ListExpression($expressions, ListSeparator::COMMA, $this->scanner->spanFrom($start));
+            $this->scanner->expect_char(')');
+            return new List_Expression($expressions, List_Separator::COMMA, $this->scanner->span_from($start));
         } finally {
-            $this->inParentheses = $wasInParentheses;
+            $this->in_parentheses = $was_in_parentheses;
         }
     }
-
     /**
      * Consumes a map expression.
      *
@@ -2572,84 +2102,66 @@ WARNING;
      * as the expression before the colon and $start the point before the
      * opening parenthesis.
      */
-    private function map(Expression $first, int $start): MapExpression
+    private function map(Expression $first, int $start): Map_Expression
     {
-        $pairs = [
-            [$first, $this->expressionUntilComma()],
-        ];
-
-        while ($this->scanner->scanChar(',')) {
+        $pairs = [[$first, $this->expression_until_comma()]];
+        while ($this->scanner->scan_char(',')) {
             $this->whitespace();
-            if (!$this->lookingAtExpression()) {
+            if (!$this->looking_at_expression()) {
                 break;
             }
-
-            $key = $this->expressionUntilComma();
-            $this->scanner->expectChar(':');
+            $key = $this->expression_until_comma();
+            $this->scanner->expect_char(':');
             $this->whitespace();
-            $value = $this->expressionUntilComma();
-
+            $value = $this->expression_until_comma();
             $pairs[] = [$key, $value];
         }
-
-        $this->scanner->expectChar(')');
-
-        return new MapExpression($pairs, $this->scanner->spanFrom($start));
+        $this->scanner->expect_char(')');
+        return new Map_Expression($pairs, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes an expression that starts with a `#`.
      */
-    private function hashExpression(): Expression
+    private function hash_expression(): Expression
     {
-        assert($this->scanner->peekChar() === '#');
-        if ($this->scanner->peekChar(1) === '{') {
-            return $this->identifierLike();
+        assert($this->scanner->peek_char() === '#');
+        if ($this->scanner->peek_char(1) === '{') {
+            return $this->identifier_like();
         }
-
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('#');
-
-        $first = $this->scanner->peekChar();
-        if ($first !== null && Character::isDigit($first)) {
-            return new ColorExpression($this->hexColorContents($start), $this->scanner->spanFrom($start));
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('#');
+        $first = $this->scanner->peek_char();
+        if ($first !== null && Character::is_digit($first)) {
+            return new Color_Expression($this->hex_color_contents($start), $this->scanner->span_from($start));
         }
-
-        $afterHash = $this->scanner->getPosition();
-        $identifier = $this->interpolatedIdentifier();
-        if ($this->isHexColor($identifier)) {
-            $this->scanner->setPosition($afterHash);
-
-            return new ColorExpression($this->hexColorContents($start), $this->scanner->spanFrom($start));
+        $after_hash = $this->scanner->get_position();
+        $identifier = $this->interpolated_identifier();
+        if ($this->is_hex_color($identifier)) {
+            $this->scanner->set_position($after_hash);
+            return new Color_Expression($this->hex_color_contents($start), $this->scanner->span_from($start));
         }
-
-        $buffer = new InterpolationBuffer();
+        $buffer = new Interpolation_Buffer();
         $buffer->write('#');
-        $buffer->addInterpolation($identifier);
-
-        return new StringExpression($buffer->buildInterpolation($this->scanner->spanFrom($start)));
+        $buffer->add_interpolation($identifier);
+        return new String_Expression($buffer->build_interpolation($this->scanner->span_from($start)));
     }
-
     /**
      * Consumes the contents of a hex color, after the `#`.
      */
-    private function hexColorContents(int $start): SassColor
+    private function hex_color_contents(int $start): Sass_Color
     {
-        $digit1 = $this->hexDigit();
-        $digit2 = $this->hexDigit();
-        $digit3 = $this->hexDigit();
-
+        $digit1 = $this->hex_digit();
+        $digit2 = $this->hex_digit();
+        $digit3 = $this->hex_digit();
         $alpha = null;
-
-        if (!Character::isHex($this->scanner->peekChar())) {
+        if (!Character::is_hex($this->scanner->peek_char())) {
             // #abc
             $red = ($digit1 << 4) + $digit1;
             $green = ($digit2 << 4) + $digit2;
             $blue = ($digit3 << 4) + $digit3;
         } else {
-            $digit4 = $this->hexDigit();
-
-            if (!Character::isHex($this->scanner->peekChar())) {
+            $digit4 = $this->hex_digit();
+            if (!Character::is_hex($this->scanner->peek_char())) {
                 #abcd
                 $red = ($digit1 << 4) + $digit1;
                 $green = ($digit2 << 4) + $digit2;
@@ -2658,195 +2170,158 @@ WARNING;
             } else {
                 $red = ($digit1 << 4) + $digit2;
                 $green = ($digit3 << 4) + $digit4;
-                $blue = ($this->hexDigit() << 4) + $this->hexDigit();
-
-                if (Character::isHex($this->scanner->peekChar())) {
-                    $alpha = (($this->hexDigit() << 4) + $this->hexDigit()) / 0xff;
+                $blue = ($this->hex_digit() << 4) + $this->hex_digit();
+                if (Character::is_hex($this->scanner->peek_char())) {
+                    $alpha = (($this->hex_digit() << 4) + $this->hex_digit()) / 0xff;
                 }
             }
         }
-
         // Don't emit four- or eight-digit hex colors as hex, since that's not
         // yet well-supported in browsers.
-        return SassColor::rgbInternal($red, $green, $blue, $alpha ?? 1.0, $alpha === null ? new SpanColorFormat($this->scanner->spanFrom($start)) : null);
+        return Sass_Color::rgb_internal($red, $green, $blue, $alpha ?? 1.0, $alpha === null ? new Span_Color_Format($this->scanner->span_from($start)) : null);
     }
-
-    private function isHexColor(Interpolation $interpolation): bool
+    private function is_hex_color(Interpolation $interpolation): bool
     {
-        $plain = $interpolation->getAsPlain();
-
+        $plain = $interpolation->get_as_plain();
         if ($plain === null) {
             return false;
         }
-
         $length = \strlen($plain);
-
         if ($length !== 3 && $length !== 4 && $length !== 6 && $length !== 8) {
             return false;
         }
-
         for ($i = 0; $i < $length; $i++) {
-            if (!Character::isHex($plain[$i])) {
+            if (!Character::is_hex($plain[$i])) {
                 return false;
             }
         }
-
         return true;
     }
-
     /**
      * Consumes a single hexadecimal digit.
      *
      * @phpstan-impure
      */
-    private function hexDigit(): int
+    private function hex_digit(): int
     {
-        $char = $this->scanner->peekChar();
-
-        if ($char === null || !Character::isHex($char)) {
+        $char = $this->scanner->peek_char();
+        if ($char === null || !Character::is_hex($char)) {
             $this->scanner->error('Expected hex digit.');
         }
-
-        return (int) hexdec($this->scanner->readChar());
+        return (int) hexdec($this->scanner->read_char());
     }
-
     /**
      * Consumes an expression that starts with a `+`.
      */
-    private function plusExpression(): Expression
+    private function plus_expression(): Expression
     {
-        assert($this->scanner->peekChar() === '+');
-        $next = $this->scanner->peekChar(1);
-
-        if (Character::isDigit($next) || $next === '.') {
+        assert($this->scanner->peek_char() === '+');
+        $next = $this->scanner->peek_char(1);
+        if (Character::is_digit($next) || $next === '.') {
             return $this->number();
         }
-
-        return $this->unaryOperation();
+        return $this->unary_operation();
     }
-
     /**
      * Consumes an expression that starts with a `-`.
      */
-    private function minusExpression(): Expression
+    private function minus_expression(): Expression
     {
-        assert($this->scanner->peekChar() === '-');
-        $next = $this->scanner->peekChar(1);
-
-        if (Character::isDigit($next) || $next === '.') {
+        assert($this->scanner->peek_char() === '-');
+        $next = $this->scanner->peek_char(1);
+        if (Character::is_digit($next) || $next === '.') {
             return $this->number();
         }
-
-        if ($this->lookingAtInterpolatedIdentifier()) {
-            return $this->identifierLike();
+        if ($this->looking_at_interpolated_identifier()) {
+            return $this->identifier_like();
         }
-
-        return $this->unaryOperation();
+        return $this->unary_operation();
     }
-
     /**
      * Consumes an `!important` expression.
      */
-    private function importantExpression(): Expression
+    private function important_expression(): Expression
     {
-        assert($this->scanner->peekChar() === '!');
-
-        $start = $this->scanner->getPosition();
-        $this->scanner->readChar();
+        assert($this->scanner->peek_char() === '!');
+        $start = $this->scanner->get_position();
+        $this->scanner->read_char();
         $this->whitespace();
-        $this->expectIdentifier('important');
-
-        return StringExpression::plain('!important', $this->scanner->spanFrom($start));
+        $this->expect_identifier('important');
+        return String_Expression::plain('!important', $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a unary operation expression.
      */
-    private function unaryOperation(): UnaryOperationExpression
+    private function unary_operation(): Unary_Operation_Expression
     {
-        $start = $this->scanner->getPosition();
-        $operator = $this->unaryOperatorFor($this->scanner->readChar());
-
+        $start = $this->scanner->get_position();
+        $operator = $this->unary_operator_for($this->scanner->read_char());
         if ($operator === null) {
-            $this->scanner->error('Expected unary operator.', $this->scanner->getPosition() - 1);
+            $this->scanner->error('Expected unary operator.', $this->scanner->get_position() - 1);
         }
-
-        if ($this->isPlainCss() && $operator !== UnaryOperator::DIVIDE) {
-            $this->scanner->error("Operators aren't allowed in plain CSS.", $this->scanner->getPosition() - 1, 1);
+        if ($this->is_plain_css() && $operator !== Unary_Operator::DIVIDE) {
+            $this->scanner->error("Operators aren't allowed in plain CSS.", $this->scanner->get_position() - 1, 1);
         }
-
         $this->whitespace();
-        $operand = $this->singleExpression();
-
-        return new UnaryOperationExpression($operator, $operand, $this->scanner->spanFrom($start));
+        $operand = $this->single_expression();
+        return new Unary_Operation_Expression($operator, $operand, $this->scanner->span_from($start));
     }
-
     /**
      * Returns the unary operator corresponding to $character, or `null` if
      * the character is not a unary operator.
      */
-    private function unaryOperatorFor(string $character): ?UnaryOperator
+    private function unary_operator_for(string $character): ?Unary_Operator
     {
         return match ($character) {
-            '+' => UnaryOperator::PLUS,
-            '-' => UnaryOperator::MINUS,
-            '/' => UnaryOperator::DIVIDE,
+            '+' => Unary_Operator::PLUS,
+            '-' => Unary_Operator::MINUS,
+            '/' => Unary_Operator::DIVIDE,
             default => null,
         };
     }
-
     /**
      * Consumes a number expression.
      */
-    private function number(): NumberExpression
+    private function number(): Number_Expression
     {
-        $start = $this->scanner->getPosition();
-        $first = $this->scanner->peekChar();
-
+        $start = $this->scanner->get_position();
+        $first = $this->scanner->peek_char();
         if ($first === '+' || $first === '-') {
-            $this->scanner->readChar();
+            $this->scanner->read_char();
         }
-
-        if ($this->scanner->peekChar() !== '.') {
-            $this->consumeNaturalNumber();
+        if ($this->scanner->peek_char() !== '.') {
+            $this->consume_natural_number();
         }
-
         // Don't complain about a dot after a number unless the number starts with a
         // dot. We don't allow a plain ".", but we need to allow "1." so that
         // "1..." will work as a rest argument.
-        $this->tryDecimal($this->scanner->getPosition() !== $start && $first !== '+' && $first !== '-');
-        $this->tryExponent();
-
+        $this->try_decimal($this->scanner->get_position() !== $start && $first !== '+' && $first !== '-');
+        $this->try_exponent();
         // Use PHP's built-in double parsing so that we don't accumulate
         // floating-point errors for numbers with lots of digits.
         $number = floatval($this->scanner->substring($start));
-
         $unit = null;
-        if ($this->scanner->scanChar('%')) {
+        if ($this->scanner->scan_char('%')) {
             $unit = '%';
-        } elseif ($this->lookingAtIdentifier() && ($this->scanner->peekChar() !== '-' || $this->scanner->peekChar(1) !== '-')) {
+        } elseif ($this->looking_at_identifier() && ($this->scanner->peek_char() !== '-' || $this->scanner->peek_char(1) !== '-')) {
             $unit = $this->identifier(false, true);
         }
-
-        return new NumberExpression($number, $this->scanner->spanFrom($start), $unit);
+        return new Number_Expression($number, $this->scanner->span_from($start), $unit);
     }
-
     /**
      * Consumes a natural number (that is, a non-negative integer).
      *
      * Doesn't support scientific notation.
      */
-    private function consumeNaturalNumber(): void
+    private function consume_natural_number(): void
     {
-        if (!Character::isDigit($this->scanner->readChar())) {
-            $this->scanner->error('Expected digit.', $this->scanner->getPosition() - 1);
+        if (!Character::is_digit($this->scanner->read_char())) {
+            $this->scanner->error('Expected digit.', $this->scanner->get_position() - 1);
         }
-
-        while (Character::isDigit($this->scanner->peekChar())) {
-            $this->scanner->readChar();
+        while (Character::is_digit($this->scanner->peek_char())) {
+            $this->scanner->read_char();
         }
     }
-
     /**
      * Consumes the decimal component of a number if it exists.
      *
@@ -2854,433 +2329,342 @@ WARNING;
      * dot without any numbers following it. Otherwise, it will ignore the dot
      * without consuming it.
      */
-    private function tryDecimal(bool $allowTrailingDot = false): void
+    private function try_decimal(bool $allow_trailing_dot = false): void
     {
-        if ($this->scanner->peekChar() !== '.') {
+        if ($this->scanner->peek_char() !== '.') {
             return;
         }
-
-        if (!Character::isDigit($this->scanner->peekChar(1))) {
-            if ($allowTrailingDot) {
+        if (!Character::is_digit($this->scanner->peek_char(1))) {
+            if ($allow_trailing_dot) {
                 return;
             }
-
-            $this->scanner->error('Expected digit.', $this->scanner->getPosition() + 1);
+            $this->scanner->error('Expected digit.', $this->scanner->get_position() + 1);
         }
-
-        $this->scanner->readChar();
-        while (Character::isDigit($this->scanner->peekChar())) {
-            $this->scanner->readChar();
+        $this->scanner->read_char();
+        while (Character::is_digit($this->scanner->peek_char())) {
+            $this->scanner->read_char();
         }
     }
-
     /**
      * Consumes the exponent component of a number if it exists.
      */
-    private function tryExponent(): void
+    private function try_exponent(): void
     {
-        $first = $this->scanner->peekChar();
-
+        $first = $this->scanner->peek_char();
         if ($first !== 'e' && $first !== 'E') {
             return;
         }
-
-        $next = $this->scanner->peekChar(1);
-
-        if (!Character::isDigit($next) && $next !== '-' && $next !== '+') {
+        $next = $this->scanner->peek_char(1);
+        if (!Character::is_digit($next) && $next !== '-' && $next !== '+') {
             return;
         }
-
-        $this->scanner->readChar();
+        $this->scanner->read_char();
         if ($next === '+' || $next === '-') {
-            $this->scanner->readChar();
+            $this->scanner->read_char();
         }
-
-        if (!Character::isDigit($this->scanner->peekChar())) {
+        if (!Character::is_digit($this->scanner->peek_char())) {
             $this->scanner->error('Expected digit.');
         }
-
-        while (Character::isDigit($this->scanner->peekChar())) {
-            $this->scanner->readChar();
+        while (Character::is_digit($this->scanner->peek_char())) {
+            $this->scanner->read_char();
         }
     }
-
     /**
      * Consumes a unicode range expression.
      */
-    private function unicodeRange(): StringExpression
+    private function unicode_range(): String_Expression
     {
-        $start = $this->scanner->getPosition();
-        $this->expectIdentChar('u');
-        $this->scanner->expectChar('+');
-
-        $firstRangeLength = 0;
-        while ($this->scanCharIf(Character::isHex(...))) {
-            $firstRangeLength++;
+        $start = $this->scanner->get_position();
+        $this->expect_ident_char('u');
+        $this->scanner->expect_char('+');
+        $first_range_length = 0;
+        while ($this->scan_char_if(Character::is_hex(...))) {
+            $first_range_length++;
         }
-
-        $hasQuestionMark = false;
-
-        while ($this->scanner->scanChar('?')) {
-            $hasQuestionMark = true;
-            $firstRangeLength++;
+        $has_question_mark = false;
+        while ($this->scanner->scan_char('?')) {
+            $has_question_mark = true;
+            $first_range_length++;
         }
-
-        if ($firstRangeLength === 0) {
+        if ($first_range_length === 0) {
             $this->scanner->error('Expected hex digit or "?".');
-        } elseif ($firstRangeLength > 6) {
-            $this->error('Expected at most 6 digits.', $this->scanner->spanFrom($start));
-        } elseif ($hasQuestionMark) {
-            return StringExpression::plain($this->scanner->substring($start), $this->scanner->spanFrom($start));
+        } elseif ($first_range_length > 6) {
+            $this->error('Expected at most 6 digits.', $this->scanner->span_from($start));
+        } elseif ($has_question_mark) {
+            return String_Expression::plain($this->scanner->substring($start), $this->scanner->span_from($start));
         }
-
-        if ($this->scanner->scanChar('-')) {
-            $secondRangeStart = $this->scanner->getPosition();
-            $secondRangeLength = 0;
-            while ($this->scanCharIf(Character::isHex(...))) {
-                $secondRangeLength++;
+        if ($this->scanner->scan_char('-')) {
+            $second_range_start = $this->scanner->get_position();
+            $second_range_length = 0;
+            while ($this->scan_char_if(Character::is_hex(...))) {
+                $second_range_length++;
             }
-
-            if ($secondRangeLength === 0) {
+            if ($second_range_length === 0) {
                 $this->scanner->error('Expected hex digit.');
-            } elseif ($secondRangeLength > 6) {
-                $this->error('Expected at most 6 digits.', $this->scanner->spanFrom($secondRangeStart));
+            } elseif ($second_range_length > 6) {
+                $this->error('Expected at most 6 digits.', $this->scanner->span_from($second_range_start));
             }
         }
-
-        if ($this->lookingAtInterpolatedIdentifierBody()) {
+        if ($this->looking_at_interpolated_identifier_body()) {
             $this->scanner->error('Expected end of identifier.');
         }
-
-        return StringExpression::plain($this->scanner->substring($start), $this->scanner->spanFrom($start));
+        return String_Expression::plain($this->scanner->substring($start), $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a variable expression.
      */
-    private function variable(): VariableExpression
+    private function variable(): Variable_Expression
     {
-        $start = $this->scanner->getPosition();
-        $name = $this->variableName();
-
-        if ($this->isPlainCss()) {
-            $this->error('Sass variables aren\'t allowed in plain CSS.', $this->scanner->spanFrom($start));
+        $start = $this->scanner->get_position();
+        $name = $this->variable_name();
+        if ($this->is_plain_css()) {
+            $this->error('Sass variables aren\'t allowed in plain CSS.', $this->scanner->span_from($start));
         }
-
-        return new VariableExpression($name, $this->scanner->spanFrom($start));
+        return new Variable_Expression($name, $this->scanner->span_from($start));
     }
-
     /**
      * Consumes a selector expression.
      */
-    private function selector(): SelectorExpression
+    private function selector(): Selector_Expression
     {
-        if ($this->isPlainCss()) {
+        if ($this->is_plain_css()) {
             $this->scanner->error("The parent selector isn't allowed in plain CSS.", null, 1);
         }
-
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('&');
-
-        if ($this->scanner->scanChar('&')) {
-            $this->warn('In Sass, "&&" means two copies of the parent selector. You probably want to use "and" instead.', $this->scanner->spanFrom($start));
-            $this->scanner->setPosition($this->scanner->getPosition() - 1);
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('&');
+        if ($this->scanner->scan_char('&')) {
+            $this->warn('In Sass, "&&" means two copies of the parent selector. You probably want to use "and" instead.', $this->scanner->span_from($start));
+            $this->scanner->set_position($this->scanner->get_position() - 1);
         }
-
-        return new SelectorExpression($this->scanner->spanFrom($start));
+        return new Selector_Expression($this->scanner->span_from($start));
     }
-
     /**
      * Consumes a quoted string expression.
      */
-    protected function interpolatedString(): StringExpression
+    protected function interpolated_string(): String_Expression
     {
-        $start = $this->scanner->getPosition();
-        $quote = $this->scanner->readChar();
-
+        $start = $this->scanner->get_position();
+        $quote = $this->scanner->read_char();
         if ($quote !== "'" && $quote !== '"') {
             $this->scanner->error('Expected string.', $start);
         }
-
-        $buffer = new InterpolationBuffer();
-
+        $buffer = new Interpolation_Buffer();
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === $quote) {
-                $this->scanner->readChar();
+                $this->scanner->read_char();
                 break;
             }
-
-            if ($next === null || Character::isNewline($next)) {
-                $this->scanner->error("Expected $quote.");
+            if ($next === null || Character::is_newline($next)) {
+                $this->scanner->error("Expected {$quote}.");
             }
-
             if ($next === '\\') {
-                $second = $this->scanner->peekChar(1);
-
-                if (Character::isNewline($second)) {
-                    $this->scanner->readChar();
-                    $this->scanner->readChar();
-
+                $second = $this->scanner->peek_char(1);
+                if (Character::is_newline($second)) {
+                    $this->scanner->read_char();
+                    $this->scanner->read_char();
                     if ($second === "\r") {
-                        $this->scanner->scanChar("\n");
+                        $this->scanner->scan_char("\n");
                     }
                 } else {
-                    $buffer->write($this->escapeCharacter());
+                    $buffer->write($this->escape_character());
                 }
             } elseif ($next === '#') {
-                if ($this->scanner->peekChar(1) === '{') {
-                    $buffer->add($this->singleInterpolation());
+                if ($this->scanner->peek_char(1) === '{') {
+                    $buffer->add($this->single_interpolation());
                 } else {
-                    $buffer->write($this->scanner->readChar());
+                    $buffer->write($this->scanner->read_char());
                 }
             } else {
-                $buffer->write($this->scanner->readUtf8Char());
+                $buffer->write($this->scanner->read_utf8char());
             }
         }
-
-        return new StringExpression($buffer->buildInterpolation($this->scanner->spanFrom($start)), true);
+        return new String_Expression($buffer->build_interpolation($this->scanner->span_from($start)), true);
     }
-
     /**
      * Consumes an expression that starts like an identifier.
      */
-    protected function identifierLike(): Expression
+    protected function identifier_like(): Expression
     {
-        $start = $this->scanner->getPosition();
-        $identifier = $this->interpolatedIdentifier();
-        $plain = $identifier->getAsPlain();
-
+        $start = $this->scanner->get_position();
+        $identifier = $this->interpolated_identifier();
+        $plain = $identifier->get_as_plain();
         if ($plain !== null) {
-            if ($plain === 'if' && $this->scanner->peekChar() === '(') {
-                $invocation = $this->argumentInvocation();
-
-                return new IfExpression($invocation, $identifier->getSpan()->expand($invocation->getSpan()));
+            if ($plain === 'if' && $this->scanner->peek_char() === '(') {
+                $invocation = $this->argument_invocation();
+                return new If_Expression($invocation, $identifier->get_span()->expand($invocation->get_span()));
             }
-
             if ($plain === 'not') {
                 $this->whitespace();
-
-                $expression = $this->singleExpression();
-
-                return new UnaryOperationExpression(UnaryOperator::NOT, $expression, $identifier->getSpan()->expand($expression->getSpan()));
+                $expression = $this->single_expression();
+                return new Unary_Operation_Expression(Unary_Operator::NOT, $expression, $identifier->get_span()->expand($expression->get_span()));
             }
-
             $lower = strtolower($plain);
-
-            if ($this->scanner->peekChar() !== '(') {
+            if ($this->scanner->peek_char() !== '(') {
                 switch ($plain) {
                     case 'false':
-                        return new BooleanExpression(false, $identifier->getSpan());
+                        return new Boolean_Expression(false, $identifier->get_span());
                     case 'null':
-                        return new NullExpression($identifier->getSpan());
+                        return new Null_Expression($identifier->get_span());
                     case 'true':
-                        return new BooleanExpression(true, $identifier->getSpan());
+                        return new Boolean_Expression(true, $identifier->get_span());
                 }
-
-                $color = Colors::colorNameToColor($lower);
-
+                $color = Colors::color_name_to_color($lower);
                 if ($color !== null) {
-                    return new ColorExpression(
-                        SassColor::rgbInternal($color->getRed(), $color->getGreen(), $color->getBlue(), $color->getAlpha(), new SpanColorFormat($identifier->getSpan())),
-                        $identifier->getSpan()
-                    );
+                    return new Color_Expression(Sass_Color::rgb_internal($color->get_red(), $color->get_green(), $color->get_blue(), $color->get_alpha(), new Span_Color_Format($identifier->get_span())), $identifier->get_span());
                 }
             }
-
-            $specialFunction = $this->trySpecialFunction($lower, $start);
-
-            if ($specialFunction !== null) {
-                return $specialFunction;
+            $special_function = $this->try_special_function($lower, $start);
+            if ($special_function !== null) {
+                return $special_function;
             }
         }
-
-        switch ($this->scanner->peekChar()) {
+        switch ($this->scanner->peek_char()) {
             case '.':
-                if ($this->scanner->peekChar(1) === '.') {
-                    return new StringExpression($identifier);
+                if ($this->scanner->peek_char(1) === '.') {
+                    return new String_Expression($identifier);
                 }
-
-                $this->scanner->readChar();
-
+                $this->scanner->read_char();
                 if ($plain !== null) {
-                    return $this->namespacedExpression($plain, $start);
+                    return $this->namespaced_expression($plain, $start);
                 }
-
-                $this->error("Interpolation isn't allowed in namespaces.", $identifier->getSpan());
-
-                // no break
+                $this->error("Interpolation isn't allowed in namespaces.", $identifier->get_span());
+            // no break
             case '(':
                 if ($plain === null) {
-                    return new InterpolatedFunctionExpression($identifier, $this->argumentInvocation(), $this->scanner->spanFrom($start));
+                    return new Interpolated_Function_Expression($identifier, $this->argument_invocation(), $this->scanner->span_from($start));
                 }
-
-                return new FunctionExpression($plain, $this->argumentInvocation(false, $lower === 'var'), $this->scanner->spanFrom($start));
-
+                return new Function_Expression($plain, $this->argument_invocation(false, $lower === 'var'), $this->scanner->span_from($start));
             default:
-                return new StringExpression($identifier);
+                return new String_Expression($identifier);
         }
     }
-
     /**
      * Consumes an expression after a namespace.
      *
      * This assumes the scanner is positioned immediately after the `.`. The
      * $start should refer to the state at the beginning of the namespace.
      */
-    protected function namespacedExpression(string $namespace, int $start): Expression
+    protected function namespaced_expression(string $namespace, int $start): Expression
     {
-        if ($this->scanner->peekChar() === '$') {
-            $name = $this->variableName();
-            $this->assertPublic($name, fn (): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
-
+        if ($this->scanner->peek_char() === '$') {
+            $name = $this->variable_name();
+            $this->assert_public($name, fn(): \Source_Span\File_Span => $this->scanner->span_from($start));
             // TODO remove this when implementing modules
-            $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
+            $this->error('Sass modules are not implemented yet.', $this->scanner->span_from($start));
             // return new VariableExpression($name, $this->scanner->spanFrom($start), $plain);
         }
-
         // TODO remove this when implementing modules
-        $this->publicIdentifier();
-        $this->error('Sass modules are not implemented yet.', $this->scanner->spanFrom($start));
+        $this->public_identifier();
+        $this->error('Sass modules are not implemented yet.', $this->scanner->span_from($start));
         // return new FunctionExpression($this->publicIdentifier(), $this->argumentInvocation(), $this->scanner->spanFrom($start), $plain);
     }
-
     /**
      * If $name is the name of a function with special syntax, consumes it.
      *
      * Otherwise, returns `null`. $start is the location before the beginning of $name.
      */
-    protected function trySpecialFunction(string $name, int $start): ?Expression
+    protected function try_special_function(string $name, int $start): ?Expression
     {
         $normalized = Util::unvendor($name);
-
         switch ($normalized) {
             case 'calc':
                 if ($normalized === $name) {
                     return null;
                 }
-
-                // fall through
-                // no break
+            // fall through
+            // no break
             case 'element':
             case 'expression':
-                if (!$this->scanner->scanChar('(')) {
+                if (!$this->scanner->scan_char('(')) {
                     return null;
                 }
-
-                $buffer = new InterpolationBuffer();
+                $buffer = new Interpolation_Buffer();
                 $buffer->write($name);
                 $buffer->write('(');
                 break;
-
             case 'progid':
-                if (!$this->scanner->scanChar(':')) {
+                if (!$this->scanner->scan_char(':')) {
                     return null;
                 }
-
-                $buffer = new InterpolationBuffer();
+                $buffer = new Interpolation_Buffer();
                 $buffer->write($name);
                 $buffer->write(':');
-
-                $next = $this->scanner->peekChar();
-
-                while ($next !== null && (Character::isAlphabetic($next) || $next === '.')) {
-                    $buffer->write($this->scanner->readChar());
-                    $next = $this->scanner->peekChar();
+                $next = $this->scanner->peek_char();
+                while ($next !== null && (Character::is_alphabetic($next) || $next === '.')) {
+                    $buffer->write($this->scanner->read_char());
+                    $next = $this->scanner->peek_char();
                 }
-
-                $this->scanner->expectChar('(');
+                $this->scanner->expect_char('(');
                 $buffer->write('(');
                 break;
-
             case 'url':
-                $contents = $this->tryUrlContents($start);
-
+                $contents = $this->try_url_contents($start);
                 if ($contents === null) {
                     return null;
                 }
-
-                return new StringExpression($contents);
-
+                return new String_Expression($contents);
             default:
                 return null;
         }
-
-        $buffer->addInterpolation($this->interpolatedDeclarationValue(true));
-        $this->scanner->expectChar(')');
+        $buffer->add_interpolation($this->interpolated_declaration_value(true));
+        $this->scanner->expect_char(')');
         $buffer->write(')');
-
-        return new StringExpression($buffer->buildInterpolation($this->scanner->spanFrom($start)));
+        return new String_Expression($buffer->build_interpolation($this->scanner->span_from($start)));
     }
-
-    private function tryUrlContents(int $start, ?string $name = null): ?Interpolation
+    private function try_url_contents(int $start, ?string $name = null): ?Interpolation
     {
-        $beginningOfContents = $this->scanner->getPosition();
-
-        if (!$this->scanner->scanChar('(')) {
+        $beginning_of_contents = $this->scanner->get_position();
+        if (!$this->scanner->scan_char('(')) {
             return null;
         }
-        $this->whitespaceWithoutComments();
-
-        $buffer = new InterpolationBuffer();
+        $this->whitespace_without_comments();
+        $buffer = new Interpolation_Buffer();
         $buffer->write($name ?? 'url');
         $buffer->write('(');
-
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === null) {
                 break;
             }
-
             if ($next === '\\') {
                 $buffer->write($this->escape());
-            } elseif ($next === '!' || $next === '%' || $next === '&' || (\ord($next) >= \ord('*') && \ord($next) <= \ord('~')) || \ord($next) >= 0x80) {
-                $buffer->write($this->scanner->readUtf8Char());
+            } elseif ($next === '!' || $next === '%' || $next === '&' || \ord($next) >= \ord('*') && \ord($next) <= \ord('~') || \ord($next) >= 0x80) {
+                $buffer->write($this->scanner->read_utf8char());
             } elseif ($next === '#') {
-                if ($this->scanner->peekChar(1) === '{') {
-                    $buffer->add($this->singleInterpolation());
+                if ($this->scanner->peek_char(1) === '{') {
+                    $buffer->add($this->single_interpolation());
                 } else {
-                    $buffer->write($this->scanner->readChar());
+                    $buffer->write($this->scanner->read_char());
                 }
-            } elseif (Character::isWhitespace($next)) {
-                $this->whitespaceWithoutComments();
-
-                if ($this->scanner->peekChar() !== ')') {
+            } elseif (Character::is_whitespace($next)) {
+                $this->whitespace_without_comments();
+                if ($this->scanner->peek_char() !== ')') {
                     break;
                 }
             } elseif ($next === ')') {
-                $buffer->write($this->scanner->readChar());
-
-                return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+                $buffer->write($this->scanner->read_char());
+                return $buffer->build_interpolation($this->scanner->span_from($start));
             } else {
                 break;
             }
         }
-
-        $this->scanner->setPosition($beginningOfContents);
-
+        $this->scanner->set_position($beginning_of_contents);
         return null;
     }
-
     /**
      * Consumes a `url` token that's allowed to contain SassScript.
      */
-    protected function dynamicUrl(): Expression
+    protected function dynamic_url(): Expression
     {
-        $start = $this->scanner->getPosition();
-        $this->expectIdentifier('url');
-
-        $contents = $this->tryUrlContents($start);
-
+        $start = $this->scanner->get_position();
+        $this->expect_identifier('url');
+        $contents = $this->try_url_contents($start);
         if ($contents !== null) {
-            return new StringExpression($contents);
+            return new String_Expression($contents);
         }
-
-        return new InterpolatedFunctionExpression(new Interpolation(['url'], $this->scanner->spanFrom($start)), $this->argumentInvocation(), $this->scanner->spanFrom($start));
+        return new Interpolated_Function_Expression(new Interpolation(['url'], $this->scanner->span_from($start)), $this->argument_invocation(), $this->scanner->span_from($start));
     }
-
     /**
      * Consumes tokens up to "{", "}", ";", or "!".
      *
@@ -3297,117 +2681,94 @@ WARNING;
      *   re-parsed.
      * - This does not compress adjacent whitespace characters.
      */
-    protected function almostAnyValue(bool $omitComments = false): Interpolation
+    protected function almost_any_value(bool $omit_comments = false): Interpolation
     {
-        $start = $this->scanner->getPosition();
-        $buffer = new InterpolationBuffer();
-
+        $start = $this->scanner->get_position();
+        $buffer = new Interpolation_Buffer();
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             switch ($next) {
                 case '\\':
                     // Write a literal backslash because this text will be re-parsed.
-                    $buffer->write($this->scanner->readChar());
-                    $buffer->write($this->scanner->readUtf8Char());
+                    $buffer->write($this->scanner->read_char());
+                    $buffer->write($this->scanner->read_utf8char());
                     break;
-
                 case '"':
                 case "'":
-                    $buffer->addInterpolation($this->interpolatedString()->asInterpolation());
+                    $buffer->add_interpolation($this->interpolated_string()->as_interpolation());
                     break;
-
                 case '/':
-                    switch ($this->scanner->peekChar(1)) {
+                    switch ($this->scanner->peek_char(1)) {
                         case '*':
-                            if (!$omitComments) {
-                                $buffer->write($this->rawText($this->loudComment(...)));
+                            if (!$omit_comments) {
+                                $buffer->write($this->raw_text($this->loud_comment(...)));
                             } else {
-                                $this->loudComment();
+                                $this->loud_comment();
                             }
                             break;
-
                         case '/':
-                            if (!$omitComments) {
-                                $buffer->write($this->rawText($this->silentComment(...)));
+                            if (!$omit_comments) {
+                                $buffer->write($this->raw_text($this->silent_comment(...)));
                             } else {
-                                $this->silentComment();
+                                $this->silent_comment();
                             }
                             break;
-
                         default:
-                            $buffer->write($this->scanner->readChar());
+                            $buffer->write($this->scanner->read_char());
                     }
                     break;
-
                 case '#':
-                    if ($this->scanner->peekChar(1) === '{') {
+                    if ($this->scanner->peek_char(1) === '{') {
                         // Add a full interpolated identifier to handle cases like
                         // "#{...}--1", since "--1" isn't a valid identifier on its own.
-                        $buffer->addInterpolation($this->interpolatedIdentifier());
+                        $buffer->add_interpolation($this->interpolated_identifier());
                     } else {
-                        $buffer->write($this->scanner->readChar());
+                        $buffer->write($this->scanner->read_char());
                     }
                     break;
-
                 case "\r":
                 case "\n":
                 case "\f":
-                    if ($this->isIndented()) {
+                    if ($this->is_indented()) {
                         break 2;
                     }
-                    $buffer->write($this->scanner->readChar());
+                    $buffer->write($this->scanner->read_char());
                     break;
-
                 case '!':
                 case ';':
                 case '{':
                 case '}':
                     break 2;
-
                 case 'u':
                 case 'U':
-                    $beforeUrl = $this->scanner->getPosition();
+                    $before_url = $this->scanner->get_position();
                     $identifier = $this->identifier();
-
-                    if (
-                        $identifier !== 'url'
-                        // This isn't actually a standard CSS feature, but it was
-                        // supported by the old `@document` rule, so we continue to support
-                        // it for backwards-compatibility.
-                        && $identifier !== 'url-prefix'
-                    ) {
+                    if ($identifier !== 'url' && $identifier !== 'url-prefix') {
                         $buffer->write($identifier);
                         continue 2;
                     }
-
-                    $contents = $this->tryUrlContents($beforeUrl, $identifier);
-
+                    $contents = $this->try_url_contents($before_url, $identifier);
                     if ($contents === null) {
-                        $this->scanner->setPosition($beforeUrl);
-                        $buffer->write($this->scanner->readChar());
+                        $this->scanner->set_position($before_url);
+                        $buffer->write($this->scanner->read_char());
                     } else {
-                        $buffer->addInterpolation($contents);
+                        $buffer->add_interpolation($contents);
                     }
                     break;
-
                 default:
                     if ($next === null) {
                         break 2;
                     }
-
-                    if ($this->lookingAtIdentifier()) {
+                    if ($this->looking_at_identifier()) {
                         $buffer->write($this->identifier());
                     } else {
-                        $buffer->write($this->scanner->readUtf8Char());
+                        $buffer->write($this->scanner->read_utf8char());
                     }
                     break;
             }
         }
-
-        return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+        return $buffer->build_interpolation($this->scanner->span_from($start));
     }
-
     /**
      * Consumes tokens until it reaches a top-level `";"`, `")"`, `"]"`,
      * or `"}"` and returns their contents as a string.
@@ -3427,569 +2788,460 @@ WARNING;
      *
      * Unlike {@see declarationValue}, this allows interpolation.
      */
-    private function interpolatedDeclarationValue(bool $allowEmpty = false, bool $allowSemicolon = false, bool $allowColon = true, bool $allowOpenBrace = true, bool $silentComments = true): Interpolation
+    private function interpolated_declaration_value(bool $allow_empty = false, bool $allow_semicolon = false, bool $allow_colon = true, bool $allow_open_brace = true, bool $silent_comments = true): Interpolation
     {
-        $start = $this->scanner->getPosition();
-        $buffer = new InterpolationBuffer();
+        $start = $this->scanner->get_position();
+        $buffer = new Interpolation_Buffer();
         $brackets = [];
-        $wroteNewline = false;
-
+        $wrote_newline = false;
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === null) {
                 break;
             }
-
             switch ($next) {
                 case '\\':
                     $buffer->write($this->escape(true));
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 case '"':
                 case "'":
-                    $buffer->addInterpolation($this->interpolatedString()->asInterpolation());
-                    $wroteNewline = false;
+                    $buffer->add_interpolation($this->interpolated_string()->as_interpolation());
+                    $wrote_newline = false;
                     break;
-
                 case '/':
-                    $peekedChar = $this->scanner->peekChar(1);
-
-                    if ($peekedChar === '*') {
-                        $buffer->write($this->rawText($this->loudComment(...)));
-                    } elseif ($peekedChar === '/' && $silentComments) {
-                        $this->silentComment();
+                    $peeked_char = $this->scanner->peek_char(1);
+                    if ($peeked_char === '*') {
+                        $buffer->write($this->raw_text($this->loud_comment(...)));
+                    } elseif ($peeked_char === '/' && $silent_comments) {
+                        $this->silent_comment();
                     } else {
-                        $buffer->write($this->scanner->readChar());
+                        $buffer->write($this->scanner->read_char());
                     }
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 case '#':
-                    if ($this->scanner->peekChar(1) === '{') {
+                    if ($this->scanner->peek_char(1) === '{') {
                         // Add a full interpolated identifier to handle cases like
                         // "#{...}--1", since "--1" isn't a valid identifier on its own.
-                        $buffer->addInterpolation($this->interpolatedIdentifier());
+                        $buffer->add_interpolation($this->interpolated_identifier());
                     } else {
-                        $buffer->write($this->scanner->readChar());
+                        $buffer->write($this->scanner->read_char());
                     }
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 case ' ':
                 case "\t":
-                    $second = $this->scanner->peekChar(1);
-                    if ($wroteNewline || $second === null || !Character::isWhitespace($second)) {
-                        $buffer->write($this->scanner->readChar());
+                    $second = $this->scanner->peek_char(1);
+                    if ($wrote_newline || $second === null || !Character::is_whitespace($second)) {
+                        $buffer->write($this->scanner->read_char());
                     } else {
-                        $this->scanner->readChar();
+                        $this->scanner->read_char();
                     }
                     break;
-
                 case "\n":
                 case "\r":
                 case "\f":
-                    if ($this->isIndented()) {
+                    if ($this->is_indented()) {
                         break 2;
                     }
-                    $prev = $this->scanner->peekChar(-1);
-                    if ($prev === null || !Character::isNewline($prev)) {
+                    $prev = $this->scanner->peek_char(-1);
+                    if ($prev === null || !Character::is_newline($prev)) {
                         $buffer->write("\n");
                     }
-                    $this->scanner->readChar();
-                    $wroteNewline = true;
+                    $this->scanner->read_char();
+                    $wrote_newline = true;
                     break;
-
                 case '{':
-                    if (!$allowOpenBrace) {
+                    if (!$allow_open_brace) {
                         break 2;
                     }
-
-                    // Fallthrough
-                    // no break
+                // Fallthrough
+                // no break
                 case '(':
                 case '[':
-                    $bracket = $this->scanner->readChar();
+                    $bracket = $this->scanner->read_char();
                     $buffer->write($bracket);
                     $brackets[] = Character::opposite($bracket);
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 case ')':
                 case '}':
                 case ']':
                     if (empty($brackets)) {
                         break 2;
                     }
-
                     $bracket = array_pop($brackets);
-                    $this->scanner->expectChar($bracket);
+                    $this->scanner->expect_char($bracket);
                     $buffer->write($bracket);
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 case ';':
-                    if (!$allowSemicolon && empty($brackets)) {
+                    if (!$allow_semicolon && empty($brackets)) {
                         break 2;
                     }
-
-                    $buffer->write($this->scanner->readChar());
-                    $wroteNewline = false;
+                    $buffer->write($this->scanner->read_char());
+                    $wrote_newline = false;
                     break;
-
                 case ':':
-                    if (!$allowColon && empty($brackets)) {
+                    if (!$allow_colon && empty($brackets)) {
                         break 2;
                     }
-
-                    $buffer->write($this->scanner->readChar());
-                    $wroteNewline = false;
+                    $buffer->write($this->scanner->read_char());
+                    $wrote_newline = false;
                     break;
-
                 case 'u':
                 case 'U':
-                    $beforeUrl = $this->scanner->getPosition();
+                    $before_url = $this->scanner->get_position();
                     $identifier = $this->identifier();
-
-                    if (
-                        $identifier !== 'url'
-                        // This isn't actually a standard CSS feature, but it was
-                        // supported by the old `@document` rule, so we continue to support
-                        // it for backwards-compatibility.
-                        && $identifier !== 'url-prefix'
-                    ) {
+                    if ($identifier !== 'url' && $identifier !== 'url-prefix') {
                         $buffer->write($identifier);
-                        $wroteNewline = false;
+                        $wrote_newline = false;
                         continue 2;
                     }
-
-                    $contents = $this->tryUrlContents($beforeUrl, $identifier);
-
+                    $contents = $this->try_url_contents($before_url, $identifier);
                     if ($contents === null) {
-                        $this->scanner->setPosition($beforeUrl);
-                        $buffer->write($this->scanner->readChar());
+                        $this->scanner->set_position($before_url);
+                        $buffer->write($this->scanner->read_char());
                     } else {
-                        $buffer->addInterpolation($contents);
+                        $buffer->add_interpolation($contents);
                     }
-
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
-
                 default:
-                    if ($this->lookingAtIdentifier()) {
+                    if ($this->looking_at_identifier()) {
                         $buffer->write($this->identifier());
                     } else {
-                        $buffer->write($this->scanner->readUtf8Char());
+                        $buffer->write($this->scanner->read_utf8char());
                     }
-                    $wroteNewline = false;
+                    $wrote_newline = false;
                     break;
             }
         }
-
         if (!empty($brackets)) {
-            $this->scanner->expectChar(array_pop($brackets));
+            $this->scanner->expect_char(array_pop($brackets));
         }
-
-        if (!$allowEmpty && $buffer->isEmpty()) {
+        if (!$allow_empty && $buffer->is_empty()) {
             $this->scanner->error('Expected token.');
         }
-
-        return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+        return $buffer->build_interpolation($this->scanner->span_from($start));
     }
-
     /**
      * Consumes an identifier that may contain interpolation.
      */
-    protected function interpolatedIdentifier(): Interpolation
+    protected function interpolated_identifier(): Interpolation
     {
-        $start = $this->scanner->getPosition();
-        $buffer = new InterpolationBuffer();
-
-        if ($this->scanner->scanChar('-')) {
+        $start = $this->scanner->get_position();
+        $buffer = new Interpolation_Buffer();
+        if ($this->scanner->scan_char('-')) {
             $buffer->write('-');
-
-            if ($this->scanner->scanChar('-')) {
+            if ($this->scanner->scan_char('-')) {
                 $buffer->write('-');
-                $this->interpolatedIdentifierBody($buffer);
-
-                return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+                $this->interpolated_identifier_body($buffer);
+                return $buffer->build_interpolation($this->scanner->span_from($start));
             }
         }
-
-        $first = $this->scanner->peekChar();
-
+        $first = $this->scanner->peek_char();
         if ($first === null) {
             $this->scanner->error('Expected identifier.');
         }
-
-        if (Character::isNameStart($first)) {
-            $buffer->write($this->scanner->readUtf8Char());
+        if (Character::is_name_start($first)) {
+            $buffer->write($this->scanner->read_utf8char());
         } elseif ($first === '\\') {
             $buffer->write($this->escape(true));
-        } elseif ($first === '#' && $this->scanner->peekChar(1) === '{') {
-            $buffer->add($this->singleInterpolation());
+        } elseif ($first === '#' && $this->scanner->peek_char(1) === '{') {
+            $buffer->add($this->single_interpolation());
         } else {
             $this->scanner->error('Expected identifier.');
         }
-
-        $this->interpolatedIdentifierBody($buffer);
-
-        return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+        $this->interpolated_identifier_body($buffer);
+        return $buffer->build_interpolation($this->scanner->span_from($start));
     }
-
     /**
      * Consumes a chunk of a possibly-interpolated CSS identifier after the name
      * start, and adds the contents to the $buffer buffer.
      */
-    private function interpolatedIdentifierBody(InterpolationBuffer $buffer): void
+    private function interpolated_identifier_body(Interpolation_Buffer $buffer): void
     {
         while (true) {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === null) {
                 break;
             }
-
-            if ($next === '_' || $next === '-' || Character::isAlphanumeric($next) || \ord($next) >= 0x80) {
-                $buffer->write($this->scanner->readUtf8Char());
+            if ($next === '_' || $next === '-' || Character::is_alphanumeric($next) || \ord($next) >= 0x80) {
+                $buffer->write($this->scanner->read_utf8char());
             } elseif ($next === '\\') {
                 $buffer->write($this->escape());
-            } elseif ($next === '#' && $this->scanner->peekChar(1) === '{') {
-                $buffer->add($this->singleInterpolation());
+            } elseif ($next === '#' && $this->scanner->peek_char(1) === '{') {
+                $buffer->add($this->single_interpolation());
             } else {
                 break;
             }
         }
     }
-
     /**
      * Consumes interpolation.
      */
-    protected function singleInterpolation(): Expression
+    protected function single_interpolation(): Expression
     {
-        $start = $this->scanner->getPosition();
-
+        $start = $this->scanner->get_position();
         $this->scanner->expect('#{');
-
         $this->whitespace();
-
         $contents = $this->expression();
-
-        $this->scanner->expectChar('}');
-
-        if ($this->isPlainCss()) {
-            $this->error('Interpolation isn\'t allowed in plain CSS.', $this->scanner->spanFrom($start));
+        $this->scanner->expect_char('}');
+        if ($this->is_plain_css()) {
+            $this->error('Interpolation isn\'t allowed in plain CSS.', $this->scanner->span_from($start));
         }
-
         return $contents;
     }
-
     /**
      * Consumes a list of media queries.
      */
-    private function mediaQueryList(): Interpolation
+    private function media_query_list(): Interpolation
     {
-        $start = $this->scanner->getPosition();
-        $buffer = new InterpolationBuffer();
-
+        $start = $this->scanner->get_position();
+        $buffer = new Interpolation_Buffer();
         while (true) {
             $this->whitespace();
-            $this->mediaQuery($buffer);
+            $this->media_query($buffer);
             $this->whitespace();
-
-            if (!$this->scanner->scanChar(',')) {
+            if (!$this->scanner->scan_char(',')) {
                 break;
             }
-
             $buffer->write(', ');
         }
-
-        return $buffer->buildInterpolation($this->scanner->spanFrom($start));
+        return $buffer->build_interpolation($this->scanner->span_from($start));
     }
-
     /**
      * Consumes a single media query.
      */
-    private function mediaQuery(InterpolationBuffer $buffer): void
+    private function media_query(Interpolation_Buffer $buffer): void
     {
-        if ($this->scanner->peekChar() === '(') {
-            $this->mediaInParens($buffer);
+        if ($this->scanner->peek_char() === '(') {
+            $this->media_in_parens($buffer);
             $this->whitespace();
-
-            if ($this->scanIdentifier('and')) {
+            if ($this->scan_identifier('and')) {
                 $buffer->write(' and ');
-                $this->expectWhitespace();
-                $this->mediaLogicSequence($buffer, 'and');
-            } elseif ($this->scanIdentifier('or')) {
+                $this->expect_whitespace();
+                $this->media_logic_sequence($buffer, 'and');
+            } elseif ($this->scan_identifier('or')) {
                 $buffer->write(' or ');
-                $this->expectWhitespace();
-                $this->mediaLogicSequence($buffer, 'or');
+                $this->expect_whitespace();
+                $this->media_logic_sequence($buffer, 'or');
             }
-
             return;
         }
-
-        $identifier1 = $this->interpolatedIdentifier();
-
-        if (StringUtil::equalsIgnoreCase($identifier1->getAsPlain(), 'not')) {
+        $identifier1 = $this->interpolated_identifier();
+        if (String_Util::equals_ignore_case($identifier1->get_as_plain(), 'not')) {
             // For example, "@media not (...) {"
-            $this->expectWhitespace();
-
-            if (!$this->lookingAtInterpolatedIdentifier()) {
+            $this->expect_whitespace();
+            if (!$this->looking_at_interpolated_identifier()) {
                 $buffer->write('not ');
-                $this->mediaOrInterp($buffer);
-
+                $this->media_or_interp($buffer);
                 return;
             }
         }
-
         $this->whitespace();
-        $buffer->addInterpolation($identifier1);
-
-        if (!$this->lookingAtInterpolatedIdentifier()) {
+        $buffer->add_interpolation($identifier1);
+        if (!$this->looking_at_interpolated_identifier()) {
             // For example, "@media screen {".
             return;
         }
-
         $buffer->write(' ');
-
-        $identifier2 = $this->interpolatedIdentifier();
-
-        if (StringUtil::equalsIgnoreCase($identifier2->getAsPlain(), 'and')) {
-            $this->expectWhitespace();
+        $identifier2 = $this->interpolated_identifier();
+        if (String_Util::equals_ignore_case($identifier2->get_as_plain(), 'and')) {
+            $this->expect_whitespace();
             // For example, "@media screen and ..."
             $buffer->write(' and ');
         } else {
             $this->whitespace();
-            $buffer->addInterpolation($identifier2);
-
-            if ($this->scanIdentifier('and')) {
+            $buffer->add_interpolation($identifier2);
+            if ($this->scan_identifier('and')) {
                 // For example, "@media only screen and ..."
-                $this->expectWhitespace();
+                $this->expect_whitespace();
                 $buffer->write(' and ');
             } else {
                 // For example, "@media only screen {"
                 return;
             }
         }
-
         // We've consumed either `IDENTIFIER "and"` or
         // `IDENTIFIER IDENTIFIER "and"`.
-
-        if ($this->scanIdentifier('not')) {
+        if ($this->scan_identifier('not')) {
             // For example, "@media screen and not (...) {"
-            $this->expectWhitespace();
+            $this->expect_whitespace();
             $buffer->write('not ');
-            $this->mediaOrInterp($buffer);
+            $this->media_or_interp($buffer);
             return;
         }
-
-        $this->mediaLogicSequence($buffer, 'and');
+        $this->media_logic_sequence($buffer, 'and');
     }
-
     /**
      * Consumes one or more `MediaOrInterp` expressions separated by $operator
      * and writes them to $buffer.
      */
-    private function mediaLogicSequence(InterpolationBuffer $buffer, string $operator): void
+    private function media_logic_sequence(Interpolation_Buffer $buffer, string $operator): void
     {
         while (true) {
-            $this->mediaOrInterp($buffer);
+            $this->media_or_interp($buffer);
             $this->whitespace();
-
-            if (!$this->scanIdentifier($operator)) {
+            if (!$this->scan_identifier($operator)) {
                 return;
             }
-            $this->expectWhitespace();
-
+            $this->expect_whitespace();
             $buffer->write(' ');
             $buffer->write($operator);
             $buffer->write(' ');
         }
     }
-
     /**
      * Consumes a `MediaOrInterp` expression and writes it to $buffer.
      */
-    private function mediaOrInterp(InterpolationBuffer $buffer): void
+    private function media_or_interp(Interpolation_Buffer $buffer): void
     {
-        if ($this->scanner->peekChar() === '#') {
-            $interpolation = $this->singleInterpolation();
-
-            $buffer->addInterpolation(new Interpolation([$interpolation], $interpolation->getSpan()));
+        if ($this->scanner->peek_char() === '#') {
+            $interpolation = $this->single_interpolation();
+            $buffer->add_interpolation(new Interpolation([$interpolation], $interpolation->get_span()));
         } else {
-            $this->mediaInParens($buffer);
+            $this->media_in_parens($buffer);
         }
     }
-
     /**
      * Consumes a `MediaInParens` expression and writes it to $buffer.
      */
-    private function mediaInParens(InterpolationBuffer $buffer): void
+    private function media_in_parens(Interpolation_Buffer $buffer): void
     {
-        $this->scanner->expectChar('(', 'media condition in parentheses');
+        $this->scanner->expect_char('(', 'media condition in parentheses');
         $buffer->write('(');
         $this->whitespace();
-
-        if ($this->scanner->peekChar() === '(') {
-            $this->mediaInParens($buffer);
+        if ($this->scanner->peek_char() === '(') {
+            $this->media_in_parens($buffer);
             $this->whitespace();
-
-            if ($this->scanIdentifier('and')) {
+            if ($this->scan_identifier('and')) {
                 $buffer->write(' and ');
-                $this->expectWhitespace();
-                $this->mediaLogicSequence($buffer, 'and');
-            } elseif ($this->scanIdentifier('or')) {
+                $this->expect_whitespace();
+                $this->media_logic_sequence($buffer, 'and');
+            } elseif ($this->scan_identifier('or')) {
                 $buffer->write(' or ');
-                $this->expectWhitespace();
-                $this->mediaLogicSequence($buffer, 'or');
+                $this->expect_whitespace();
+                $this->media_logic_sequence($buffer, 'or');
             }
-        } elseif ($this->scanIdentifier('not')) {
+        } elseif ($this->scan_identifier('not')) {
             $buffer->write('not ');
-            $this->expectWhitespace();
-            $this->mediaOrInterp($buffer);
+            $this->expect_whitespace();
+            $this->media_or_interp($buffer);
         } else {
-            $buffer->add($this->expressionUntilComparison());
-
-            if ($this->scanner->scanChar(':')) {
+            $buffer->add($this->expression_until_comparison());
+            if ($this->scanner->scan_char(':')) {
                 $this->whitespace();
                 $buffer->write(': ');
                 $buffer->add($this->expression());
             } else {
-                $next = $this->scanner->peekChar();
-
+                $next = $this->scanner->peek_char();
                 if ($next === '<' || $next === '>' || $next === '=') {
                     $buffer->write(' ');
-                    $buffer->write($this->scanner->readChar());
-                    if (($next === '<' || $next === '>') && $this->scanner->scanChar('=')) {
+                    $buffer->write($this->scanner->read_char());
+                    if (($next === '<' || $next === '>') && $this->scanner->scan_char('=')) {
                         $buffer->write('=');
                     }
                     $buffer->write(' ');
-
                     $this->whitespace();
-                    $buffer->add($this->expressionUntilComparison());
-
-                    if (($next === '<' || $next === '>') && $this->scanner->scanChar($next)) {
+                    $buffer->add($this->expression_until_comparison());
+                    if (($next === '<' || $next === '>') && $this->scanner->scan_char($next)) {
                         $buffer->write(' ');
                         $buffer->write($next);
-                        if ($this->scanner->scanChar('=')) {
+                        if ($this->scanner->scan_char('=')) {
                             $buffer->write('=');
                         }
                         $buffer->write(' ');
-
                         $this->whitespace();
-                        $buffer->add($this->expressionUntilComparison());
+                        $buffer->add($this->expression_until_comparison());
                     }
                 }
             }
         }
-
-        $this->scanner->expectChar(')');
+        $this->scanner->expect_char(')');
         $this->whitespace();
         $buffer->write(')');
     }
-
     /**
      * Consumes an expression until it reaches a top-level `<`, `>`, or a `=`
      * that's not `==`.
      */
-    private function expressionUntilComparison(): Expression
+    private function expression_until_comparison(): Expression
     {
         return $this->expression(function (): bool {
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === '=') {
-                return $this->scanner->peekChar(1) !== '=';
+                return $this->scanner->peek_char(1) !== '=';
             }
-
             return $next === '<' || $next === '>';
         });
     }
-
     /**
      * Consumes a `@supports` condition.
      */
-    private function supportsCondition(): SupportsCondition
+    private function supports_condition(): Supports_Condition
     {
-        $start = $this->scanner->getPosition();
-
-        if ($this->scanIdentifier('not')) {
+        $start = $this->scanner->get_position();
+        if ($this->scan_identifier('not')) {
             $this->whitespace();
-
-            return new SupportsNegation($this->supportsConditionInParens(), $this->scanner->spanFrom($start));
+            return new Supports_Negation($this->supports_condition_in_parens(), $this->scanner->span_from($start));
         }
-
-        $condition = $this->supportsConditionInParens();
+        $condition = $this->supports_condition_in_parens();
         $this->whitespace();
         $operator = null;
-
-        while ($this->lookingAtIdentifier()) {
+        while ($this->looking_at_identifier()) {
             if ($operator !== null) {
-                $this->expectIdentifier($operator);
-            } elseif ($this->scanIdentifier('or')) {
+                $this->expect_identifier($operator);
+            } elseif ($this->scan_identifier('or')) {
                 $operator = 'or';
             } else {
-                $this->expectIdentifier('and');
+                $this->expect_identifier('and');
                 $operator = 'and';
             }
-
             $this->whitespace();
-            $right = $this->supportsConditionInParens();
-
-            $condition = new SupportsOperation($condition, $right, $operator, $this->scanner->spanFrom($start));
+            $right = $this->supports_condition_in_parens();
+            $condition = new Supports_Operation($condition, $right, $operator, $this->scanner->span_from($start));
             $this->whitespace();
         }
-
         return $condition;
     }
-
     /**
      * Consumes a parenthesized supports condition, or an interpolation.
      */
-    private function supportsConditionInParens(): SupportsCondition
+    private function supports_condition_in_parens(): Supports_Condition
     {
-        $start = $this->scanner->getPosition();
-
-        if ($this->lookingAtInterpolatedIdentifier()) {
-            $identifier = $this->interpolatedIdentifier();
-
-            if ($identifier->getAsPlain() !== null && strtolower($identifier->getAsPlain()) === 'not') {
-                $this->error('"not" is not a valid identifier here.', $identifier->getSpan());
+        $start = $this->scanner->get_position();
+        if ($this->looking_at_interpolated_identifier()) {
+            $identifier = $this->interpolated_identifier();
+            if ($identifier->get_as_plain() !== null && strtolower($identifier->get_as_plain()) === 'not') {
+                $this->error('"not" is not a valid identifier here.', $identifier->get_span());
             }
-
-            if ($this->scanner->scanChar('(')) {
-                $arguments = $this->interpolatedDeclarationValue(true, true);
-                $this->scanner->expectChar(')');
-
-                return new SupportsFunction($identifier, $arguments, $this->scanner->spanFrom($start));
+            if ($this->scanner->scan_char('(')) {
+                $arguments = $this->interpolated_declaration_value(true, true);
+                $this->scanner->expect_char(')');
+                return new Supports_Function($identifier, $arguments, $this->scanner->span_from($start));
             }
-
-            if (\count($identifier->getContents()) !== 1 || !$identifier->getContents()[0] instanceof Expression) {
-                $this->error('Expected @supports condition.', $identifier->getSpan());
+            if (\count($identifier->get_contents()) !== 1 || !$identifier->get_contents()[0] instanceof Expression) {
+                $this->error('Expected @supports condition.', $identifier->get_span());
             } else {
-                return new SupportsInterpolation($identifier->getContents()[0], $identifier->getSpan());
+                return new Supports_Interpolation($identifier->get_contents()[0], $identifier->get_span());
             }
         }
-
-        $this->scanner->expectChar('(');
+        $this->scanner->expect_char('(');
         $this->whitespace();
-
-        if ($this->scanIdentifier('not')) {
+        if ($this->scan_identifier('not')) {
             $this->whitespace();
-            $condition = $this->supportsConditionInParens();
-            $this->scanner->expectChar(')');
-
-            return new SupportsNegation($condition, $this->scanner->spanFrom($start));
+            $condition = $this->supports_condition_in_parens();
+            $this->scanner->expect_char(')');
+            return new Supports_Negation($condition, $this->scanner->span_from($start));
         }
-
-        if ($this->scanner->peekChar() === '(') {
-            $condition = $this->supportsCondition();
-            $this->scanner->expectChar(')');
-
+        if ($this->scanner->peek_char() === '(') {
+            $condition = $this->supports_condition();
+            $this->scanner->expect_char(')');
             return $condition;
         }
-
         // Unfortunately, we may have to backtrack here. The grammar is:
         //
         //       Expression ":" Expression
@@ -4004,109 +3256,84 @@ WARNING;
         // vast majority of real uses to be `Expression ":" Expression`, so it makes
         // sense to parse that case faster in exchange for less code complexity and
         // a slower backtracking case.
-
-        $nameStart = $this->scanner->getPosition();
-        $wasInParentheses = $this->inParentheses;
-
+        $name_start = $this->scanner->get_position();
+        $was_in_parentheses = $this->in_parentheses;
         try {
             $name = $this->expression();
-            $this->scanner->expectChar(':');
-        } catch (FormatException $e) {
-            $this->scanner->setPosition($nameStart);
-            $this->inParentheses = $wasInParentheses;
-
-            $identifier = $this->interpolatedIdentifier();
-            $operation = $this->trySupportsOperation($identifier, $nameStart);
-
+            $this->scanner->expect_char(':');
+        } catch (Format_Exception $e) {
+            $this->scanner->set_position($name_start);
+            $this->in_parentheses = $was_in_parentheses;
+            $identifier = $this->interpolated_identifier();
+            $operation = $this->try_supports_operation($identifier, $name_start);
             if ($operation !== null) {
-                $this->scanner->expectChar(')');
-
+                $this->scanner->expect_char(')');
                 return $operation;
             }
-
             // If parsing an expression fails, try to parse an
             // `InterpolatedAnyValue` instead. But if that value runs into a
             // top-level colon, then this is probably intended to be a declaration
             // after all, so we rethrow the declaration-parsing error.
-            $buffer = new InterpolationBuffer();
-            $buffer->addInterpolation($identifier);
-            $buffer->addInterpolation($this->interpolatedDeclarationValue(true, true, false));
-
-            $contents = $buffer->buildInterpolation($this->scanner->spanFrom($nameStart));
-
-            if ($this->scanner->peekChar() === ':') {
+            $buffer = new Interpolation_Buffer();
+            $buffer->add_interpolation($identifier);
+            $buffer->add_interpolation($this->interpolated_declaration_value(true, true, false));
+            $contents = $buffer->build_interpolation($this->scanner->span_from($name_start));
+            if ($this->scanner->peek_char() === ':') {
                 throw $e;
             }
-
-            $this->scanner->expectChar(')');
-
-            return new SupportsAnything($contents, $this->scanner->spanFrom($start));
+            $this->scanner->expect_char(')');
+            return new Supports_Anything($contents, $this->scanner->span_from($start));
         }
-
-        $declaration = $this->supportsDeclarationValue($name, $start);
-        $this->scanner->expectChar(')');
-
+        $declaration = $this->supports_declaration_value($name, $start);
+        $this->scanner->expect_char(')');
         return $declaration;
     }
-
-    private function supportsDeclarationValue(Expression $name, int $start): SupportsDeclaration
+    private function supports_declaration_value(Expression $name, int $start): Supports_Declaration
     {
-        if ($name instanceof StringExpression && !$name->hasQuotes() && str_starts_with($name->getText()->getInitialPlain(), '--')) {
-            $value = new StringExpression($this->interpolatedDeclarationValue());
+        if ($name instanceof String_Expression && !$name->has_quotes() && str_starts_with($name->get_text()->get_initial_plain(), '--')) {
+            $value = new String_Expression($this->interpolated_declaration_value());
         } else {
             $this->whitespace();
             $value = $this->expression();
         }
-
-        return new SupportsDeclaration($name, $value, $this->scanner->spanFrom($start));
+        return new Supports_Declaration($name, $value, $this->scanner->span_from($start));
     }
-
     /**
      * If $interpolation is followed by `"and"` or `"or"`, parse it as a supports operation.
      *
      * Otherwise, return `null` without moving the scanner position.
      */
-    private function trySupportsOperation(Interpolation $interpolation, int $start): ?SupportsOperation
+    private function try_supports_operation(Interpolation $interpolation, int $start): ?Supports_Operation
     {
-        if (\count($interpolation->getContents()) !== 1) {
+        if (\count($interpolation->get_contents()) !== 1) {
             return null;
         }
-
-        $expression = $interpolation->getContents()[0];
-
+        $expression = $interpolation->get_contents()[0];
         if (!$expression instanceof Expression) {
             return null;
         }
-
-        $beforeWhitespace = $this->scanner->getPosition();
+        $before_whitespace = $this->scanner->get_position();
         $this->whitespace();
-
         $operation = null;
         $operator = null;
-
-        while ($this->lookingAtIdentifier()) {
+        while ($this->looking_at_identifier()) {
             if ($operator !== null) {
-                $this->expectIdentifier($operator);
-            } elseif ($this->scanIdentifier('and')) {
+                $this->expect_identifier($operator);
+            } elseif ($this->scan_identifier('and')) {
                 $operator = 'and';
-            } elseif ($this->scanIdentifier('or')) {
+            } elseif ($this->scan_identifier('or')) {
                 $operator = 'or';
             } else {
-                $this->scanner->setPosition($beforeWhitespace);
-
+                $this->scanner->set_position($before_whitespace);
                 return null;
             }
-
             $this->whitespace();
-            $right = $this->supportsConditionInParens();
-
-            $operation = new SupportsOperation($operation ?? new SupportsInterpolation($expression, $interpolation->getSpan()), $right, $operator, $this->scanner->spanFrom($start));
+            $right = $this->supports_condition_in_parens();
+            $operation = new Supports_Operation($operation ?? new Supports_Interpolation($expression, $interpolation->get_span()), $right, $operator, $this->scanner->span_from($start));
             $this->whitespace();
         }
-
         return $operation;
     }
-
     /**
      * Returns whether the scanner is immediately before an identifier that may
      * contain interpolation.
@@ -4116,79 +3343,62 @@ WARNING;
      *
      * [the CSS algorithm]: https://drafts.csswg.org/css-syntax-3/#would-start-an-identifier
      */
-    private function lookingAtInterpolatedIdentifier(): bool
+    private function looking_at_interpolated_identifier(): bool
     {
-        $first = $this->scanner->peekChar();
-
+        $first = $this->scanner->peek_char();
         if ($first === null) {
             return false;
         }
-
-        if ($first === '\\' || Character::isNameStart($first)) {
+        if ($first === '\\' || Character::is_name_start($first)) {
             return true;
         }
-
-        if ($first === '#' && $this->scanner->peekChar(1) === '{') {
+        if ($first === '#' && $this->scanner->peek_char(1) === '{') {
             return true;
         }
-
         if ($first !== '-') {
             return false;
         }
-
-        $second = $this->scanner->peekChar(1);
-
+        $second = $this->scanner->peek_char(1);
         if ($second === null) {
             return false;
         }
-
         if ($second === '#') {
-            return $this->scanner->peekChar(2) === '{';
+            return $this->scanner->peek_char(2) === '{';
         }
-
-        return $second === '\\' || $second === '-' || Character::isNameStart($second);
+        return $second === '\\' || $second === '-' || Character::is_name_start($second);
     }
-
     /**
      * Returns whether the scanner is immediately before a sequence of characters
      * that could be part of an CSS identifier body.
      *
      * The identifier body may include interpolation.
      */
-    private function lookingAtInterpolatedIdentifierBody(): bool
+    private function looking_at_interpolated_identifier_body(): bool
     {
-        $first = $this->scanner->peekChar();
-
+        $first = $this->scanner->peek_char();
         if ($first === null) {
             return false;
         }
-
-        if ($first === '\\' || Character::isName($first)) {
+        if ($first === '\\' || Character::is_name($first)) {
             return true;
         }
-
-        return $first === '#' && $this->scanner->peekChar(1) === '{';
+        return $first === '#' && $this->scanner->peek_char(1) === '{';
     }
-
     /**
      * Returns whether the scanner is immediately before a SassScript expression.
      */
-    private function lookingAtExpression(): bool
+    private function looking_at_expression(): bool
     {
-        $character = $this->scanner->peekChar();
-
+        $character = $this->scanner->peek_char();
         if ($character === null) {
             return false;
         }
-
         if ($character === '.') {
-            return $this->scanner->peekChar(1) !== '.';
+            return $this->scanner->peek_char(1) !== '.';
         }
-
         if ($character === '!') {
-            $next = $this->scanner->peekChar(1);
-
-            return $next === null || $next === 'i' || $next === 'I' || Character::isWhitespace($next);
+            $next = $this->scanner->peek_char(1);
+            return $next === null || $next === 'i' || $next === 'I' || Character::is_whitespace($next);
         }
         if ($character === '(') {
             return true;
@@ -4223,12 +3433,11 @@ WARNING;
         if ($character === '&') {
             return true;
         }
-        if (Character::isNameStart($character)) {
+        if (Character::is_name_start($character)) {
             return true;
         }
-        return Character::isDigit($character);
+        return Character::is_digit($character);
     }
-
     /**
      * Consumes a block of $child statements and passes them, as well as the
      * span from $start to the end of the child block, to $create.
@@ -4241,27 +3450,23 @@ WARNING;
      * @param-immediately-invoked-callable $child
      * @param-immediately-invoked-callable $create
      */
-    private function withChildren(callable $child, int $start, callable $create)
+    private function with_children(callable $child, int $start, callable $create)
     {
         $children = $this->children($child);
-        $result = $create($children, $this->scanner->spanFrom($start));
-        $this->whitespaceWithoutComments();
-
+        $result = $create($children, $this->scanner->span_from($start));
+        $this->whitespace_without_comments();
         return $result;
     }
-
     /**
      * Like {@see identifier}, but rejects identifiers that begin with `_` or `-`.
      */
-    private function publicIdentifier(): string
+    private function public_identifier(): string
     {
-        $start = $this->scanner->getPosition();
+        $start = $this->scanner->get_position();
         $result = $this->identifier();
-        $this->assertPublic($result, fn (): \SourceSpan\FileSpan => $this->scanner->spanFrom($start));
-
+        $this->assert_public($result, fn(): \Source_Span\File_Span => $this->scanner->span_from($start));
         return $result;
     }
-
     /**
      * Throws an error if $identifier isn't public.
      *
@@ -4271,54 +3476,47 @@ WARNING;
      *
      * @param-immediately-invoked-callable $span
      */
-    private function assertPublic(string $identifier, callable $span): void
+    private function assert_public(string $identifier, callable $span): void
     {
-        if (!Character::isPrivate($identifier)) {
+        if (!Character::is_private($identifier)) {
             return;
         }
-
         $this->error("Private members can't be accessed from outside their modules.", $span());
     }
-
     /**
      * Adds $expression to $buffer, or if it's an unquoted string adds the
      * interpolation it contains instead.
      */
-    private function addOrInject(InterpolationBuffer $buffer, Expression $expression): void
+    private function add_or_inject(Interpolation_Buffer $buffer, Expression $expression): void
     {
-        if ($expression instanceof StringExpression && !$expression->hasQuotes()) {
-            $buffer->addInterpolation($expression->getText());
+        if ($expression instanceof String_Expression && !$expression->has_quotes()) {
+            $buffer->add_interpolation($expression->get_text());
         } else {
             $buffer->add($expression);
         }
     }
-
     /**
      * Whether this is parsing the indented syntax.
      */
-    abstract protected function isIndented(): bool;
-
+    abstract protected function is_indented(): bool;
     /**
      * Whether this is a plain CSS stylesheet.
      */
-    protected function isPlainCss(): bool
+    protected function is_plain_css(): bool
     {
         return false;
     }
-
     /**
      * The indentation level at the current scanner position.
      *
      * This value isn't used directly by StylesheetParser; it's just passed to
      * {@see scanElse}.
      */
-    abstract protected function getCurrentIndentation(): int;
-
+    abstract protected function get_current_indentation(): int;
     /**
      * Parses and returns a selector used in a style rule.
      */
-    abstract protected function styleRuleSelector(): Interpolation;
-
+    abstract protected function style_rule_selector(): Interpolation;
     /**
      * Asserts that the scanner is positioned before a statement separator, or at
      * the end of a list of statements.
@@ -4329,19 +3527,16 @@ WARNING;
      *
      * @throws FormatException
      */
-    abstract protected function expectStatementSeparator(?string $name = null): void;
-
+    abstract protected function expect_statement_separator(?string $name = null): void;
     /**
      * Whether the scanner is positioned at the end of a statement.
      */
-    abstract protected function atEndOfStatement(): bool;
-
+    abstract protected function at_end_of_statement(): bool;
     /**
      * Whether the scanner is positioned before a block of children that can be
      * parsed with {@see children}.
      */
-    abstract protected function lookingAtChildren(): bool;
-
+    abstract protected function looking_at_children(): bool;
     /**
      * Tries to scan an `@else` rule after an `@if` block, and returns whether that succeeded.
      *
@@ -4349,8 +3544,7 @@ WARNING;
      * $ifIndentation is the result of {@see getCurrentIndentation} from before the
      * corresponding `@if` was parsed.
      */
-    abstract protected function scanElse(int $ifIndentation): bool;
-
+    abstract protected function scan_else(int $if_indentation): bool;
     /**
      * Consumes a block of child statements.
      *
@@ -4365,7 +3559,6 @@ WARNING;
      * @param-immediately-invoked-callable $child
      */
     abstract protected function children(callable $child): array;
-
     /**
      * Consumes top-level statements.
      *

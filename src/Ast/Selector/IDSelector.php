@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,12 +10,10 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Source_Span\File_Span;
 /**
  * An ID selector.
  *
@@ -24,51 +21,46 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class IDSelector extends SimpleSelector
+final class Id_Selector extends Simple_Selector
 {
-    public function __construct(/**
-     * The ID name this selects for.
-     */
+    public function __construct(
+        /**
+         * The ID name this selects for.
+         */
         private readonly string $name,
-        FileSpan $span
-    ) {
+        File_Span $span
+    )
+    {
         parent::__construct($span);
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
-    public function getSpecificity(): int
+    public function get_specificity(): int
     {
-        return parent::getSpecificity() ** 2;
+        return parent::get_specificity() ** 2;
     }
-
-    public function accept(SelectorVisitor $visitor)
+    public function accept(Selector_Visitor $visitor)
     {
-        return $visitor->visitIDSelector($this);
+        return $visitor->visit_id_selector($this);
     }
-
-    public function addSuffix(string $suffix): \ScssPhp\ScssPhp\Ast\Selector\IDSelector
+    public function add_suffix(string $suffix): \Scss_Php\Scss_Php\Ast\Selector\Id_Selector
     {
-        return new IDSelector($this->name . $suffix, $this->getSpan());
+        return new Id_Selector($this->name . $suffix, $this->get_span());
     }
-
     public function unify(array $compound): ?array
     {
         // A given compound selector may only contain one ID.
         foreach ($compound as $simple) {
-            if ($simple instanceof IDSelector && !$simple->equals($this)) {
+            if ($simple instanceof Id_Selector && !$simple->equals($this)) {
                 return null;
             }
         }
-
         return parent::unify($compound);
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof IDSelector && $other->name === $this->name;
+        return $other instanceof Id_Selector && $other->name === $this->name;
     }
 }

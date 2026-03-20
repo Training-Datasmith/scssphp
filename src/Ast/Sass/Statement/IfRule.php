@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,11 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * An `@if` rule.
  *
@@ -25,18 +22,16 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class IfRule implements Statement
+final class If_Rule implements Statement
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param list<IfClause> $clauses
      */
-    public function __construct(private readonly array $clauses, FileSpan $span, private readonly ?ElseClause $lastClause = null)
+    public function __construct(private readonly array $clauses, File_Span $span, private readonly ?Else_Clause $last_clause = null)
     {
         $this->span = $span;
     }
-
     /**
      * The `@if` and `@else if` clauses.
      *
@@ -46,43 +41,36 @@ final class IfRule implements Statement
      *
      * @return list<IfClause>
      */
-    public function getClauses(): array
+    public function get_clauses(): array
     {
         return $this->clauses;
     }
-
     /**
      * The final, unconditional `@else` clause.
      *
      * This is `null` if there is no unconditional `@else`.
      */
-    public function getLastClause(): ?ElseClause
+    public function get_last_clause(): ?Else_Clause
     {
-        return $this->lastClause;
+        return $this->last_clause;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitIfRule($this);
+        return $visitor->visit_if_rule($this);
     }
-
     public function __toString(): string
     {
         $parts = [];
-
         foreach ($this->clauses as $index => $clause) {
-            $parts[] = ($index === 0 ? '@if ' : '@else if ') . $clause->getExpression() . '{' . implode(' ', $clause->getChildren()) . '}';
+            $parts[] = ($index === 0 ? '@if ' : '@else if ') . $clause->get_expression() . '{' . implode(' ', $clause->get_children()) . '}';
         }
-
-        if ($this->lastClause !== null) {
-            $parts[] = $this->lastClause;
+        if ($this->last_clause !== null) {
+            $parts[] = $this->last_clause;
         }
-
         return implode(' ', $parts);
     }
 }

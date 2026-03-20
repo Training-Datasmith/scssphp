@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,17 +10,15 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast;
 
-namespace ScssPhp\ScssPhp\Ast;
-
-use SourceSpan\FileSpan;
-
+use Source_Span\File_Span;
 /**
  * A node in an abstract syntax tree.
  *
  * @internal
  */
-interface AstNode extends \Stringable
+interface Ast_Node extends \Stringable
 {
-    public function getSpan(): FileSpan;
+    public function get_span(): File_Span;
 }

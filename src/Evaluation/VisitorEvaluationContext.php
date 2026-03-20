@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,48 +10,38 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Evaluation;
 
-namespace ScssPhp\ScssPhp\Evaluation;
-
-use ScssPhp\ScssPhp\Ast\AstNode;
-use ScssPhp\ScssPhp\Deprecation;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
+use Scss_Php\Scss_Php\Deprecation;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class VisitorEvaluationContext extends EvaluationContext
+final class Visitor_Evaluation_Context extends Evaluation_Context
 {
-    public function __construct(private readonly EvaluateVisitor $visitor, private readonly AstNode $defaultWarnNodeWithSpan)
+    public function __construct(private readonly Evaluate_Visitor $visitor, private readonly Ast_Node $default_warn_node_with_span)
     {
     }
-
-    public function getCurrentCallableSpan(): FileSpan
+    public function get_current_callable_span(): File_Span
     {
-        $callableNode = $this->visitor->getCallableNode();
-
-        if ($callableNode !== null) {
-            return $callableNode->getSpan();
+        $callable_node = $this->visitor->get_callable_node();
+        if ($callable_node !== null) {
+            return $callable_node->get_span();
         }
-
         throw new \LogicException('No Sass callable is currently being evaluated.');
     }
-
     public function warn(string $message, ?Deprecation $deprecation = null): void
     {
-        $span = $this->visitor->getImportSpan() ?? $this->maybeCurrentCallableSpan() ?? $this->defaultWarnNodeWithSpan->getSpan();
-
+        $span = $this->visitor->get_import_span() ?? $this->maybe_current_callable_span() ?? $this->default_warn_node_with_span->get_span();
         $this->visitor->warn($message, $span, $deprecation);
     }
-
-    private function maybeCurrentCallableSpan(): ?FileSpan
+    private function maybe_current_callable_span(): ?File_Span
     {
-        $callableNode = $this->visitor->getCallableNode();
-
-        if ($callableNode !== null) {
-            return $callableNode->getSpan();
+        $callable_node = $this->visitor->get_callable_node();
+        if ($callable_node !== null) {
+            return $callable_node->get_span();
         }
-
         return null;
     }
 }

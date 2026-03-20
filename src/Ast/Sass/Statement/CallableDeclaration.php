@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,11 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentDeclaration;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Declaration;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Source_Span\File_Span;
 /**
  * An abstract class for callables (functions or mixins) that are declared in
  * user code.
@@ -26,49 +23,42 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-abstract class CallableDeclaration extends ParentStatement
+abstract class Callable_Declaration extends Parent_Statement
 {
     private readonly string $name;
-
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param Statement[] $children
      */
-    public function __construct(private readonly string $originalName, private readonly ArgumentDeclaration $arguments, FileSpan $span, array $children, private readonly ?SilentComment $comment = null)
+    public function __construct(private readonly string $original_name, private readonly Argument_Declaration $arguments, File_Span $span, array $children, private readonly ?Silent_Comment $comment = null)
     {
-        $this->name = str_replace('_', '-', $this->originalName);
+        $this->name = str_replace('_', '-', $this->original_name);
         $this->span = $span;
         parent::__construct($children);
     }
-
     /**
      * The name of this callable, with underscores converted to hyphens.
      */
-    final public function getName(): string
+    final public function get_name(): string
     {
         return $this->name;
     }
-
     /**
      * The callable's original name, without underscores converted to hyphens.
      */
-    public function getOriginalName(): string
+    public function get_original_name(): string
     {
-        return $this->originalName;
+        return $this->original_name;
     }
-
-    final public function getArguments(): ArgumentDeclaration
+    final public function get_arguments(): Argument_Declaration
     {
         return $this->arguments;
     }
-
-    final public function getComment(): ?SilentComment
+    final public function get_comment(): ?Silent_Comment
     {
         return $this->comment;
     }
-
-    final public function getSpan(): FileSpan
+    final public function get_span(): File_Span
     {
         return $this->span;
     }

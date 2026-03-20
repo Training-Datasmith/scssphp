@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,12 +10,10 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Source_Span\File_Span;
 /**
  * An attribute selector.
  *
@@ -25,90 +22,83 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class AttributeSelector extends SimpleSelector
+final class Attribute_Selector extends Simple_Selector
 {
     /**
      * Creates an attribute selector that matches any element with a property of
      * the given name.
      */
-    public static function create(QualifiedName $name, FileSpan $span): AttributeSelector
+    public static function create(Qualified_Name $name, File_Span $span): Attribute_Selector
     {
-        return new AttributeSelector($name, $span, null, null, null);
+        return new Attribute_Selector($name, $span, null, null, null);
     }
-
     /**
      * Creates an attribute selector that matches an element with a property
      * named $name, whose value matches $value based on the semantics of $op.
      */
-    public static function withOperator(QualifiedName $name, ?AttributeOperator $op, ?string $value, FileSpan $span, ?string $modifier = null): AttributeSelector
+    public static function with_operator(Qualified_Name $name, ?Attribute_Operator $op, ?string $value, File_Span $span, ?string $modifier = null): Attribute_Selector
     {
-        return new AttributeSelector($name, $span, $op, $value, $modifier);
+        return new Attribute_Selector($name, $span, $op, $value, $modifier);
     }
-
-    private function __construct(/**
-     * The name of the attribute being selected for.
-     */
-        private readonly QualifiedName $name,
-        FileSpan $span, /**
-     * The operator that defines the semantics of {@see value}.
-     *
-     * If this is `null`, this matches any element with the given property,
-     * regardless of this value. It's `null` if and only if {@see value} is `null`.
-     */
-        private readonly ?AttributeOperator $op, /**
-     * An assertion about the value of {@see name}.
-     *
-     * The precise semantics of this string are defined by {@see op}.
-     *
-     * If this is `null`, this matches any element with the given property,
-     * regardless of this value. It's `null` if and only if {@see op} is `null`.
-     */
-        private readonly ?string $value, /**
-     * The modifier which indicates how the attribute selector should be
-     * processed.
-     *
-     * See for example [case-sensitivity][] modifiers.
-     *
-     * [case-sensitivity]: https://www.w3.org/TR/selectors-4/#attribute-case
-     *
-     * If {@see op} is `null`, this is always `null` as well.
-     */
+    private function __construct(
+        /**
+         * The name of the attribute being selected for.
+         */
+        private readonly Qualified_Name $name,
+        File_Span $span,
+        /**
+         * The operator that defines the semantics of {@see value}.
+         *
+         * If this is `null`, this matches any element with the given property,
+         * regardless of this value. It's `null` if and only if {@see value} is `null`.
+         */
+        private readonly ?Attribute_Operator $op,
+        /**
+         * An assertion about the value of {@see name}.
+         *
+         * The precise semantics of this string are defined by {@see op}.
+         *
+         * If this is `null`, this matches any element with the given property,
+         * regardless of this value. It's `null` if and only if {@see op} is `null`.
+         */
+        private readonly ?string $value,
+        /**
+         * The modifier which indicates how the attribute selector should be
+         * processed.
+         *
+         * See for example [case-sensitivity][] modifiers.
+         *
+         * [case-sensitivity]: https://www.w3.org/TR/selectors-4/#attribute-case
+         *
+         * If {@see op} is `null`, this is always `null` as well.
+         */
         private readonly ?string $modifier
-    ) {
+    )
+    {
         parent::__construct($span);
     }
-
-    public function getName(): QualifiedName
+    public function get_name(): Qualified_Name
     {
         return $this->name;
     }
-
-    public function getOp(): ?AttributeOperator
+    public function get_op(): ?Attribute_Operator
     {
         return $this->op;
     }
-
-    public function getValue(): ?string
+    public function get_value(): ?string
     {
         return $this->value;
     }
-
-    public function getModifier(): ?string
+    public function get_modifier(): ?string
     {
         return $this->modifier;
     }
-
-    public function accept(SelectorVisitor $visitor)
+    public function accept(Selector_Visitor $visitor)
     {
-        return $visitor->visitAttributeSelector($this);
+        return $visitor->visit_attribute_selector($this);
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof AttributeSelector &&
-            $other->name->equals($this->name) &&
-            $other->op === $this->op &&
-            $other->value === $this->value &&
-            $other->modifier === $this->modifier;
+        return $other instanceof Attribute_Selector && $other->name->equals($this->name) && $other->op === $this->op && $other->value === $this->value && $other->modifier === $this->modifier;
     }
 }

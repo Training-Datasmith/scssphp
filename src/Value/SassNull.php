@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,54 +10,44 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Value;
 
-namespace ScssPhp\ScssPhp\Value;
-
-use ScssPhp\ScssPhp\Visitor\ValueVisitor;
-
+use Scss_Php\Scss_Php\Visitor\Value_Visitor;
 /**
  * The SassScript `null` value.
  */
-final class SassNull extends Value
+final class Sass_Null extends Value
 {
-    private static SassNull $instance;
-
-    public static function create(): SassNull
+    private static Sass_Null $instance;
+    public static function create(): Sass_Null
     {
         return self::$instance ??= new self();
     }
-
     private function __construct()
     {
     }
-
-    public function isTruthy(): bool
+    public function is_truthy(): bool
     {
         return false;
     }
-
-    public function isBlank(): bool
+    public function is_blank(): bool
     {
         return true;
     }
-
-    public function realNull(): ?Value
+    public function real_null(): ?Value
     {
         return null;
     }
-
-    public function accept(ValueVisitor $visitor)
+    public function accept(Value_Visitor $visitor)
     {
-        return $visitor->visitNull();
+        return $visitor->visit_null();
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof SassNull;
+        return $other instanceof Sass_Null;
     }
-
-    public function unaryNot(): \ScssPhp\ScssPhp\Value\SassBoolean
+    public function unary_not(): \Scss_Php\Scss_Php\Value\Sass_Boolean
     {
-        return SassBoolean::create(true);
+        return Sass_Boolean::create(true);
     }
 }

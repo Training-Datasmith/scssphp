@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,19 +10,17 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Value;
 
-namespace ScssPhp\ScssPhp\Value;
-
-use ScssPhp\ScssPhp\Serializer\Serializer;
-use ScssPhp\ScssPhp\Util\Equatable;
-
+use Scss_Php\Scss_Php\Serializer\Serializer;
+use Scss_Php\Scss_Php\Util\Equatable;
 /**
  * A binary operation that can appear in a {@see SassCalculation}.
  */
-final class CalculationOperation implements Equatable, \Stringable
+final class Calculation_Operation implements Equatable, \Stringable
 {
     public function __construct(
-        private readonly CalculationOperator $operator,
+        private readonly Calculation_Operator $operator,
         /**
          * The left-hand operand.
          *
@@ -38,36 +35,30 @@ final class CalculationOperation implements Equatable, \Stringable
          * {@see SassString}, or a {@see CalculationOperation}.
          */
         private readonly object $right
-    ) {
+    )
+    {
     }
-
-    public function getOperator(): CalculationOperator
+    public function get_operator(): Calculation_Operator
     {
         return $this->operator;
     }
-
-    public function getLeft(): object
+    public function get_left(): object
     {
         return $this->left;
     }
-
-    public function getRight(): object
+    public function get_right(): object
     {
         return $this->right;
     }
-
     public function equals(object $other): bool
     {
         assert($this->left instanceof Equatable);
         assert($this->right instanceof Equatable);
-
-        return $other instanceof CalculationOperation && $this->operator === $other->operator && $this->left->equals($other->left) && $this->right->equals($other->right);
+        return $other instanceof Calculation_Operation && $this->operator === $other->operator && $this->left->equals($other->left) && $this->right->equals($other->right);
     }
-
     public function __toString(): string
     {
-        $parenthesized = Serializer::serializeValue(SassCalculation::unsimplified('', [$this]), true);
-
+        $parenthesized = Serializer::serialize_value(Sass_Calculation::unsimplified('', [$this]), true);
         return substr($parenthesized, 1, \strlen($parenthesized) - 2);
     }
 }

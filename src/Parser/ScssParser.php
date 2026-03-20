@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,268 +10,210 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\LoudComment;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\SilentComment;
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Util\Character;
-use ScssPhp\ScssPhp\Util\LoggerUtil;
-
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Loud_Comment;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Silent_Comment;
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Util\Character;
+use Scss_Php\Scss_Php\Util\Logger_Util;
 /**
  * A parser for the CSS-compatible syntax.
  *
  * @internal
  */
-class ScssParser extends StylesheetParser
+class Scss_Parser extends Stylesheet_Parser
 {
-    protected function isIndented(): bool
+    protected function is_indented(): bool
     {
         return false;
     }
-
-    protected function getCurrentIndentation(): int
+    protected function get_current_indentation(): int
     {
         return 0;
     }
-
-    protected function styleRuleSelector(): Interpolation
+    protected function style_rule_selector(): Interpolation
     {
-        return $this->almostAnyValue();
+        return $this->almost_any_value();
     }
-
-    protected function expectStatementSeparator(?string $name = null): void
+    protected function expect_statement_separator(?string $name = null): void
     {
-        $this->whitespaceWithoutComments();
-
-        if ($this->scanner->isDone()) {
+        $this->whitespace_without_comments();
+        if ($this->scanner->is_done()) {
             return;
         }
-
-        $next = $this->scanner->peekChar();
-
+        $next = $this->scanner->peek_char();
         if ($next === ';' || $next === '}') {
             return;
         }
-
-        $this->scanner->expectChar(';');
+        $this->scanner->expect_char(';');
     }
-
-    protected function atEndOfStatement(): bool
+    protected function at_end_of_statement(): bool
     {
-        $next = $this->scanner->peekChar();
-
+        $next = $this->scanner->peek_char();
         return $next === null || $next === ';' || $next === '}' || $next === '{';
     }
-
-    protected function lookingAtChildren(): bool
+    protected function looking_at_children(): bool
     {
-        return $this->scanner->peekChar() === '{';
+        return $this->scanner->peek_char() === '{';
     }
-
-    protected function scanElse(int $ifIndentation): bool
+    protected function scan_else(int $if_indentation): bool
     {
-        $start = $this->scanner->getPosition();
+        $start = $this->scanner->get_position();
         $this->whitespace();
-        $beforeAt = $this->scanner->getPosition();
-
-        if ($this->scanner->scanChar('@')) {
-            if ($this->scanIdentifier('else', true)) {
+        $before_at = $this->scanner->get_position();
+        if ($this->scanner->scan_char('@')) {
+            if ($this->scan_identifier('else', true)) {
                 return true;
             }
-
-            if ($this->scanIdentifier('elseif', true)) {
-                LoggerUtil::warnForDeprecation($this->logger, Deprecation::elseif, "@elseif is deprecated and will not be supported in future Sass versions.\n\nRecommendation: @else if", $this->scanner->spanFrom($beforeAt));
-
-                $this->scanner->setPosition($this->scanner->getPosition() - 2);
-
+            if ($this->scan_identifier('elseif', true)) {
+                Logger_Util::warn_for_deprecation($this->logger, Deprecation::elseif, "@elseif is deprecated and will not be supported in future Sass versions.\n\nRecommendation: @else if", $this->scanner->span_from($before_at));
+                $this->scanner->set_position($this->scanner->get_position() - 2);
                 return true;
             }
         }
-
-        $this->scanner->setPosition($start);
-
+        $this->scanner->set_position($start);
         return false;
     }
-
     protected function children(callable $child): array
     {
-        $this->scanner->expectChar('{');
-        $this->whitespaceWithoutComments();
+        $this->scanner->expect_char('{');
+        $this->whitespace_without_comments();
         $children = [];
-
         while (true) {
-            switch ($this->scanner->peekChar()) {
+            switch ($this->scanner->peek_char()) {
                 case '$':
-                    $children[] = $this->variableDeclarationWithoutNamespace();
+                    $children[] = $this->variable_declaration_without_namespace();
                     break;
-
                 case '/':
-                    switch ($this->scanner->peekChar(1)) {
+                    switch ($this->scanner->peek_char(1)) {
                         case '/':
-                            $children[] = $this->silentCommentStatement();
-                            $this->whitespaceWithoutComments();
+                            $children[] = $this->silent_comment_statement();
+                            $this->whitespace_without_comments();
                             break;
-
                         case '*':
-                            $children[] = $this->loudCommentStatement();
-                            $this->whitespaceWithoutComments();
+                            $children[] = $this->loud_comment_statement();
+                            $this->whitespace_without_comments();
                             break;
-
                         default:
                             $children[] = $child();
                             break;
                     }
                     break;
-
                 case ';':
-                    $this->scanner->readChar();
-                    $this->whitespaceWithoutComments();
+                    $this->scanner->read_char();
+                    $this->whitespace_without_comments();
                     break;
-
                 case '}':
-                    $this->scanner->expectChar('}');
-
+                    $this->scanner->expect_char('}');
                     return $children;
-
                 default:
                     $children[] = $child();
                     break;
             }
         }
     }
-
     protected function statements(callable $statement): array
     {
         $statements = [];
-        $this->whitespaceWithoutComments();
-
-        while (!$this->scanner->isDone()) {
-            switch ($this->scanner->peekChar()) {
+        $this->whitespace_without_comments();
+        while (!$this->scanner->is_done()) {
+            switch ($this->scanner->peek_char()) {
                 case '$':
-                    $statements[] = $this->variableDeclarationWithoutNamespace();
+                    $statements[] = $this->variable_declaration_without_namespace();
                     break;
-
                 case '/':
-                    switch ($this->scanner->peekChar(1)) {
+                    switch ($this->scanner->peek_char(1)) {
                         case '/':
-                            $statements[] = $this->silentCommentStatement();
-                            $this->whitespaceWithoutComments();
+                            $statements[] = $this->silent_comment_statement();
+                            $this->whitespace_without_comments();
                             break;
-
                         case '*':
-                            $statements[] = $this->loudCommentStatement();
-                            $this->whitespaceWithoutComments();
+                            $statements[] = $this->loud_comment_statement();
+                            $this->whitespace_without_comments();
                             break;
-
                         default:
                             $child = $statement();
-
                             if ($child !== null) {
                                 $statements[] = $child;
                             }
                             break;
                     }
                     break;
-
                 case ';':
-                    $this->scanner->readChar();
-                    $this->whitespaceWithoutComments();
+                    $this->scanner->read_char();
+                    $this->whitespace_without_comments();
                     break;
-
                 default:
                     $child = $statement();
-
                     if ($child !== null) {
                         $statements[] = $child;
                     }
                     break;
             }
         }
-
         return $statements;
     }
-
     /**
      * Consumes a statement-level silent comment block.
      */
-    private function silentCommentStatement(): SilentComment
+    private function silent_comment_statement(): Silent_Comment
     {
-        $start = $this->scanner->getPosition();
-
+        $start = $this->scanner->get_position();
         $this->scanner->expect('//');
-
         do {
-            while (!$this->scanner->isDone() && !Character::isNewline($this->scanner->readChar())) {
+            while (!$this->scanner->is_done() && !Character::is_newline($this->scanner->read_char())) {
                 // Ignore the content of the comment
             }
-
-            if ($this->scanner->isDone()) {
+            if ($this->scanner->is_done()) {
                 break;
             }
-
             $this->spaces();
         } while ($this->scanner->scan('//'));
-
-        if ($this->isPlainCss()) {
-            $this->error('Silent comments aren\'t allowed in plain CSS.', $this->scanner->spanFrom($start));
+        if ($this->is_plain_css()) {
+            $this->error('Silent comments aren\'t allowed in plain CSS.', $this->scanner->span_from($start));
         }
-
-        $this->lastSilentComment = new SilentComment($this->scanner->substring($start), $this->scanner->spanFrom($start));
-
-        return $this->lastSilentComment;
+        $this->last_silent_comment = new Silent_Comment($this->scanner->substring($start), $this->scanner->span_from($start));
+        return $this->last_silent_comment;
     }
-
     /**
      * Consumes a statement-level loud comment block.
      */
-    private function loudCommentStatement(): LoudComment
+    private function loud_comment_statement(): Loud_Comment
     {
-        $start = $this->scanner->getPosition();
-
+        $start = $this->scanner->get_position();
         $this->scanner->expect('/*');
-
-        $buffer = new InterpolationBuffer();
+        $buffer = new Interpolation_Buffer();
         $buffer->write('/*');
-
         while (true) {
-            switch ($this->scanner->peekChar()) {
+            switch ($this->scanner->peek_char()) {
                 case '#':
-                    if ($this->scanner->peekChar(1) === '{') {
-                        $buffer->add($this->singleInterpolation());
+                    if ($this->scanner->peek_char(1) === '{') {
+                        $buffer->add($this->single_interpolation());
                     } else {
-                        $buffer->write($this->scanner->readChar());
+                        $buffer->write($this->scanner->read_char());
                     }
                     break;
-
                 case '*':
-                    $buffer->write($this->scanner->readChar());
-
-                    if ($this->scanner->peekChar() !== '/') {
+                    $buffer->write($this->scanner->read_char());
+                    if ($this->scanner->peek_char() !== '/') {
                         break;
                     }
-
-                    $buffer->write($this->scanner->readChar());
-
-                    return new LoudComment($buffer->buildInterpolation($this->scanner->spanFrom($start)));
-
+                    $buffer->write($this->scanner->read_char());
+                    return new Loud_Comment($buffer->build_interpolation($this->scanner->span_from($start)));
                 case "\r":
-                    $this->scanner->readChar();
-
-                    if ($this->scanner->peekChar() !== "\n") {
+                    $this->scanner->read_char();
+                    if ($this->scanner->peek_char() !== "\n") {
                         $buffer->write("\n");
                     }
                     break;
-
                 case "\f":
-                    $this->scanner->readChar();
+                    $this->scanner->read_char();
                     $buffer->write("\n");
                     break;
-
                 default:
-                    $buffer->write($this->scanner->readUtf8Char());
+                    $buffer->write($this->scanner->read_utf8char());
             }
         }
     }

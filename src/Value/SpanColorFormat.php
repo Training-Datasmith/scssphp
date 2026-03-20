@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,25 +10,21 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Value;
 
-namespace ScssPhp\ScssPhp\Value;
-
-use SourceSpan\FileSpan;
-
+use Source_Span\File_Span;
 /**
  * @internal
  */
-final class SpanColorFormat implements ColorFormat
+final class Span_Color_Format implements Color_Format
 {
-    private readonly FileSpan $span;
-
-    public function __construct(FileSpan $span)
+    private readonly File_Span $span;
+    public function __construct(File_Span $span)
     {
         $this->span = $span;
     }
-
-    public function getOriginal(): string
+    public function get_original(): string
     {
-        return $this->span->getText();
+        return $this->span->get_text();
     }
 }

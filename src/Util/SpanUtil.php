@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,62 +10,52 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Util;
 
-namespace ScssPhp\ScssPhp\Util;
-
-use ScssPhp\ScssPhp\Parser\StringScanner;
-use SourceSpan\FileSpan;
-use SourceSpan\SourceFile;
-
+use Scss_Php\Scss_Php\Parser\String_Scanner;
+use Source_Span\File_Span;
+use Source_Span\Source_File;
 /**
  * @internal
  */
-final class SpanUtil
+final class Span_Util
 {
-    public static function bogusSpan(): FileSpan
+    public static function bogus_span(): File_Span
     {
-        return SourceFile::fromString('')->span(0);
+        return Source_File::from_string('')->span(0);
     }
-
     /**
      * Returns this span with all whitespace trimmed from both sides.
      */
-    public static function trim(FileSpan $span): FileSpan
+    public static function trim(File_Span $span): File_Span
     {
-        return self::trimRight(self::trimLeft($span));
+        return self::trim_right(self::trim_left($span));
     }
-
     /**
      * Returns this span with all leading whitespace trimmed.
      */
-    public static function trimLeft(FileSpan $span): FileSpan
+    public static function trim_left(File_Span $span): File_Span
     {
         $start = 0;
-        $text = $span->getText();
-        $textLength = \strlen($text);
-
-        while ($start < $textLength && Character::isWhitespace($text[$start])) {
+        $text = $span->get_text();
+        $text_length = \strlen($text);
+        while ($start < $text_length && Character::is_whitespace($text[$start])) {
             $start++;
         }
-
         return $span->subspan($start);
     }
-
     /**
      * Returns this span with all trailing whitespace trimmed.
      */
-    public static function trimRight(FileSpan $span): FileSpan
+    public static function trim_right(File_Span $span): File_Span
     {
-        $text = $span->getText();
+        $text = $span->get_text();
         $end = \strlen($text) - 1;
-
-        while ($end >= 0 && Character::isWhitespace($text[$end])) {
+        while ($end >= 0 && Character::is_whitespace($text[$end])) {
             $end--;
         }
-
         return $span->subspan(0, $end + 1);
     }
-
     /**
      * Returns the span of the identifier at the start of this span.
      *
@@ -74,74 +63,63 @@ final class SpanUtil
      * will be included from the start of this span before looking for an
      * identifier.
      */
-    public static function initialIdentifier(FileSpan $span, int $includeLeading = 0): FileSpan
+    public static function initial_identifier(File_Span $span, int $include_leading = 0): File_Span
     {
-        $scanner = new StringScanner($span->getText());
-
-        for ($i = 0; $i < $includeLeading; $i++) {
-            $scanner->readUtf8Char();
+        $scanner = new String_Scanner($span->get_text());
+        for ($i = 0; $i < $include_leading; $i++) {
+            $scanner->read_utf8char();
         }
-
-        self::scanIdentifier($scanner);
-
-        return $span->subspan(0, $scanner->getPosition());
+        self::scan_identifier($scanner);
+        return $span->subspan(0, $scanner->get_position());
     }
-
     /**
      * Returns a subspan excluding the identifier at the start of this span.
      */
-    public static function withoutInitialIdentifier(FileSpan $span): FileSpan
+    public static function without_initial_identifier(File_Span $span): File_Span
     {
-        $scanner = new StringScanner($span->getText());
-        self::scanIdentifier($scanner);
-
-        return $span->subspan($scanner->getPosition());
+        $scanner = new String_Scanner($span->get_text());
+        self::scan_identifier($scanner);
+        return $span->subspan($scanner->get_position());
     }
-
     /**
      * Returns a subspan excluding a namespace and `.` at the start of this span.
      */
-    public static function withoutNamespace(FileSpan $span): FileSpan
+    public static function without_namespace(File_Span $span): File_Span
     {
-        return self::withoutInitialIdentifier($span)->subspan(1);
+        return self::without_initial_identifier($span)->subspan(1);
     }
-
     /**
      * Returns a subspan excluding an initial at-rule and any whitespace after
      * it.
      */
-    public static function withoutInitialAtRule(FileSpan $span): FileSpan
+    public static function without_initial_at_rule(File_Span $span): File_Span
     {
-        $scanner = new StringScanner($span->getText());
-        $scanner->expectChar('@');
-        self::scanIdentifier($scanner);
-
-        return self::trimLeft($span->subspan($scanner->getPosition()));
+        $scanner = new String_Scanner($span->get_text());
+        $scanner->expect_char('@');
+        self::scan_identifier($scanner);
+        return self::trim_left($span->subspan($scanner->get_position()));
     }
-
     /**
      * Whether $span contains the $target FileSpan.
      *
      * Validates the FileSpans to be in the same file and for the $target to be
      * within $span FileSpan inclusive range [start,end].
      */
-    public static function contains(FileSpan $span, FileSpan $target): bool
+    public static function contains(File_Span $span, File_Span $target): bool
     {
-        return $span->getFile() === $target->getFile() && $span->getStart()->getOffset() <= $target->getStart()->getOffset() && $span->getEnd()->getOffset() >= $target->getEnd()->getOffset();
+        return $span->get_file() === $target->get_file() && $span->get_start()->get_offset() <= $target->get_start()->get_offset() && $span->get_end()->get_offset() >= $target->get_end()->get_offset();
     }
-
     /**
      * Consumes an identifier from $scanner.
      */
-    private static function scanIdentifier(StringScanner $scanner): void
+    private static function scan_identifier(String_Scanner $scanner): void
     {
-        while (!$scanner->isDone()) {
-            $char = $scanner->peekChar();
-
+        while (!$scanner->is_done()) {
+            $char = $scanner->peek_char();
             if ($char === '\\') {
-                ParserUtil::consumeEscapedCharacter($scanner);
-            } elseif ($char !== null && Character::isName($char)) {
-                $scanner->readUtf8Char();
+                Parser_Util::consume_escaped_character($scanner);
+            } elseif ($char !== null && Character::is_name($char)) {
+                $scanner->read_utf8char();
             } else {
                 break;
             }

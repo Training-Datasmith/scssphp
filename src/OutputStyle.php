@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,14 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php;
 
-namespace ScssPhp\ScssPhp;
-
-enum OutputStyle: string
+enum Output_Style : string
 {
     case EXPANDED = 'expanded';
     case COMPRESSED = 'compressed';
-
     /**
      * Converts a string to an output style.
      *
@@ -26,7 +23,7 @@ enum OutputStyle: string
      * versions 1.12+ and 2.0 of Scssphp. In 1.x, OutputStyle was using
      * string constants.
      */
-    public static function fromString(string $string): OutputStyle
+    public static function from_string(string $string): Output_Style
     {
         return match ($string) {
             'expanded' => self::EXPANDED,
@@ -34,7 +31,6 @@ enum OutputStyle: string
             default => throw new \InvalidArgumentException('Invalid output style'),
         };
     }
-
     /**
      * Converts an output style to a string supported by {@see OutputStyle::fromString()}.
      *
@@ -43,8 +39,8 @@ enum OutputStyle: string
      * The returned string representation is guaranteed to be compatible
      * between 1.12 and 2.0.
      */
-    public static function toString(OutputStyle $outputStyle): string
+    public static function to_string(Output_Style $output_style): string
     {
-        return $outputStyle->value;
+        return $output_style->value;
     }
 }

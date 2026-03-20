@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,14 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * A `@error` rule.
  *
@@ -26,30 +23,25 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class ErrorRule implements Statement
+final class Error_Rule implements Statement
 {
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly Expression $expression, FileSpan $span)
+    private readonly File_Span $span;
+    public function __construct(private readonly Expression $expression, File_Span $span)
     {
         $this->span = $span;
     }
-
-    public function getExpression(): Expression
+    public function get_expression(): Expression
     {
         return $this->expression;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitErrorRule($this);
+        return $visitor->visit_error_rule($this);
     }
-
     public function __toString(): string
     {
         return '@error ' . $this->expression . ';';

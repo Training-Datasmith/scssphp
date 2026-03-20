@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * A block within a `@keyframes` rule.
@@ -21,12 +19,12 @@ namespace ScssPhp\ScssPhp\Ast\Css;
  *
  * @internal
  */
-interface CssKeyframeBlock extends CssParentNode
+interface Css_Keyframe_Block extends Css_Parent_Node
 {
     /**
      * The selector for this block.
      *
      * @return CssValue<list<string>>
      */
-    public function getSelector(): CssValue;
+    public function get_selector(): Css_Value;
 }

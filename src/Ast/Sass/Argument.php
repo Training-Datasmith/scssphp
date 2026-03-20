@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,32 +10,27 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass;
 
-namespace ScssPhp\ScssPhp\Ast\Sass;
-
-use ScssPhp\ScssPhp\Util;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Util;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Source_Span\File_Span;
 /**
  * An argument declared as part of an {@see ArgumentDeclaration}.
  *
  * @internal
  */
-final class Argument implements SassNode, SassDeclaration
+final class Argument implements Sass_Node, Sass_Declaration
 {
-    private readonly FileSpan $span;
-
-    public function __construct(private readonly string $name, FileSpan $span, private readonly ?Expression $defaultValue = null)
+    private readonly File_Span $span;
+    public function __construct(private readonly string $name, File_Span $span, private readonly ?Expression $default_value = null)
     {
         $this->span = $span;
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
     /**
      * The variable name as written in the document, without underscores
      * converted to hyphens and including the leading `$`.
@@ -44,40 +38,33 @@ final class Argument implements SassNode, SassDeclaration
      * This isn't particularly efficient, and should only be used for error
      * messages.
      */
-    public function getOriginalName(): string
+    public function get_original_name(): string
     {
-        if ($this->defaultValue === null) {
-            return $this->span->getText();
+        if ($this->default_value === null) {
+            return $this->span->get_text();
         }
-
-        return Util::declarationName($this->span);
+        return Util::declaration_name($this->span);
     }
-
-    public function getNameSpan(): FileSpan
+    public function get_name_span(): File_Span
     {
-        if ($this->defaultValue === null) {
+        if ($this->default_value === null) {
             return $this->span;
         }
-
-        return SpanUtil::initialIdentifier($this->span, 1);
+        return Span_Util::initial_identifier($this->span, 1);
     }
-
-    public function getDefaultValue(): ?Expression
+    public function get_default_value(): ?Expression
     {
-        return $this->defaultValue;
+        return $this->default_value;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
-        if ($this->defaultValue === null) {
+        if ($this->default_value === null) {
             return $this->name;
         }
-
-        return $this->name . ': ' . $this->defaultValue;
+        return $this->name . ': ' . $this->default_value;
     }
 }

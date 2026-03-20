@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,18 +10,16 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Selector;
 
-namespace ScssPhp\ScssPhp\Ast\Selector;
-
-use ScssPhp\ScssPhp\Ast\AstNode;
-use ScssPhp\ScssPhp\Deprecation;
-use ScssPhp\ScssPhp\Exception\SassException;
-use ScssPhp\ScssPhp\Serializer\Serializer;
-use ScssPhp\ScssPhp\Util\Equatable;
-use ScssPhp\ScssPhp\Visitor\SelectorVisitor;
-use ScssPhp\ScssPhp\Warn;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
+use Scss_Php\Scss_Php\Deprecation;
+use Scss_Php\Scss_Php\Exception\Sass_Exception;
+use Scss_Php\Scss_Php\Serializer\Serializer;
+use Scss_Php\Scss_Php\Util\Equatable;
+use Scss_Php\Scss_Php\Visitor\Selector_Visitor;
+use Scss_Php\Scss_Php\Warn;
+use Source_Span\File_Span;
 /**
  * A node in the abstract syntax tree for a selector.
  *
@@ -33,38 +30,33 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-abstract class Selector implements AstNode, Equatable
+abstract class Selector implements Ast_Node, Equatable
 {
-    private readonly FileSpan $span;
-
-    public function __construct(FileSpan $span)
+    private readonly File_Span $span;
+    public function __construct(File_Span $span)
     {
         $this->span = $span;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     /**
      * Whether this selector, and complex selectors containing it, should not be
      * emitted.
      */
-    public function isInvisible(): bool
+    public function is_invisible(): bool
     {
-        return $this->accept(new IsInvisibleVisitor(true));
+        return $this->accept(new Is_Invisible_Visitor(true));
     }
-
     /**
      * Whether this selector would be invisible even if it didn't have bogus
      * combinators.
      */
-    public function isInvisibleOtherThanBogusCombinators(): bool
+    public function is_invisible_other_than_bogus_combinators(): bool
     {
-        return $this->accept(new IsInvisibleVisitor(false));
+        return $this->accept(new Is_Invisible_Visitor(false));
     }
-
     /**
      * Whether this selector is not valid CSS.
      *
@@ -72,43 +64,38 @@ abstract class Selector implements AstNode, Equatable
      * nesting (`> .foo)` and selectors with invalid combinators that are still
      * supported for backwards-compatibility reasons (`.foo + ~ .bar`).
      */
-    public function isBogus(): bool
+    public function is_bogus(): bool
     {
-        return $this->accept(new IsBogusVisitor(true));
+        return $this->accept(new Is_Bogus_Visitor(true));
     }
-
     /**
      * Whether this selector is bogus other than having a leading combinator.
      */
-    public function isBogusOtherThanLeadingCombinator(): bool
+    public function is_bogus_other_than_leading_combinator(): bool
     {
-        return $this->accept(new IsBogusVisitor(false));
+        return $this->accept(new Is_Bogus_Visitor(false));
     }
-
     /**
      * Whether this is a useless selector (that is, it's bogus _and_ it can't be
      * transformed into valid CSS by `@extend` or nesting).
      */
-    public function isUseless(): bool
+    public function is_useless(): bool
     {
-        return $this->accept(new IsUselessVisitor());
+        return $this->accept(new Is_Useless_Visitor());
     }
-
     /**
      * Prints a warning if $this is a bogus selector.
      *
      * This may only be called from within a custom Sass function. This will
      * throw a {@see SassException} in a future major version.
      */
-    public function assertNotBogus(?string $name = null): void
+    public function assert_not_bogus(?string $name = null): void
     {
-        if (!$this->isBogus()) {
+        if (!$this->is_bogus()) {
             return;
         }
-
-        Warn::forDeprecation(($name === null ? '' : "\$$name: ") . "$this is not valid CSS.\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators", Deprecation::bogusCombinators);
+        Warn::for_deprecation(($name === null ? '' : "\${$name}: ") . "{$this} is not valid CSS.\nThis will be an error in Dart Sass 2.0.0.\n\nMore info: https://sass-lang.com/d/bogus-combinators", Deprecation::bogusCombinators);
     }
-
     /**
      * Calls the appropriate visit method on $visitor.
      *
@@ -120,10 +107,9 @@ abstract class Selector implements AstNode, Equatable
      *
      * @internal
      */
-    abstract public function accept(SelectorVisitor $visitor);
-
+    abstract public function accept(Selector_Visitor $visitor);
     final public function __toString(): string
     {
-        return Serializer::serializeSelector($this, true);
+        return Serializer::serialize_selector($this, true);
     }
 }

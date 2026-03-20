@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Extend;
+namespace Scss_Php\Scss_Php\Extend;
 
 /**
  * Different modes in which extension can run.
  *
  * @internal
  */
-enum ExtendMode
+enum Extend_Mode
 {
     /**
      * Normal mode, used with the `@extend` rule.
@@ -27,7 +25,6 @@ enum ExtendMode
      * This preserves existing selectors and extends each target individually.
      */
     case normal;
-
     /**
      * Replace mode, used by the `selector-replace()` function.
      *
@@ -35,7 +32,6 @@ enum ExtendMode
      * extend a given compound selector.
      */
     case replace;
-
     /**
      * All-targets mode, used by the `selector-extend()` function.
      *

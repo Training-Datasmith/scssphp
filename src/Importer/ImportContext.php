@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,16 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Importer;
+namespace Scss_Php\Scss_Php\Importer;
 
 /**
  * @internal
  */
-final class ImportContext
+final class Import_Context
 {
-    private static ?CanonicalizeContext $context = null;
-
+    private static ?Canonicalize_Context $context = null;
     /**
      * Whether the Sass compiler is currently evaluating an `@import` rule.
      *
@@ -30,11 +27,10 @@ final class ImportContext
      * admittedly hacky to set this globally, but `@import` will eventually be
      * removed, at which point we can delete this and have one consistent behavior.
      */
-    public static function isFromImport(): bool
+    public static function is_from_import(): bool
     {
-        return self::$context?->isFromImport() ?? false;
+        return self::$context?->is_from_import() ?? false;
     }
-
     /**
      * @template T
      *
@@ -43,24 +39,20 @@ final class ImportContext
      *
      * @param-immediately-invoked-callable $callback
      */
-    public static function inImportRule(callable $callback)
+    public static function in_import_rule(callable $callback)
     {
         if (self::$context !== null) {
-            return self::$context->withFromImport(true, $callback);
+            return self::$context->with_from_import(true, $callback);
         }
-
-        return self::withCanonicalizeContext(new CanonicalizeContext(null, true), $callback);
+        return self::with_canonicalize_context(new Canonicalize_Context(null, true), $callback);
     }
-
-    public static function getCanonicalizeContext(): CanonicalizeContext
+    public static function get_canonicalize_context(): Canonicalize_Context
     {
         if (self::$context === null) {
             throw new \LogicException('canonicalizeContext may only be accessed within a call to canonicalize().');
         }
-
         return self::$context;
     }
-
     /**
      * Runs $callback in the given context.
      *
@@ -71,16 +63,14 @@ final class ImportContext
      *
      * @param-immediately-invoked-callable $callback
      */
-    public static function withCanonicalizeContext(?CanonicalizeContext $canonicalizeContext, callable $callback)
+    public static function with_canonicalize_context(?Canonicalize_Context $canonicalize_context, callable $callback)
     {
-        $oldCanonicalizeContext = self::$context;
-
-        self::$context = $canonicalizeContext;
-
+        $old_canonicalize_context = self::$context;
+        self::$context = $canonicalize_context;
         try {
             return $callback();
         } finally {
-            self::$context = $oldCanonicalizeContext;
+            self::$context = $old_canonicalize_context;
         }
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * @internal
  */
-enum MediaQuerySingletonMergeResult implements MediaQueryMergeResult
+enum Media_Query_Singleton_Merge_Result implements Media_Query_Merge_Result
 {
     case empty;
     case unrepresentable;

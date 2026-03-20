@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,20 +10,18 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Value;
+namespace Scss_Php\Scss_Php\Value;
 
 /**
  * An enum of list separator types.
  */
-enum ListSeparator
+enum List_Separator
 {
     case COMMA;
     case SPACE;
     case SLASH;
     case UNDECIDED;
-
-    public function getSeparator(): ?string
+    public function get_separator(): ?string
     {
         return match ($this) {
             self::COMMA => ',',

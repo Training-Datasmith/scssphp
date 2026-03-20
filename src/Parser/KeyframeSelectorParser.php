@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,18 +10,16 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Util\Character;
-
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
+use Scss_Php\Scss_Php\Util\Character;
 /**
  * A parser for `@keyframes` block selectors.
  *
  * @internal
  */
-final class KeyframeSelectorParser extends Parser
+final class Keyframe_Selector_Parser extends Parser
 {
     /**
      * @return list<string>
@@ -31,74 +28,59 @@ final class KeyframeSelectorParser extends Parser
      */
     public function parse(): array
     {
-        return $this->wrapSpanFormatException(function (): array {
+        return $this->wrap_span_format_exception(function (): array {
             $selectors = [];
-
             do {
                 $this->whitespace();
-                if ($this->lookingAtIdentifier()) {
-                    if ($this->scanIdentifier('from')) {
+                if ($this->looking_at_identifier()) {
+                    if ($this->scan_identifier('from')) {
                         $selectors[] = 'from';
                     } else {
-                        $this->expectIdentifier('to', '"to" or "from"');
+                        $this->expect_identifier('to', '"to" or "from"');
                         $selectors[] = 'to';
                     }
                 } else {
                     $selectors[] = $this->percentage();
                 }
                 $this->whitespace();
-            } while ($this->scanner->scanChar(','));
-            $this->scanner->expectDone();
-
+            } while ($this->scanner->scan_char(','));
+            $this->scanner->expect_done();
             return $selectors;
         });
     }
-
     private function percentage(): string
     {
         $buffer = '';
-
-        if ($this->scanner->scanChar('+')) {
+        if ($this->scanner->scan_char('+')) {
             $buffer .= '+';
         }
-
-        $second = $this->scanner->peekChar();
-
-        if (!Character::isDigit($second) && $second !== '.') {
+        $second = $this->scanner->peek_char();
+        if (!Character::is_digit($second) && $second !== '.') {
             $this->scanner->error('Expected number.');
         }
-
-        while (Character::isDigit($this->scanner->peekChar())) {
-            $buffer .= $this->scanner->readChar();
+        while (Character::is_digit($this->scanner->peek_char())) {
+            $buffer .= $this->scanner->read_char();
         }
-
-        if ($this->scanner->peekChar() === '.') {
-            $buffer .= $this->scanner->readChar();
-
-            while (Character::isDigit($this->scanner->peekChar())) {
-                $buffer .= $this->scanner->readChar();
+        if ($this->scanner->peek_char() === '.') {
+            $buffer .= $this->scanner->read_char();
+            while (Character::is_digit($this->scanner->peek_char())) {
+                $buffer .= $this->scanner->read_char();
             }
         }
-
-        if ($this->scanIdentChar('e')) {
+        if ($this->scan_ident_char('e')) {
             $buffer .= 'e';
-            $next = $this->scanner->peekChar();
-
+            $next = $this->scanner->peek_char();
             if ($next === '+' || $next === '-') {
-                $buffer .= $this->scanner->readChar();
+                $buffer .= $this->scanner->read_char();
             }
-
-            if (!Character::isDigit($this->scanner->peekChar())) {
+            if (!Character::is_digit($this->scanner->peek_char())) {
                 $this->scanner->error('Expected digit.');
             }
-
-            while (Character::isDigit($this->scanner->peekChar())) {
-                $buffer .= $this->scanner->readChar();
+            while (Character::is_digit($this->scanner->peek_char())) {
+                $buffer .= $this->scanner->read_char();
             }
         }
-
-        $this->scanner->expectChar('%');
-
+        $this->scanner->expect_char('%');
         return $buffer . '%';
     }
 }

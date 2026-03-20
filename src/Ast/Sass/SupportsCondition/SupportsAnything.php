@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,44 +10,40 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Source_Span\File_Span;
 /**
  * A supports condition that represents the forwards-compatible
  * `<general-enclosed>` production.
  *
  * @internal
  */
-final class SupportsAnything implements SupportsCondition
+final class Supports_Anything implements Supports_Condition
 {
-    private readonly FileSpan $span;
-
-    public function __construct(/**
-     * The contents of the condition.
-     */
+    private readonly File_Span $span;
+    public function __construct(
+        /**
+         * The contents of the condition.
+         */
         private readonly Interpolation $contents,
-        FileSpan $span
-    ) {
+        File_Span $span
+    )
+    {
         $this->span = $span;
     }
-
-    public function getContents(): Interpolation
+    public function get_contents(): Interpolation
     {
         return $this->contents;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
-        return "($this->contents)";
+        return "({$this->contents})";
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,50 +10,43 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * A map literal.
  *
  * @internal
  */
-final class MapExpression implements Expression
+final class Map_Expression implements Expression
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param list<array{Expression, Expression}> $pairs
      */
-    public function __construct(private readonly array $pairs, FileSpan $span)
+    public function __construct(private readonly array $pairs, File_Span $span)
     {
         $this->span = $span;
     }
-
     /**
      * @return list<array{Expression, Expression}>
      */
-    public function getPairs(): array
+    public function get_pairs(): array
     {
         return $this->pairs;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitMapExpression($this);
+        return $visitor->visit_map_expression($this);
     }
-
     public function __toString(): string
     {
-        return '(' . implode(', ', array_map(fn (array $pair): string => $pair[0] . ': ' . $pair[1], $this->pairs)) . ')';
+        return '(' . implode(', ', array_map(fn(array $pair): string => $pair[0] . ': ' . $pair[1], $this->pairs)) . ')';
     }
 }

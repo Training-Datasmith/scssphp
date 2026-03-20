@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,36 +10,31 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Util;
+namespace Scss_Php\Scss_Php\Util;
 
 /**
  * @internal
  */
-final class EquatableUtil
+final class Equatable_Util
 {
     /**
      * @param iterable<mixed> $list
      */
-    public static function iterableContains(iterable $list, Equatable $item): bool
+    public static function iterable_contains(iterable $list, Equatable $item): bool
     {
-        foreach ($list as $listItem) {
-            if (!\is_object($listItem)) {
+        foreach ($list as $list_item) {
+            if (!\is_object($list_item)) {
                 continue;
             }
-
-            if ($item === $listItem) {
+            if ($item === $list_item) {
                 return true;
             }
-
-            if ($item->equals($listItem)) {
+            if ($item->equals($list_item)) {
                 return true;
             }
         }
-
         return false;
     }
-
     /**
      * Checks whether 2 values are equals, using the Equatable semantic to compare objects if possible.
      *
@@ -55,36 +49,29 @@ final class EquatableUtil
         if ($item1 === $item2) {
             return true;
         }
-
         if ($item1 instanceof Equatable && $item2 instanceof Equatable) {
             return $item1->equals($item2);
         }
-
         return false;
     }
-
     /**
      * Checks whether 2 lists are equals, using the Equatable semantic to compare objects if possible.
      *
      * @param list<mixed> $list1
      * @param list<mixed> $list2
      */
-    public static function listEquals(array $list1, array $list2): bool
+    public static function list_equals(array $list1, array $list2): bool
     {
         if (\count($list1) !== \count($list2)) {
             return false;
         }
-
         foreach ($list1 as $i => $item1) {
             $item2 = $list2[$i];
-
             if (self::equals($item1, $item2)) {
                 continue;
             }
-
             return false;
         }
-
         return true;
     }
 }

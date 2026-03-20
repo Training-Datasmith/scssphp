@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,13 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Source_Span;
 
-namespace ScssPhp\ScssPhp\SourceSpan;
-
-use League\Uri\Contracts\UriInterface;
-use SourceSpan\FileLocation;
-use SourceSpan\FileSpan;
-use SourceSpan\SourceFile;
-use SourceSpan\SourceSpan;
-
+use League\Uri\Contracts\Uri_Interface;
+use Source_Span\File_Location;
+use Source_Span\File_Span;
+use Source_Span\Source_File;
+use Source_Span\Source_Span;
 /**
  * A FileSpan wrapper that with secondary spans attached, so that
  * {@see MultiSpan::message} can forward to {@see SourceSpan::messageMultiple}.
@@ -32,98 +29,79 @@ use SourceSpan\SourceSpan;
  *
  * @internal
  */
-final class MultiSpan implements FileSpan
+final class Multi_Span implements File_Span
 {
     /**
      * @param array<string, SourceSpan> $secondarySpans
      */
-    public function __construct(
-        private readonly FileSpan $primary,
-        private readonly string $primaryLabel,
-        private readonly array $secondarySpans,
-    ) {
-    }
-
-    public function getStart(): FileLocation
+    public function __construct(private readonly File_Span $primary, private readonly string $primary_label, private readonly array $secondary_spans)
     {
-        return $this->primary->getStart();
     }
-
-    public function getEnd(): FileLocation
+    public function get_start(): File_Location
     {
-        return $this->primary->getEnd();
+        return $this->primary->get_start();
     }
-
-    public function getText(): string
+    public function get_end(): File_Location
     {
-        return $this->primary->getText();
+        return $this->primary->get_end();
     }
-
-    public function getContext(): string
+    public function get_text(): string
     {
-        return $this->primary->getContext();
+        return $this->primary->get_text();
     }
-
-    public function getFile(): SourceFile
+    public function get_context(): string
     {
-        return $this->primary->getFile();
+        return $this->primary->get_context();
     }
-
-    public function getLength(): int
+    public function get_file(): Source_File
     {
-        return $this->primary->getLength();
+        return $this->primary->get_file();
     }
-
-    public function getSourceUrl(): ?UriInterface
+    public function get_length(): int
     {
-        return $this->primary->getSourceUrl();
+        return $this->primary->get_length();
     }
-
-    public function compareTo(SourceSpan $other): int
+    public function get_source_url(): ?Uri_Interface
     {
-        return $this->primary->compareTo($other);
+        return $this->primary->get_source_url();
     }
-
-    public function expand(FileSpan $other): FileSpan
+    public function compare_to(Source_Span $other): int
     {
-        return $this->withPrimary($this->primary->expand($other));
+        return $this->primary->compare_to($other);
     }
-
-    public function union(SourceSpan $other): SourceSpan
+    public function expand(File_Span $other): File_Span
+    {
+        return $this->with_primary($this->primary->expand($other));
+    }
+    public function union(Source_Span $other): Source_Span
     {
         return $this->primary->union($other);
     }
-
-    public function subspan(int $start, ?int $end = null): FileSpan
+    public function subspan(int $start, ?int $end = null): File_Span
     {
-        return $this->withPrimary($this->primary->subspan($start, $end));
+        return $this->with_primary($this->primary->subspan($start, $end));
     }
-
     public function highlight(): string
     {
-        return $this->primary->highlightMultiple($this->primaryLabel, $this->secondarySpans);
+        return $this->primary->highlight_multiple($this->primary_label, $this->secondary_spans);
     }
-
     public function message(string $message): string
     {
-        return $this->primary->messageMultiple($message, $this->primaryLabel, $this->secondarySpans);
+        return $this->primary->message_multiple($message, $this->primary_label, $this->secondary_spans);
     }
-
-    public function highlightMultiple(string $label, array $secondarySpans): string
+    public function highlight_multiple(string $label, array $secondary_spans): string
     {
-        return $this->primary->highlightMultiple($label, array_merge($this->secondarySpans, $secondarySpans));
+        return $this->primary->highlight_multiple($label, array_merge($this->secondary_spans, $secondary_spans));
     }
-
-    public function messageMultiple(string $message, string $label, array $secondarySpans): string
+    public function message_multiple(string $message, string $label, array $secondary_spans): string
     {
-        return $this->primary->messageMultiple($message, $label, array_merge($this->secondarySpans, $secondarySpans));
+        return $this->primary->message_multiple($message, $label, array_merge($this->secondary_spans, $secondary_spans));
     }
-
     /**
      * Returns a copy of $this with $newPrimary as its primary span.
      */
-    private function withPrimary(FileSpan $newPrimary): MultiSpan
+    private function with_primary(File_Span $new_primary): Multi_Span
     {
-        return new MultiSpan($newPrimary, $this->primaryLabel, $this->secondarySpans);
+        return new Multi_Span($new_primary, $this->primary_label, $this->secondary_spans);
     }
 }

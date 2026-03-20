@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,16 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Serializer;
 
-namespace ScssPhp\ScssPhp\Serializer;
-
-use ScssPhp\ScssPhp\SourceMap\SingleMapping;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Source_Map\Single_Mapping;
+use Source_Span\File_Span;
 /**
  * @internal
  */
-interface SourceMapBuffer extends StringBuffer
+interface Source_Map_Buffer extends String_Buffer
 {
     /**
      * Runs $callback and associates all text written within it with $span.
@@ -33,13 +30,12 @@ interface SourceMapBuffer extends StringBuffer
      * @param callable(): T $callback
      * @return T
      */
-    public function forSpan(FileSpan $span, callable $callback);
-
+    public function for_span(File_Span $span, callable $callback);
     /**
      * Returns the source map for the file being written.
      *
      * If $prefix is passed, all the entries in the source map will be moved
      * forward by the number of characters and lines in $prefix.
      */
-    public function buildSourceMap(?string $prefix): SingleMapping;
+    public function build_source_map(?string $prefix): Single_Mapping;
 }

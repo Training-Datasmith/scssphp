@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,19 +10,17 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Evaluation;
 
-namespace ScssPhp\ScssPhp\Evaluation;
-
-use ScssPhp\ScssPhp\Ast\AstNode;
-use ScssPhp\ScssPhp\Value\ListSeparator;
-use ScssPhp\ScssPhp\Value\Value;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
+use Scss_Php\Scss_Php\Value\List_Separator;
+use Scss_Php\Scss_Php\Value\Value;
 /**
  * The result of evaluating arguments to a function or mixin.
  *
  * @internal
  */
-final class ArgumentResults
+final class Argument_Results
 {
     /**
      * @param list<Value>            $positional
@@ -39,49 +36,45 @@ final class ArgumentResults
         /**
          * The {@see AstNode}s that hold the spans for each {@see positional} argument.
          */
-        private readonly array $positionalNodes,
+        private readonly array $positional_nodes,
         private readonly array $named,
         /**
          * The {@see AstNode}s that hold the spans for each {@see named} argument.
          */
-        private readonly array $namedNodes,
-        private readonly ListSeparator $separator
-    ) {
+        private readonly array $named_nodes,
+        private readonly List_Separator $separator
+    )
+    {
     }
-
     /**
      * @return list<Value>
      */
-    public function getPositional(): array
+    public function get_positional(): array
     {
         return $this->positional;
     }
-
     /**
      * @return list<AstNode>
      */
-    public function getPositionalNodes(): array
+    public function get_positional_nodes(): array
     {
-        return $this->positionalNodes;
+        return $this->positional_nodes;
     }
-
     /**
      * @return array<string, Value>
      */
-    public function getNamed(): array
+    public function get_named(): array
     {
         return $this->named;
     }
-
     /**
      * @return array<string, AstNode>
      */
-    public function getNamedNodes(): array
+    public function get_named_nodes(): array
     {
-        return $this->namedNodes;
+        return $this->named_nodes;
     }
-
-    public function getSeparator(): ListSeparator
+    public function get_separator(): List_Separator
     {
         return $this->separator;
     }

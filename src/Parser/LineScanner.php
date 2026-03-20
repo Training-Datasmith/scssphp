@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,130 +10,111 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Parser;
+namespace Scss_Php\Scss_Php\Parser;
 
 /**
  * A subclass of {@see StringScanner} that tracks line and column information.
  *
  * @internal
  */
-final class LineScanner extends StringScanner
+final class Line_Scanner extends String_Scanner
 {
     private int $line = 0;
-
     private int $column = 0;
-
-    public function getLine(): int
+    public function get_line(): int
     {
         return $this->line;
     }
-
-    public function getColumn(): int
+    public function get_column(): int
     {
         return $this->column;
     }
-
     /**
      * Whether the current position is between a CR character and an LF
      * character.
      */
-    private function betweenCRLF(): bool
+    private function between_crlf(): bool
     {
-        return $this->peekChar(-1) === "\r" && $this->peekChar() === "\n";
+        return $this->peek_char(-1) === "\r" && $this->peek_char() === "\n";
     }
-
-    public function setPosition(int $position): void
+    public function set_position(int $position): void
     {
-        $newPosition = $position;
-        $oldPosition = $this->getPosition();
-        parent::setPosition($position);
-
-        if ($newPosition > $oldPosition) {
-            $newlines = $this->newlinesIn($this->substring($oldPosition, $newPosition));
+        $new_position = $position;
+        $old_position = $this->get_position();
+        parent::set_position($position);
+        if ($new_position > $old_position) {
+            $newlines = $this->newlines_in($this->substring($old_position, $new_position));
             $this->line += \count($newlines);
-
             if ($newlines === []) {
-                $this->column += $newPosition - $oldPosition;
+                $this->column += $new_position - $old_position;
             } else {
                 $last = $newlines[\count($newlines) - 1];
                 $end = $last[1] + \strlen($last[0]);
-
-                $this->column = $newPosition - $end;
+                $this->column = $new_position - $end;
             }
         } else {
-            $newlines = $this->newlinesIn($this->substring($newPosition, $oldPosition));
-
-            if ($this->betweenCRLF()) {
+            $newlines = $this->newlines_in($this->substring($new_position, $old_position));
+            if ($this->between_crlf()) {
                 array_pop($newlines);
             }
             $this->line -= \count($newlines);
-
             if ($newlines === []) {
-                $this->column -= $oldPosition - $newPosition;
+                $this->column -= $old_position - $new_position;
             } else {
-                $lastCrlfPosition = strrpos($this->getString(), "\r\n", $newPosition);
-                if ($lastCrlfPosition === false) {
-                    $lastCrlfPosition = -1;
+                $last_crlf_position = strrpos($this->get_string(), "\r\n", $new_position);
+                if ($last_crlf_position === false) {
+                    $last_crlf_position = -1;
                 }
-                $lastLfPosition = strrpos($this->getString(), "\n", $newPosition);
-                if ($lastLfPosition === false) {
-                    $lastLfPosition = -1;
+                $last_lf_position = strrpos($this->get_string(), "\n", $new_position);
+                if ($last_lf_position === false) {
+                    $last_lf_position = -1;
                 }
-                $lastNewLinePosition = max($lastCrlfPosition, $lastLfPosition);
-                $this->column = $newPosition - $lastNewLinePosition - 1;
+                $last_new_line_position = max($last_crlf_position, $last_lf_position);
+                $this->column = $new_position - $last_new_line_position - 1;
             }
         }
     }
-
     /**
      * @phpstan-impure
      */
-    public function scanChar(string $char): bool
+    public function scan_char(string $char): bool
     {
-        if (!parent::scanChar($char)) {
+        if (!parent::scan_char($char)) {
             return false;
         }
-
-        $this->adjustLineAndColumn($char);
+        $this->adjust_line_and_column($char);
         return true;
     }
-
     /**
      * @phpstan-impure
      */
-    public function readChar(): string
+    public function read_char(): string
     {
-        $character = parent::readChar();
-        $this->adjustLineAndColumn($character);
-
+        $character = parent::read_char();
+        $this->adjust_line_and_column($character);
         return $character;
     }
-
     /**
      * @phpstan-impure
      */
-    public function readUtf8Char(): string
+    public function read_utf8char(): string
     {
-        $character = parent::readUtf8Char();
-        $this->adjustLineAndColumn($character);
-
+        $character = parent::read_utf8char();
+        $this->adjust_line_and_column($character);
         return $character;
     }
-
     /**
      * Adjusts {@see line} and {@see column} after having consumed $character.
      */
-    private function adjustLineAndColumn(string $character): void
+    private function adjust_line_and_column(string $character): void
     {
-        if ($character === "\n" || ($character === "\r" && $this->peekChar() !== "\n")) {
+        if ($character === "\n" || $character === "\r" && $this->peek_char() !== "\n") {
             $this->line += 1;
             $this->column = 0;
         } else {
             $this->column += \strlen($character);
         }
     }
-
     /**
      * @phpstan-impure
      */
@@ -143,35 +123,27 @@ final class LineScanner extends StringScanner
         if (!parent::scan($string)) {
             return false;
         }
-
-        $newlines = $this->newlinesIn($string);
+        $newlines = $this->newlines_in($string);
         $this->line += \count($newlines);
-
         if ($newlines === []) {
             $this->column += \strlen($string);
         } else {
             $last = $newlines[\count($newlines) - 1];
             $end = $last[1] + \strlen($last[0]);
-
             $this->column = \strlen($string) - $end;
         }
-
         return true;
     }
-
     /**
      * @return list<array{string, int}>
      */
-    private function newlinesIn(string $text): array
+    private function newlines_in(string $text): array
     {
         preg_match_all('/\r\n?|\n/', $text, $matches, PREG_OFFSET_CAPTURE);
-
         $newlines = $matches[0];
-
-        if ($this->betweenCRLF()) {
+        if ($this->between_crlf()) {
             array_pop($newlines);
         }
-
         return $newlines;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,51 +10,47 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Source_Span\File_Span;
 /**
  * A function-syntax condition.
  *
  * @internal
  */
-final class SupportsFunction implements SupportsCondition
+final class Supports_Function implements Supports_Condition
 {
-    private readonly FileSpan $span;
-
-    public function __construct(/**
-     * The name of the function.
-     */
-        private readonly Interpolation $name, /**
-     * The arguments of the function.
-     */
+    private readonly File_Span $span;
+    public function __construct(
+        /**
+         * The name of the function.
+         */
+        private readonly Interpolation $name,
+        /**
+         * The arguments of the function.
+         */
         private readonly Interpolation $arguments,
-        FileSpan $span
-    ) {
+        File_Span $span
+    )
+    {
         $this->span = $span;
     }
-
-    public function getName(): Interpolation
+    public function get_name(): Interpolation
     {
         return $this->name;
     }
-
-    public function getArguments(): Interpolation
+    public function get_arguments(): Interpolation
     {
         return $this->arguments;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
-        return "$this->name($this->arguments)";
+        return "{$this->name}({$this->arguments})";
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,179 +10,130 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentInvocation;
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\FunctionExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\ParenthesizedExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\StringExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Import\StaticImport;
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Ast\Sass\Statement\ImportRule;
-use ScssPhp\ScssPhp\Function\FunctionRegistry;
-
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Invocation;
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Function_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\Parenthesized_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\String_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Import\Static_Import;
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Ast\Sass\Statement\Import_Rule;
+use Scss_Php\Scss_Php\Function\Function_Registry;
 /**
  * A parser for imported CSS files.
  *
  * @internal
  */
-final class CssParser extends ScssParser
+final class Css_Parser extends Scss_Parser
 {
     /**
      * Sass global functions which are shadowing a CSS function are allowed in CSS files.
      */
-    private const CSS_ALLOWED_FUNCTIONS = [
-        'rgb' => true, 'rgba' => true, 'hsl' => true, 'hsla' => true, 'grayscale' => true,
-        'invert' => true, 'alpha' => true, 'opacity' => true, 'saturate' => true,
-        'min' => true, 'max' => true, 'round' => true, 'abs' => true,
-    ];
-
-    protected function isPlainCss(): bool
+    private const CSS_ALLOWED_FUNCTIONS = ['rgb' => true, 'rgba' => true, 'hsl' => true, 'hsla' => true, 'grayscale' => true, 'invert' => true, 'alpha' => true, 'opacity' => true, 'saturate' => true, 'min' => true, 'max' => true, 'round' => true, 'abs' => true];
+    protected function is_plain_css(): bool
     {
         return true;
     }
-
-    protected function silentComment(): bool
+    protected function silent_comment(): bool
     {
-        if ($this->inExpression()) {
+        if ($this->in_expression()) {
             return false;
         }
-
-        $start = $this->scanner->getPosition();
-        parent::silentComment();
-        $this->error("Silent comments aren't allowed in plain CSS.", $this->scanner->spanFrom($start));
+        $start = $this->scanner->get_position();
+        parent::silent_comment();
+        $this->error("Silent comments aren't allowed in plain CSS.", $this->scanner->span_from($start));
     }
-
-    protected function atRule(callable $child, bool $root = false): Statement
+    protected function at_rule(callable $child, bool $root = false): Statement
     {
-        $start = $this->scanner->getPosition();
-
-        $this->scanner->expectChar('@');
-        $name = $this->interpolatedIdentifier();
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('@');
+        $name = $this->interpolated_identifier();
         $this->whitespace();
-
-        return match ($name->getAsPlain()) {
-            'at-root',
-            'content',
-            'debug',
-            'each',
-            'error',
-            'extend',
-            'for',
-            'function',
-            'if',
-            'include',
-            'mixin',
-            'return',
-            'warn',
-            'while' => $this->forbiddenAtRule($start),
-            'import' => $this->cssImportRule($start),
-            'media' => $this->mediaRule($start),
-            '-moz-document' => $this->mozDocumentRule($start, $name),
-            'supports' => $this->supportsRule($start),
-            default => $this->unknownAtRule($start, $name),
+        return match ($name->get_as_plain()) {
+            'at-root', 'content', 'debug', 'each', 'error', 'extend', 'for', 'function', 'if', 'include', 'mixin', 'return', 'warn', 'while' => $this->forbidden_at_rule($start),
+            'import' => $this->css_import_rule($start),
+            'media' => $this->media_rule($start),
+            '-moz-document' => $this->moz_document_rule($start, $name),
+            'supports' => $this->supports_rule($start),
+            default => $this->unknown_at_rule($start, $name),
         };
     }
-
-    private function forbiddenAtRule(int $start): never
+    private function forbidden_at_rule(int $start): never
     {
-        $this->almostAnyValue();
-        $this->error("This at-rule isn't allowed in plain CSS.", $this->scanner->spanFrom($start));
+        $this->almost_any_value();
+        $this->error("This at-rule isn't allowed in plain CSS.", $this->scanner->span_from($start));
     }
-
-    private function cssImportRule(int $start): ImportRule
+    private function css_import_rule(int $start): Import_Rule
     {
-        $urlStart = $this->scanner->getPosition();
-        $next = $this->scanner->peekChar();
-
+        $url_start = $this->scanner->get_position();
+        $next = $this->scanner->peek_char();
         if ($next === 'u' || $next === 'U') {
-            $url = $this->dynamicUrl();
+            $url = $this->dynamic_url();
         } else {
-            $url = new StringExpression($this->interpolatedString()->asInterpolation(true));
+            $url = new String_Expression($this->interpolated_string()->as_interpolation(true));
         }
-        $urlSpan = $this->scanner->spanFrom($urlStart);
-
+        $url_span = $this->scanner->span_from($url_start);
         $this->whitespace();
-        $modifiers = $this->tryImportModifiers();
-        $this->expectStatementSeparator('@import rule');
-
-        return new ImportRule([
-            new StaticImport(new Interpolation([$url], $urlSpan), $this->scanner->spanFrom($start), $modifiers),
-        ], $this->scanner->spanFrom($start));
+        $modifiers = $this->try_import_modifiers();
+        $this->expect_statement_separator('@import rule');
+        return new Import_Rule([new Static_Import(new Interpolation([$url], $url_span), $this->scanner->span_from($start), $modifiers)], $this->scanner->span_from($start));
     }
-
     protected function parentheses(): Expression
     {
         // Expressions are only allowed within calculations, but we verify this at
         // evaluation time.
-        $start = $this->scanner->getPosition();
-        $this->scanner->expectChar('(');
+        $start = $this->scanner->get_position();
+        $this->scanner->expect_char('(');
         $this->whitespace();
-        $expression = $this->expressionUntilComma();
-        $this->scanner->expectChar(')');
-
-        return new ParenthesizedExpression($expression, $this->scanner->spanFrom($start));
+        $expression = $this->expression_until_comma();
+        $this->scanner->expect_char(')');
+        return new Parenthesized_Expression($expression, $this->scanner->span_from($start));
     }
-
-    protected function identifierLike(): Expression
+    protected function identifier_like(): Expression
     {
-        $start = $this->scanner->getPosition();
-        $identifier = $this->interpolatedIdentifier();
-        $plain = $identifier->getAsPlain();
-        assert($plain !== null); // CSS doesn't allow non-plain identifiers
-
+        $start = $this->scanner->get_position();
+        $identifier = $this->interpolated_identifier();
+        $plain = $identifier->get_as_plain();
+        assert($plain !== null);
+        // CSS doesn't allow non-plain identifiers
         $lower = strtolower($plain);
-        $specialFunction = $this->trySpecialFunction($lower, $start);
-
-        if ($specialFunction !== null) {
-            return $specialFunction;
+        $special_function = $this->try_special_function($lower, $start);
+        if ($special_function !== null) {
+            return $special_function;
         }
-
-        $beforeArguments = $this->scanner->getPosition();
+        $before_arguments = $this->scanner->get_position();
         // `namespacedExpression()` is just here to throw a clearer error.
-        if ($this->scanner->scanChar('.')) {
-            return $this->namespacedExpression($plain, $start);
+        if ($this->scanner->scan_char('.')) {
+            return $this->namespaced_expression($plain, $start);
         }
-        if (!$this->scanner->scanChar('(')) {
-            return new StringExpression($identifier);
+        if (!$this->scanner->scan_char('(')) {
+            return new String_Expression($identifier);
         }
-
-        $allowEmptySecondArg = $lower === 'var';
+        $allow_empty_second_arg = $lower === 'var';
         $arguments = [];
-
-        if (!$this->scanner->scanChar(')')) {
+        if (!$this->scanner->scan_char(')')) {
             do {
                 $this->whitespace();
-
-                if ($allowEmptySecondArg && \count($arguments) === 1 && $this->scanner->peekChar() === ')') {
-                    $arguments[] = StringExpression::plain('', $this->scanner->getEmptySpan());
+                if ($allow_empty_second_arg && \count($arguments) === 1 && $this->scanner->peek_char() === ')') {
+                    $arguments[] = String_Expression::plain('', $this->scanner->get_empty_span());
                     break;
                 }
-
-                $arguments[] = $this->expressionUntilComma(true);
+                $arguments[] = $this->expression_until_comma(true);
                 $this->whitespace();
-            } while ($this->scanner->scanChar(','));
-            $this->scanner->expectChar(')');
+            } while ($this->scanner->scan_char(','));
+            $this->scanner->expect_char(')');
         }
-
-        if ($plain === 'if' || (!isset(self::CSS_ALLOWED_FUNCTIONS[$plain]) && FunctionRegistry::isBuiltinFunction($plain))) {
-            $this->error("This function isn't allowed in plain CSS.", $this->scanner->spanFrom($start));
+        if ($plain === 'if' || !isset(self::CSS_ALLOWED_FUNCTIONS[$plain]) && Function_Registry::is_builtin_function($plain)) {
+            $this->error("This function isn't allowed in plain CSS.", $this->scanner->span_from($start));
         }
-
-        return new FunctionExpression(
-            $plain,
-            new ArgumentInvocation($arguments, [], $this->scanner->spanFrom($beforeArguments)),
-            $this->scanner->spanFrom($start)
-        );
+        return new Function_Expression($plain, new Argument_Invocation($arguments, [], $this->scanner->span_from($before_arguments)), $this->scanner->span_from($start));
     }
-
-    protected function namespacedExpression(string $namespace, int $start): Expression
+    protected function namespaced_expression(string $namespace, int $start): Expression
     {
-        $expression = parent::namespacedExpression($namespace, $start);
-
-        $this->error("Module namespaces aren't allowed in plain CSS.", $expression->getSpan());
+        $expression = parent::namespaced_expression($namespace, $start);
+        $this->error("Module namespaces aren't allowed in plain CSS.", $expression->get_span());
     }
 }

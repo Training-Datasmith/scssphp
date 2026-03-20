@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,13 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Sass_Callable;
 
-namespace ScssPhp\ScssPhp\SassCallable;
-
-use League\Uri\Contracts\UriInterface;
-use ScssPhp\ScssPhp\Ast\Sass\ArgumentDeclaration;
-use ScssPhp\ScssPhp\Exception\SassFormatException;
-use ScssPhp\ScssPhp\Value\SassNull;
-use ScssPhp\ScssPhp\Value\Value;
-
+use League\Uri\Contracts\Uri_Interface;
+use Scss_Php\Scss_Php\Ast\Sass\Argument_Declaration;
+use Scss_Php\Scss_Php\Exception\Sass_Format_Exception;
+use Scss_Php\Scss_Php\Value\Sass_Null;
+use Scss_Php\Scss_Php\Value\Value;
 /**
  * A callable defined in PHP code.
  *
@@ -30,7 +27,7 @@ use ScssPhp\ScssPhp\Value\Value;
  *
  * @internal
  */
-class BuiltInCallable implements SassCallable
+class Built_In_Callable implements Sass_Callable
 {
     /**
      * Creates a function with a single $arguments declaration and a single
@@ -46,15 +43,10 @@ class BuiltInCallable implements SassCallable
      *
      * @throws SassFormatException
      */
-    public static function function(string $name, string $arguments, callable $callback, ?UriInterface $url = null): BuiltInCallable
+    public static function function(string $name, string $arguments, callable $callback, ?Uri_Interface $url = null): Built_In_Callable
     {
-        return self::parsed(
-            $name,
-            ArgumentDeclaration::parse("@function $name($arguments) {", url: $url),
-            $callback
-        );
+        return self::parsed($name, Argument_Declaration::parse("@function {$name}({$arguments}) {", url: $url), $callback);
     }
-
     /**
      * Creates a mixin with a single $arguments declaration and a single
      * $callback.
@@ -69,20 +61,13 @@ class BuiltInCallable implements SassCallable
      *
      * @throws SassFormatException
      */
-    public static function mixin(string $name, string $arguments, callable $callback, ?UriInterface $url = null, bool $acceptsContent = false): BuiltInCallable
+    public static function mixin(string $name, string $arguments, callable $callback, ?Uri_Interface $url = null, bool $accepts_content = false): Built_In_Callable
     {
-        return self::parsed(
-            $name,
-            ArgumentDeclaration::parse("@mixin $name($arguments) {", url: $url),
-            function ($arguments) use ($callback): \ScssPhp\ScssPhp\Value\SassNull {
-                $callback($arguments);
-
-                return SassNull::create();
-            },
-            $acceptsContent
-        );
+        return self::parsed($name, Argument_Declaration::parse("@mixin {$name}({$arguments}) {", url: $url), function ($arguments) use ($callback): \Scss_Php\Scss_Php\Value\Sass_Null {
+            $callback($arguments);
+            return Sass_Null::create();
+        }, $accepts_content);
     }
-
     /**
      * Creates a function with multiple implementations.
      *
@@ -98,47 +83,37 @@ class BuiltInCallable implements SassCallable
      *
      * @throws SassFormatException
      */
-    public static function overloadedFunction(string $name, array $overloads, ?UriInterface $url = null): BuiltInCallable
+    public static function overloaded_function(string $name, array $overloads, ?Uri_Interface $url = null): Built_In_Callable
     {
-        $processedOverloads = [];
-
+        $processed_overloads = [];
         foreach ($overloads as $args => $callback) {
-            $processedOverloads[] = [
-                ArgumentDeclaration::parse("@function $name($args) {", url: $url),
-                $callback,
-            ];
+            $processed_overloads[] = [Argument_Declaration::parse("@function {$name}({$args}) {", url: $url), $callback];
         }
-
-        return new BuiltInCallable($name, $processedOverloads, false);
+        return new Built_In_Callable($name, $processed_overloads, false);
     }
-
     /**
      * Creates a callable with a single $arguments declaration and a single $callback.
      *
      * @param callable(list<Value>): Value $callback
      */
-    private static function parsed(string $name, ArgumentDeclaration $arguments, callable $callback, bool $acceptsContent = false): BuiltInCallable
+    private static function parsed(string $name, Argument_Declaration $arguments, callable $callback, bool $accepts_content = false): Built_In_Callable
     {
-        return new BuiltInCallable($name, [[$arguments, $callback]], $acceptsContent);
+        return new Built_In_Callable($name, [[$arguments, $callback]], $accepts_content);
     }
-
     /**
      * @param list<array{ArgumentDeclaration, callable(list<Value>): Value}> $overloads
      */
-    private function __construct(private readonly string $name, private readonly array $overloads, private readonly bool $acceptsContent)
+    private function __construct(private readonly string $name, private readonly array $overloads, private readonly bool $accepts_content)
     {
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
-    public function acceptsContent(): bool
+    public function accepts_content(): bool
     {
-        return $this->acceptsContent;
+        return $this->accepts_content;
     }
-
     /**
      * Returns the argument declaration and PHP callback for the given
      * positional and named arguments.
@@ -151,47 +126,39 @@ class BuiltInCallable implements SassCallable
      *
      * @return array{ArgumentDeclaration, callable(list<Value>): Value}
      */
-    public function callbackFor(int $positional, array $names): array
+    public function callback_for(int $positional, array $names): array
     {
-        $fuzzyMatch = null;
-        $minMismatchDistance = null;
-
+        $fuzzy_match = null;
+        $min_mismatch_distance = null;
         foreach ($this->overloads as $overload) {
             // Ideally, find an exact match.
             if ($overload[0]->matches($positional, $names)) {
                 return $overload;
             }
-
-            $mismatchDistance = \count($overload[0]->getArguments()) - $positional;
-
-            if ($minMismatchDistance !== null) {
-                if (abs($mismatchDistance) > abs($minMismatchDistance)) {
+            $mismatch_distance = \count($overload[0]->get_arguments()) - $positional;
+            if ($min_mismatch_distance !== null) {
+                if (abs($mismatch_distance) > abs($min_mismatch_distance)) {
                     continue;
                 }
-
                 // If two overloads have the same mismatch distance, favor the overload
                 // that has more arguments.
-                if (abs($mismatchDistance) === abs($minMismatchDistance) && $mismatchDistance < 0) {
+                if (abs($mismatch_distance) === abs($min_mismatch_distance) && $mismatch_distance < 0) {
                     continue;
                 }
             }
-
-            $minMismatchDistance = $mismatchDistance;
-            $fuzzyMatch = $overload;
+            $min_mismatch_distance = $mismatch_distance;
+            $fuzzy_match = $overload;
         }
-
-        if ($fuzzyMatch !== null) {
-            return $fuzzyMatch;
+        if ($fuzzy_match !== null) {
+            return $fuzzy_match;
         }
-
         throw new \LogicException("BuiltInCallable {$this->name} may not have empty overloads.");
     }
-
     /**
      * Returns a copy of this callable with the given $name.
      */
-    public function withName(string $name): BuiltInCallable
+    public function with_name(string $name): Built_In_Callable
     {
-        return new BuiltInCallable($name, $this->overloads, $this->acceptsContent);
+        return new Built_In_Callable($name, $this->overloads, $this->accepts_content);
     }
 }

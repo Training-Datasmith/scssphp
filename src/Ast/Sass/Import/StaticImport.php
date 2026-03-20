@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,60 +10,54 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Import;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Import;
-
-use ScssPhp\ScssPhp\Ast\Sass\Import;
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Import;
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Source_Span\File_Span;
 /**
  * An import that produces a plain CSS `@import` rule.
  *
  * @internal
  */
-final class StaticImport implements Import
+final class Static_Import implements Import
 {
-    private readonly FileSpan $span;
-
-    public function __construct(/**
-     * The URL for this import.
-     *
-     * This already contains quotes.
-     */
+    private readonly File_Span $span;
+    public function __construct(
+        /**
+         * The URL for this import.
+         *
+         * This already contains quotes.
+         */
         private readonly Interpolation $url,
-        FileSpan $span, /**
-     * The modifiers (such as media or supports queries) attached to this import,
-     * or `null` if none are attached.
-     */
+        File_Span $span,
+        /**
+         * The modifiers (such as media or supports queries) attached to this import,
+         * or `null` if none are attached.
+         */
         private readonly ?Interpolation $modifiers = null
-    ) {
+    )
+    {
         $this->span = $span;
     }
-
-    public function getUrl(): Interpolation
+    public function get_url(): Interpolation
     {
         return $this->url;
     }
-
-    public function getModifiers(): ?Interpolation
+    public function get_modifiers(): ?Interpolation
     {
         return $this->modifiers;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
         $buffer = (string) $this->url;
-
         if ($this->modifiers !== null) {
             $buffer .= ' ' . $this->modifiers;
         }
-
         return $buffer;
     }
 }

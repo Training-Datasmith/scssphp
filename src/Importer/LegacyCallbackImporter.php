@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,54 +10,43 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Importer;
 
-namespace ScssPhp\ScssPhp\Importer;
-
-use League\Uri\Contracts\UriInterface;
-use ScssPhp\ScssPhp\Util\Path;
-
+use League\Uri\Contracts\Uri_Interface;
+use Scss_Php\Scss_Php\Util\Path;
 /**
  * @internal
  */
-final class LegacyCallbackImporter extends Importer
+final class Legacy_Callback_Importer extends Importer
 {
-    private readonly Importer $filesystemImporter;
-
+    private readonly Importer $filesystem_importer;
     /**
      * @param \Closure(string): (string|null) $callback
      */
     public function __construct(private readonly \Closure $callback)
     {
-        $this->filesystemImporter = new FilesystemImporter(null);
+        $this->filesystem_importer = new Filesystem_Importer(null);
     }
-
-    public function canonicalize(UriInterface $url): ?UriInterface
+    public function canonicalize(Uri_Interface $url): ?Uri_Interface
     {
-        if ($url->getScheme() === 'file') {
-            return $this->filesystemImporter->canonicalize($url);
+        if ($url->get_scheme() === 'file') {
+            return $this->filesystem_importer->canonicalize($url);
         }
-
         $result = ($this->callback)((string) $url);
-
         if ($result === null) {
             return null;
         }
-
-        $resultUrl = Path::toUri($result);
-
-        return $this->filesystemImporter->canonicalize($resultUrl);
+        $result_url = Path::to_uri($result);
+        return $this->filesystem_importer->canonicalize($result_url);
     }
-
-    public function load(UriInterface $url): ?ImporterResult
+    public function load(Uri_Interface $url): ?Importer_Result
     {
-        return $this->filesystemImporter->load($url);
+        return $this->filesystem_importer->load($url);
     }
-
-    public function couldCanonicalize(UriInterface $url, UriInterface $canonicalUrl): bool
+    public function could_canonicalize(Uri_Interface $url, Uri_Interface $canonical_url): bool
     {
-        return $this->filesystemImporter->couldCanonicalize($url, $canonicalUrl);
+        return $this->filesystem_importer->could_canonicalize($url, $canonical_url);
     }
-
     public function __toString(): string
     {
         return 'LegacyCallbackImporter';

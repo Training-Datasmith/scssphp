@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,14 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Parser;
 
-namespace ScssPhp\ScssPhp\Parser;
-
-use League\Uri\Contracts\UriInterface;
-use SourceSpan\FileLocation;
-use SourceSpan\FileSpan;
-use SourceSpan\SourceFile;
-
+use League\Uri\Contracts\Uri_Interface;
+use Source_Span\File_Location;
+use Source_Span\File_Span;
+use Source_Span\Source_File;
 /**
  * A port of Dart's string_scanner package to be used by the parser.
  *
@@ -38,101 +35,82 @@ use SourceSpan\SourceFile;
  *
  * @internal
  */
-class StringScanner
+class String_Scanner
 {
     private int $position = 0;
-
-    private readonly SourceFile $sourceFile;
-
-    private ?int $lastMatchStart = null;
-
-    private ?int $lastMatchPosition = null;
-
-    public function __construct(private readonly string $string, ?UriInterface $sourceUrl = null)
+    private readonly Source_File $source_file;
+    private ?int $last_match_start = null;
+    private ?int $last_match_position = null;
+    public function __construct(private readonly string $string, ?Uri_Interface $source_url = null)
     {
-        $this->sourceFile = SourceFile::fromString($this->string, $sourceUrl);
+        $this->source_file = Source_File::from_string($this->string, $source_url);
     }
-
-    public function getString(): string
+    public function get_string(): string
     {
         return $this->string;
     }
-
-    public function getPosition(): int
+    public function get_position(): int
     {
         return $this->position;
     }
-
-    public function setPosition(int $position): void
+    public function set_position(int $position): void
     {
         $this->position = $position;
-        $this->lastMatchStart = null;
+        $this->last_match_start = null;
     }
-
-    public function spanFrom(int $start, ?int $end = null): FileSpan
+    public function span_from(int $start, ?int $end = null): File_Span
     {
-        return $this->sourceFile->span($start, $end ?? $this->position);
+        return $this->source_file->span($start, $end ?? $this->position);
     }
-
     /**
      * The current location of the scanner.
      */
-    public function getLocation(): FileLocation
+    public function get_location(): File_Location
     {
-        return $this->sourceFile->location($this->position);
+        return $this->source_file->location($this->position);
     }
-
     /**
      * Returns an empty span at the current location.
      */
-    public function getEmptySpan(): FileSpan
+    public function get_empty_span(): File_Span
     {
-        return $this->sourceFile->span($this->position, $this->position);
+        return $this->source_file->span($this->position, $this->position);
     }
-
-    public function isDone(): bool
+    public function is_done(): bool
     {
         return $this->position === \strlen($this->string);
     }
-
     /**
      * @throws FormatException if the end of the string is reached
      *
      * @phpstan-impure
      */
-    public function readChar(): string
+    public function read_char(): string
     {
         if ($this->position === \strlen($this->string)) {
             $this->fail('more input');
         }
-
         return $this->string[$this->position++];
     }
-
     /**
      * @throws FormatException if the end of the string is reached
      *
      * @phpstan-impure
      */
-    public function readUtf8Char(): string
+    public function read_utf8char(): string
     {
         if ($this->position === \strlen($this->string)) {
             $this->fail('more input');
         }
-
         if (\ord($this->string[$this->position]) < 0x80) {
             return $this->string[$this->position++];
         }
-
         if (!preg_match('/./usA', $this->string, $m, 0, $this->position)) {
             $this->fail('utf-8 char');
         }
-
         $this->position += \strlen($m[0]);
-
         return $m[0];
     }
-
     /**
      * Consumes the next character in the string if it is the provided character.
      *
@@ -140,21 +118,17 @@ class StringScanner
      *
      * @phpstan-impure
      */
-    public function scanChar(string $char): bool
+    public function scan_char(string $char): bool
     {
         if ($this->position === \strlen($this->string)) {
             return false;
         }
-
         if ($this->string[$this->position] !== $char) {
             return false;
         }
-
         ++$this->position;
-
         return true;
     }
-
     /**
      * Consumes the provided string if it appears at the current position.
      *
@@ -167,13 +141,10 @@ class StringScanner
         if (!$this->matches($string)) {
             return false;
         }
-
         $this->position += \strlen($string);
-        $this->lastMatchPosition = $this->position;
-
+        $this->last_match_position = $this->position;
         return true;
     }
-
     /**
      * Returns whether or not the provided string appears at the current position.
      *
@@ -184,17 +155,13 @@ class StringScanner
         if ($this->position - 1 + \strlen($string) >= \strlen($this->string)) {
             return false;
         }
-
         if (substr($this->string, $this->position, \strlen($string)) === $string) {
-            $this->lastMatchStart = $this->position;
-            $this->lastMatchPosition = $this->position;
-
+            $this->last_match_start = $this->position;
+            $this->last_match_position = $this->position;
             return true;
         }
-
         return false;
     }
-
     /**
      * If the next character in the string is $character, consumes it.
      *
@@ -207,19 +174,16 @@ class StringScanner
      *
      * @phpstan-impure
      */
-    public function expectChar(string $character, ?string $name = null): void
+    public function expect_char(string $character, ?string $name = null): void
     {
-        if ($this->scanChar($character)) {
+        if ($this->scan_char($character)) {
             return;
         }
-
         if ($name === null) {
             $name = '"' . $character . '"';
         }
-
         $this->fail($name);
     }
-
     /**
      * @throws FormatException
      *
@@ -230,22 +194,18 @@ class StringScanner
         if ($this->scan($string)) {
             return;
         }
-
         $this->fail('"' . $string . '"');
     }
-
     /**
      * @throws FormatException
      */
-    public function expectDone(): void
+    public function expect_done(): void
     {
-        if ($this->isDone()) {
+        if ($this->is_done()) {
             return;
         }
-
         $this->fail('no more input');
     }
-
     /**
      * Returns the character at the given offset of the current position.
      *
@@ -253,17 +213,14 @@ class StringScanner
      * Returns null if the offset goes out of range.
      * This does not affect the position or the last match.
      */
-    public function peekChar(int $offset = 0): ?string
+    public function peek_char(int $offset = 0): ?string
     {
         $pos = $this->position + $offset;
-
         if ($pos < 0 || $pos >= \strlen($this->string)) {
             return null;
         }
-
         return $this->string[$pos];
     }
-
     /**
      * Returns the substring of the string between $start and $end (excluded).
      *
@@ -274,65 +231,54 @@ class StringScanner
         if ($end === null) {
             $end = $this->position;
         }
-
         if ($end < $start) {
             return '';
         }
-
         return substr($this->string, $start, $end - $start);
     }
-
     /**
      * The scanner's current (zero-based) line number.
      */
-    public function getLine(): int
+    public function get_line(): int
     {
-        return $this->sourceFile->getLine($this->position);
+        return $this->source_file->get_line($this->position);
     }
-
     /**
      * The scanner's current (zero-based) column number.
      */
-    public function getColumn(): int
+    public function get_column(): int
     {
-        return $this->sourceFile->getColumn($this->position);
+        return $this->source_file->get_column($this->position);
     }
-
     /**
      * @throws FormatException
      */
     public function error(string $message, ?int $position = null, ?int $length = null): never
     {
-        if ($position === null && $length === null && $this->getLastMatchStart() !== null) {
-            \assert($this->lastMatchStart !== null);
-            $position = $this->lastMatchStart;
+        if ($position === null && $length === null && $this->get_last_match_start() !== null) {
+            \assert($this->last_match_start !== null);
+            $position = $this->last_match_start;
             $length = $this->position - $position;
         }
-
         $position ??= $this->position;
         $length ??= 0;
-
-        $span = $this->sourceFile->span($position, $position + $length);
-
-        throw new FormatException($message, $span);
+        $span = $this->source_file->span($position, $position + $length);
+        throw new Format_Exception($message, $span);
     }
-
-    private function getLastMatchStart(): ?int
+    private function get_last_match_start(): ?int
     {
         // Lazily unset $this->lastMatchStart so that we avoid extra assignments in
         // character-by-character methods that are used in core loops.
-        if ($this->lastMatchPosition !== $this->position) {
-            $this->lastMatchStart = null;
+        if ($this->last_match_position !== $this->position) {
+            $this->last_match_start = null;
         }
-
-        return $this->lastMatchStart;
+        return $this->last_match_start;
     }
-
     /**
      * @throws FormatException
      */
     private function fail(string $message): never
     {
-        $this->error("expected $message.");
+        $this->error("expected {$message}.");
     }
 }

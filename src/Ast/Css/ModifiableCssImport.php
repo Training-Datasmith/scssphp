@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,54 +10,49 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Visitor\ModifiableCssVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Visitor\Modifiable_Css_Visitor;
+use Source_Span\File_Span;
 /**
  * A modifiable version of {@see CssImport} for use in the evaluation step.
  *
  * @internal
  */
-final class ModifiableCssImport extends ModifiableCssNode implements CssImport
+final class Modifiable_Css_Import extends Modifiable_Css_Node implements Css_Import
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param CssValue<string> $url
      * @param CssValue<string>|null $modifiers
      */
-    public function __construct(/**
-     * The URL being imported.
-     *
-     * This includes quotes.
-     */
-        private readonly CssValue $url,
-        FileSpan $span,
-        private readonly ?CssValue $modifiers = null
-    ) {
+    public function __construct(
+        /**
+         * The URL being imported.
+         *
+         * This includes quotes.
+         */
+        private readonly Css_Value $url,
+        File_Span $span,
+        private readonly ?Css_Value $modifiers = null
+    )
+    {
         $this->span = $span;
     }
-
-    public function getUrl(): CssValue
+    public function get_url(): Css_Value
     {
         return $this->url;
     }
-
-    public function getModifiers(): ?CssValue
+    public function get_modifiers(): ?Css_Value
     {
         return $this->modifiers;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(ModifiableCssVisitor $visitor)
+    public function accept(Modifiable_Css_Visitor $visitor)
     {
-        return $visitor->visitCssImport($this);
+        return $visitor->visit_css_import($this);
     }
 }

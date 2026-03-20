@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,8 +10,7 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp;
+namespace Scss_Php\Scss_Php;
 
 /**
  * A deprecated feature in the language.
@@ -20,79 +18,65 @@ namespace ScssPhp\ScssPhp;
  * Code consuming this enum outside Scssphp must not rely on exhaustiveness checks. New values will be added
  * in this enum in minor versions of the package without considering that as a BC break.
  */
-enum Deprecation: string
+enum Deprecation : string
 {
     /**
      * Deprecation for passing a string directly to meta.call().
      */
     case callString = 'call-string';
-
     /**
      * Deprecation for @elseif.
      */
     case elseif = 'elseif';
-
     /**
      * Deprecation for @-moz-document.
      */
     case mozDocument = 'moz-document';
-
     /**
      * Deprecation for declaring new variables with !global.
      */
     case newGlobal = 'new-global';
-
     /**
      * Deprecation for / operator for division.
      */
     case slashDiv = 'slash-div';
-
     /**
      * Deprecation for leading, trailing, and repeated combinators.
      */
     case bogusCombinators = 'bogus-combinators';
-
     /**
      * Deprecation for ambiguous + and - operators.
      */
     case strictUnary = 'strict-unary';
-
     /**
      * Deprecation for passing invalid units to built-in functions.
      */
     case functionUnits = 'function-units';
-
     /**
      * Deprecation for using !default or !global multiple times for one variable.
      */
     case duplicateVarFlags = 'duplicate-var-flags';
-
     /**
      * Deprecation for passing percentages to the Sass abs() function.
      */
     case absPercent = 'abs-percent';
-
     /**
      * Deprecation for function and mixin names beginning with --.
      */
     case cssFunctionMixin = 'css-function-mixin';
-
     /**
      * Deprecation for declarations after or between nested rules.
      */
     case mixedDecls = 'mixed-decls';
-
     /**
      * Deprecation for meta.feature-exists.
      */
     case featureExists = 'feature-exists';
-
     /**
      * Used for deprecations coming from user-authored code.
      */
     case userAuthored = 'user-authored';
-
-    public function getDescription(): ?string
+    public function get_description(): ?string
     {
         return match ($this) {
             self::callString => 'Passing a string directly to meta.call().',
@@ -111,11 +95,10 @@ enum Deprecation: string
             self::userAuthored => null,
         };
     }
-
     /**
      * The version in which this feature was first deprecated.
      */
-    public function getDeprecatedIn(): ?string
+    public function get_deprecated_in(): ?string
     {
         return match ($this) {
             self::callString => '1.2.0',
@@ -134,41 +117,35 @@ enum Deprecation: string
             self::userAuthored => null,
         };
     }
-
     /**
      * The version this feature was fully removed in, making the
      * deprecation obsolete.
      *
      * For deprecations that are not yet obsolete, this should be null.
      */
-    public function getObsoleteIn(): ?string
+    public function get_obsolete_in(): ?string
     {
-        return null; // For now, no deprecation is obsolete
+        return null;
+        // For now, no deprecation is obsolete
     }
-
-    public function isFuture(): bool
+    public function is_future(): bool
     {
         if ($this === self::userAuthored) {
             return false;
         }
-
-        return $this->getDeprecatedIn() === null;
+        return $this->get_deprecated_in() === null;
     }
-
-    public function getStatus(): DeprecationStatus
+    public function get_status(): Deprecation_Status
     {
         if ($this === self::userAuthored) {
-            return DeprecationStatus::user;
+            return Deprecation_Status::user;
         }
-
-        if ($this->isFuture()) {
-            return DeprecationStatus::future;
+        if ($this->is_future()) {
+            return Deprecation_Status::future;
         }
-
-        if ($this->getObsoleteIn() !== null) {
-            return DeprecationStatus::obsolete;
+        if ($this->get_obsolete_in() !== null) {
+            return Deprecation_Status::obsolete;
         }
-
-        return DeprecationStatus::active;
+        return Deprecation_Status::active;
     }
 }

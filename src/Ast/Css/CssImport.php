@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Ast\Css;
+namespace Scss_Php\Scss_Php\Ast\Css;
 
 /**
  * A plain CSS `@import`.
  *
  * @internal
  */
-interface CssImport extends CssNode
+interface Css_Import extends Css_Node
 {
     /**
      * The URL being imported.
@@ -28,12 +26,11 @@ interface CssImport extends CssNode
      *
      * @return CssValue<string>
      */
-    public function getUrl(): CssValue;
-
+    public function get_url(): Css_Value;
     /**
      * The modifiers (such as media or supports queries) attached to this import.
      *
      * @return CssValue<string>|null
      */
-    public function getModifiers(): ?CssValue;
+    public function get_modifiers(): ?Css_Value;
 }

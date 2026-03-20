@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,13 +10,12 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
-
-namespace ScssPhp\ScssPhp\Value;
+namespace Scss_Php\Scss_Php\Value;
 
 /**
  * @internal
  */
-enum ColorFormatEnum implements ColorFormat
+enum Color_Format_Enum implements Color_Format
 {
     /**
      * A color defined using the `rgb()` or `rgba()` functions.

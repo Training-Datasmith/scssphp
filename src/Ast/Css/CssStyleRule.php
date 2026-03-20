@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,36 +10,32 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Ast\Selector\SelectorList;
-
+use Scss_Php\Scss_Php\Ast\Selector\Selector_List;
 /**
- * A plain CSS style rule.
+* A plain CSS style rule.
 *  *
 *  * This applies style declarations to elements that match a given selector.
 *  * Note that this isn't *strictly* plain CSS, since {@see getSelector} may still
 *  * contain placeholder selectors.
- *
- * @internal
- */
-interface CssStyleRule extends CssParentNode
+*
+* @internal
+*/
+interface Css_Style_Rule extends Css_Parent_Node
 {
     /**
      * The selector for this rule.
      */
-    public function getSelector(): SelectorList;
-
+    public function get_selector(): Selector_List;
     /**
      * The selector for this rule, before any extensions were applied.
      */
-    public function getOriginalSelector(): SelectorList;
-
+    public function get_original_selector(): Selector_List;
     /**
      * Whether this style rule was originally defined in a plain CSS stylesheet.
      *
      * @internal
      */
-    public function isFromPlainCss(): bool;
+    public function is_from_plain_css(): bool;
 }

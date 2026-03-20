@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,45 +10,36 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Serializer;
 
-namespace ScssPhp\ScssPhp\Serializer;
-
-use ScssPhp\ScssPhp\Ast\Css\CssNode;
-use ScssPhp\ScssPhp\Ast\Css\CssParentNode;
-use ScssPhp\ScssPhp\Ast\Selector\Selector;
-use ScssPhp\ScssPhp\Exception\SassScriptException;
-use ScssPhp\ScssPhp\Logger\LoggerInterface;
-use ScssPhp\ScssPhp\OutputStyle;
-use ScssPhp\ScssPhp\Value\Value;
-use ScssPhp\ScssPhp\Visitor\CssVisitor;
-
+use Scss_Php\Scss_Php\Ast\Css\Css_Node;
+use Scss_Php\Scss_Php\Ast\Css\Css_Parent_Node;
+use Scss_Php\Scss_Php\Ast\Selector\Selector;
+use Scss_Php\Scss_Php\Exception\Sass_Script_Exception;
+use Scss_Php\Scss_Php\Logger\Logger_Interface;
+use Scss_Php\Scss_Php\Output_Style;
+use Scss_Php\Scss_Php\Value\Value;
+use Scss_Php\Scss_Php\Visitor\Css_Visitor;
 /**
  * @internal
  */
 final class Serializer
 {
-    public static function serialize(CssNode $node, bool $inspect = false, OutputStyle $style = OutputStyle::EXPANDED, bool $sourceMap = false, bool $charset = true, ?LoggerInterface $logger = null): SerializeResult
+    public static function serialize(Css_Node $node, bool $inspect = false, Output_Style $style = Output_Style::EXPANDED, bool $source_map = false, bool $charset = true, ?Logger_Interface $logger = null): Serialize_Result
     {
-        $visitor = new SerializeVisitor($inspect, true, $style, $sourceMap, $logger);
+        $visitor = new Serialize_Visitor($inspect, true, $style, $source_map, $logger);
         $node->accept($visitor);
-        $css = (string) $visitor->getBuffer();
-
+        $css = (string) $visitor->get_buffer();
         $prefix = '';
-
         if ($charset && strlen($css) !== mb_strlen($css, 'UTF-8')) {
-            if ($style === OutputStyle::COMPRESSED) {
-                $prefix = "\u{FEFF}";
+            if ($style === Output_Style::COMPRESSED) {
+                $prefix = "﻿";
             } else {
                 $prefix = '@charset "UTF-8";' . "\n";
             }
         }
-
-        return new SerializeResult(
-            $prefix . $css,
-            $sourceMap ? $visitor->getBuffer()->buildSourceMap($prefix) : null,
-        );
+        return new Serialize_Result($prefix . $css, $source_map ? $visitor->get_buffer()->build_source_map($prefix) : null);
     }
-
     /**
      * Converts $value to a CSS string.
      *
@@ -60,18 +50,15 @@ final class Serializer
      *
      * If $quote is `false`, quoted strings are emitted without quotes.
      */
-    public static function serializeValue(Value $value, bool $inspect = false, bool $quote = true): string
+    public static function serialize_value(Value $value, bool $inspect = false, bool $quote = true): string
     {
         // Force loading the CssParentNode and CssVisitor before using the visitor because of a weird PHP behavior.
-        class_exists(CssParentNode::class);
-        class_exists(CssVisitor::class);
-
-        $visitor = new SerializeVisitor($inspect, $quote);
+        class_exists(Css_Parent_Node::class);
+        class_exists(Css_Visitor::class);
+        $visitor = new Serialize_Visitor($inspect, $quote);
         $value->accept($visitor);
-
-        return (string) $visitor->getBuffer();
+        return (string) $visitor->get_buffer();
     }
-
     /**
      * Converts $selector to a CSS string.
      *
@@ -80,15 +67,13 @@ final class Serializer
      * may not be valid CSS. If $inspect is `false` and $selector can't be
      * represented in plain CSS, throws a {@see SassScriptException}.
      */
-    public static function serializeSelector(Selector $selector, bool $inspect = false): string
+    public static function serialize_selector(Selector $selector, bool $inspect = false): string
     {
         // Force loading the CssParentNode and CssVisitor before using the visitor because of a weird PHP behavior.
-        class_exists(CssParentNode::class);
-        class_exists(CssVisitor::class);
-
-        $visitor = new SerializeVisitor($inspect);
+        class_exists(Css_Parent_Node::class);
+        class_exists(Css_Visitor::class);
+        $visitor = new Serialize_Visitor($inspect);
         $selector->accept($visitor);
-
-        return (string) $visitor->getBuffer();
+        return (string) $visitor->get_buffer();
     }
 }

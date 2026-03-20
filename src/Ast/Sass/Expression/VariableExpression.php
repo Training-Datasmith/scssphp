@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,77 +10,68 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Expression;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Expression;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\SassReference;
-use ScssPhp\ScssPhp\Util\SpanUtil;
-use ScssPhp\ScssPhp\Visitor\ExpressionVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Sass_Reference;
+use Scss_Php\Scss_Php\Util\Span_Util;
+use Scss_Php\Scss_Php\Visitor\Expression_Visitor;
+use Source_Span\File_Span;
 /**
  * A Sass variable.
  *
  * @internal
  */
-final class VariableExpression implements Expression, SassReference
+final class Variable_Expression implements Expression, Sass_Reference
 {
-    private readonly FileSpan $span;
-
-    public function __construct(/**
-     * The name of this variable, with underscores converted to hyphens.
-     */
+    private readonly File_Span $span;
+    public function __construct(
+        /**
+         * The name of this variable, with underscores converted to hyphens.
+         */
         private readonly string $name,
-        FileSpan $span, /**
-     * The namespace of the variable being referenced, or `null` if it's
-     * referenced without a namespace.
-     */
+        File_Span $span,
+        /**
+         * The namespace of the variable being referenced, or `null` if it's
+         * referenced without a namespace.
+         */
         private readonly ?string $namespace = null
-    ) {
+    )
+    {
         $this->span = $span;
     }
-
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
-    public function getNamespace(): ?string
+    public function get_namespace(): ?string
     {
         return $this->namespace;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function getNameSpan(): FileSpan
+    public function get_name_span(): File_Span
     {
         if ($this->namespace === null) {
             return $this->span;
         }
-
-        return SpanUtil::withoutNamespace($this->span);
+        return Span_Util::without_namespace($this->span);
     }
-
-    public function getNamespaceSpan(): ?FileSpan
+    public function get_namespace_span(): ?File_Span
     {
         if ($this->namespace === null) {
             return null;
         }
-
-        return SpanUtil::initialIdentifier($this->span);
+        return Span_Util::initial_identifier($this->span);
     }
-
-    public function accept(ExpressionVisitor $visitor)
+    public function accept(Expression_Visitor $visitor)
     {
-        return $visitor->visitVariableExpression($this);
+        return $visitor->visit_variable_expression($this);
     }
-
     public function __toString(): string
     {
-        return (string) $this->span->getText();
+        return (string) $this->span->get_text();
     }
 }

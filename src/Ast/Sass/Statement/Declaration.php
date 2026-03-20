@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,16 +10,14 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Statement;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\Statement;
-
-use ScssPhp\ScssPhp\Ast\Sass\Expression;
-use ScssPhp\ScssPhp\Ast\Sass\Expression\StringExpression;
-use ScssPhp\ScssPhp\Ast\Sass\Interpolation;
-use ScssPhp\ScssPhp\Ast\Sass\Statement;
-use ScssPhp\ScssPhp\Visitor\StatementVisitor;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Expression\String_Expression;
+use Scss_Php\Scss_Php\Ast\Sass\Interpolation;
+use Scss_Php\Scss_Php\Ast\Sass\Statement;
+use Scss_Php\Scss_Php\Visitor\Statement_Visitor;
+use Source_Span\File_Span;
 /**
  * A declaration (that is, a `name: value` pair).
  *
@@ -28,48 +25,47 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class Declaration extends ParentStatement
+final class Declaration extends Parent_Statement
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param Statement[]|null $children
      */
-    private function __construct(private readonly Interpolation $name, /**
-     * The value of this declaration.
-     *
-     * If {@see getChildren} is `null`, this is never `null`. Otherwise, it may or may
-     * not be `null`.
-     */
-        private readonly ?Expression $value, FileSpan $span, ?array $children = null)
+    private function __construct(
+        private readonly Interpolation $name,
+        /**
+         * The value of this declaration.
+         *
+         * If {@see getChildren} is `null`, this is never `null`. Otherwise, it may or may
+         * not be `null`.
+         */
+        private readonly ?Expression $value,
+        File_Span $span,
+        ?array $children = null
+    )
     {
         $this->span = $span;
         parent::__construct($children);
     }
-
-    public static function create(Interpolation $name, Expression $value, FileSpan $span): self
+    public static function create(Interpolation $name, Expression $value, File_Span $span): self
     {
         return new self($name, $value, $span);
     }
-
     /**
      * @param Statement[] $children
      */
-    public static function nested(Interpolation $name, array $children, FileSpan $span, ?Expression $value = null): self
+    public static function nested(Interpolation $name, array $children, File_Span $span, ?Expression $value = null): self
     {
         return new self($name, $value, $span, $children);
     }
-
-    public function getName(): Interpolation
+    public function get_name(): Interpolation
     {
         return $this->name;
     }
-
-    public function getValue(): ?Expression
+    public function get_value(): ?Expression
     {
         return $this->value;
     }
-
     /**
      * Returns whether this is a CSS Custom Property declaration.
      *
@@ -79,38 +75,31 @@ final class Declaration extends ParentStatement
      *
      * If this is `true`, then `value` will be a {@see StringExpression}.
      */
-    public function isCustomProperty(): bool
+    public function is_custom_property(): bool
     {
-        return str_starts_with($this->name->getInitialPlain(), '--');
+        return str_starts_with($this->name->get_initial_plain(), '--');
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
-    public function accept(StatementVisitor $visitor)
+    public function accept(Statement_Visitor $visitor)
     {
-        return $visitor->visitDeclaration($this);
+        return $visitor->visit_declaration($this);
     }
-
     public function __toString(): string
     {
         $buffer = $this->name . ':';
-
         if ($this->value !== null) {
-            if (!$this->isCustomProperty()) {
+            if (!$this->is_custom_property()) {
                 $buffer .= ' ';
             }
             $buffer .= $this->value;
         }
-
-        $children = $this->getChildren();
-
+        $children = $this->get_children();
         if ($children === null) {
             return $buffer . ';';
         }
-
         return $buffer . '{' . implode(' ', $children) . '}';
     }
 }

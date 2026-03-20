@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,11 +10,9 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php;
 
-namespace ScssPhp\ScssPhp;
-
-use ScssPhp\ScssPhp\Evaluation\EvaluationContext;
-
+use Scss_Php\Scss_Php\Evaluation\Evaluation_Context;
 final class Warn
 {
     /**
@@ -25,9 +22,8 @@ final class Warn
      */
     public static function warning(string $message): void
     {
-        self::reportWarning($message, null);
+        self::report_warning($message, null);
     }
-
     /**
      * Prints a deprecation warning message associated with the current `@import` or function call.
      *
@@ -35,16 +31,14 @@ final class Warn
      */
     public static function deprecation(string $message): void
     {
-        self::reportWarning($message, Deprecation::userAuthored);
+        self::report_warning($message, Deprecation::userAuthored);
     }
-
-    public static function forDeprecation(string $message, Deprecation $deprecation): void
+    public static function for_deprecation(string $message, Deprecation $deprecation): void
     {
-        self::reportWarning($message, $deprecation);
+        self::report_warning($message, $deprecation);
     }
-
-    private static function reportWarning(string $message, ?Deprecation $deprecation): void
+    private static function report_warning(string $message, ?Deprecation $deprecation): void
     {
-        EvaluationContext::getCurrent()->warn($message, $deprecation);
+        Evaluation_Context::get_current()->warn($message, $deprecation);
     }
 }

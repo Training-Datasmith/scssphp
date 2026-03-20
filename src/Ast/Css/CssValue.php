@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,15 +10,13 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Css;
 
-namespace ScssPhp\ScssPhp\Ast\Css;
-
-use ScssPhp\ScssPhp\Ast\AstNode;
-use ScssPhp\ScssPhp\Ast\Selector\Combinator;
-use ScssPhp\ScssPhp\Util\Equatable;
-use ScssPhp\ScssPhp\Util\EquatableUtil;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Ast_Node;
+use Scss_Php\Scss_Php\Ast\Selector\Combinator;
+use Scss_Php\Scss_Php\Util\Equatable;
+use Scss_Php\Scss_Php\Util\Equatable_Util;
+use Source_Span\File_Span;
 /**
  * A value in a plain CSS tree.
  *
@@ -30,46 +27,39 @@ use SourceSpan\FileSpan;
  *
  * @internal
  */
-final class CssValue implements AstNode, Equatable
+final class Css_Value implements Ast_Node, Equatable
 {
-    private readonly FileSpan $span;
-
+    private readonly File_Span $span;
     /**
      * @param T $value
      */
-    public function __construct(private readonly mixed $value, FileSpan $span)
+    public function __construct(private readonly mixed $value, File_Span $span)
     {
         $this->span = $span;
     }
-
     /**
      * @return T
      */
-    public function getValue(): mixed
+    public function get_value(): mixed
     {
         return $this->value;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function equals(object $other): bool
     {
-        return $other instanceof CssValue && EquatableUtil::equals($this->value, $other->value);
+        return $other instanceof Css_Value && Equatable_Util::equals($this->value, $other->value);
     }
-
     public function __toString(): string
     {
         if ($this->value instanceof Combinator) {
-            return $this->value->getText();
+            return $this->value->get_text();
         }
-
         if (\is_array($this->value)) {
             return implode('', $this->value);
         }
-
         return (string) $this->value;
     }
 }

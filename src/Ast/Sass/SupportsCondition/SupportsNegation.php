@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * SCSSPHP
  *
@@ -11,46 +10,41 @@ declare(strict_types=1);
  *
  * @link http://scssphp.github.io/scssphp
  */
+namespace Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
 
-namespace ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-
-use ScssPhp\ScssPhp\Ast\Sass\SupportsCondition;
-use SourceSpan\FileSpan;
-
+use Scss_Php\Scss_Php\Ast\Sass\Supports_Condition;
+use Source_Span\File_Span;
 /**
  * A negated condition.
  *
  * @internal
  */
-final class SupportsNegation implements SupportsCondition
+final class Supports_Negation implements Supports_Condition
 {
-    private readonly FileSpan $span;
-
-    public function __construct(/**
-     * The condition that's been negated.
-     */
-        private readonly SupportsCondition $condition,
-        FileSpan $span
-    ) {
+    private readonly File_Span $span;
+    public function __construct(
+        /**
+         * The condition that's been negated.
+         */
+        private readonly Supports_Condition $condition,
+        File_Span $span
+    )
+    {
         $this->span = $span;
     }
-
-    public function getCondition(): SupportsCondition
+    public function get_condition(): Supports_Condition
     {
         return $this->condition;
     }
-
-    public function getSpan(): FileSpan
+    public function get_span(): File_Span
     {
         return $this->span;
     }
-
     public function __toString(): string
     {
-        if ($this->condition instanceof SupportsNegation || $this->condition instanceof SupportsOperation) {
-            return "not ($this->condition)";
+        if ($this->condition instanceof Supports_Negation || $this->condition instanceof Supports_Operation) {
+            return "not ({$this->condition})";
         }
-
         return 'not ' . $this->condition;
     }
 }
